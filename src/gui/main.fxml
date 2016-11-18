@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<?import gui.LayerCanvas?>
+<BorderPane fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <left>
-        <Accordion BorderPane.alignment="CENTER">
+        <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
-                <TitledPane animated="false" text="Widok">
+                <TitledPane fx:id="viewPane" animated="false" text="Widok">
                     <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="4.0">
+                        <VBox spacing="4.0">
                             <children>
-                                <CheckBox mnemonicParsing="false" text="Ryzyko lawinowe" />
-                                <CheckBox mnemonicParsing="false" text="Temperatura gruntu" />
-                                <CheckBox mnemonicParsing="false" text="Grubość pokrywy śnieżnej" />
-                                <CheckBox mnemonicParsing="false" text="Ukształtowanie terenu" />
-                                <CheckBox mnemonicParsing="false" text="Prędkość wiatru" />
-                                <CheckBox mnemonicParsing="false" text="Opady" />
-                                <Separator prefWidth="200.0" />
-                                <Slider showTickLabels="true" showTickMarks="true" />
+                                <VBox fx:id="layerSelector" spacing="4.0">
+                                    <children></children>
+                                </VBox>
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Separator/>
+                                        <Slider fx:id="zoomSlider" showTickLabels="true" showTickMarks="true" min="0.1" majorTickUnit="0.5" minorTickCount="5" max="1.5" value="0.5" />
+                                    </children>
+                                </VBox>
                             </children>
                         </VBox>
+
                     </content>
                 </TitledPane>
                 <TitledPane animated="false" text="Parametry symulacji">
@@ -40,11 +41,7 @@
         </Accordion>
     </left>
     <center>
-        <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <content>
-                <Canvas height="1024.0" width="1024.0" />
-            </content>
-        </ScrollPane>
+        <LayerCanvas fx:id="canvas"/>
     </center>
     <bottom>
         <TitledPane animated="false" text="Log" BorderPane.alignment="CENTER" />
@@ -54,7 +51,7 @@
             <items>
                 <Button mnemonicParsing="false" text="Button" />
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Hyperlink text="O Projekcie" />
+                <Hyperlink fx:id="aboutUsLink" text="O Projekcie" />
             </items>
         </ToolBar>
     </top>
