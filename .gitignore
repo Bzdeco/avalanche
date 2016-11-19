@@ -4,6 +4,8 @@
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
+*.iml
+.idea/
 
 # Sensitive or high-churn files:
 .idea/dataSources/
@@ -48,7 +50,7 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
 

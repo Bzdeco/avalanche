@@ -1,15 +1,18 @@
 package gui;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public abstract class Layer {
-    private boolean visible = false;
-    private String name;
-    private Color color;
+    private final BooleanProperty visible = new SimpleBooleanProperty(false);
 
-    public Color getColor() { return color; }
-    public String getName() { return name; }
+    private final String name;
+    private final Color color;
+
+    protected Color getColor() { return color; }
+    protected String getName() { return name; }
 
     public Layer(String name, Color color) {
         this.name  = name;
@@ -17,12 +20,10 @@ public abstract class Layer {
     }
 
     public final boolean isVisible() {
-        return visible;
+        return visible.get();
     }
-
-    public final void setVisible(boolean visible) {
-        this.visible = visible;
-    }
+    public final void setVisible(boolean visible) { this.visible.set(visible); }
+    public final BooleanProperty isVisibleProperty() { return visible; }
 
     public abstract void render(GraphicsContext gc, double width, double height);
 }

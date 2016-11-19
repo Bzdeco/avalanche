@@ -4,12 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
-import java.util.concurrent.Callable;
-
 public class LayerCanvas extends Pane {
-    private Canvas canvas = new Canvas();
+    private final Canvas canvas = new Canvas();
     private EventHandler<ActionEvent> onResize;
 
     public LayerCanvas() {
@@ -41,5 +40,9 @@ public class LayerCanvas extends Pane {
 
             onResize.handle(new ActionEvent());
         }
+    }
+
+    public void setCanvasOnScroll(EventHandler<? super ScrollEvent> scrollEvent) {
+        canvas.setOnScroll(scrollEvent);
     }
 }
