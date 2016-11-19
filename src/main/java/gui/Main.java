@@ -19,7 +19,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
-        logger.info("logging test");
+        logger.info("logging test.Teskt {} ze zmiennymi {}", 1, 2);
         primaryStage.setTitle("Projekt lawinowy");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
