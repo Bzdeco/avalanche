@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Projekt_lawinowy.iml" filepath="$PROJECT_DIR$/Projekt_lawinowy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" group="Projekt_lawinowy" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" group="Projekt_lawinowy" />
     </modules>
   </component>
 </project>
