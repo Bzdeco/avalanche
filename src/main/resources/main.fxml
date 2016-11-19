@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -10,32 +9,22 @@
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
                 <TitledPane fx:id="viewPane" animated="false" text="Widok">
-                    <content>
-                        <VBox spacing="4.0">
-                            <children>
-                                <VBox fx:id="layerSelector" spacing="4.0">
-                                    <children></children>
-                                </VBox>
-                                <VBox spacing="4.0">
-                                    <children>
-                                        <Separator/>
-                                        <Slider fx:id="zoomSlider" showTickLabels="true" showTickMarks="true" min="0.1" majorTickUnit="0.5" minorTickCount="5" max="1.5" value="0.5" />
-                                    </children>
-                                </VBox>
-                            </children>
+                    <VBox spacing="4.0">
+                        <VBox fx:id="layerSelector" spacing="4.0">
                         </VBox>
+                        <Separator/>
+                        <VBox spacing="4.0">
+                            <Slider fx:id="zoomSlider" showTickLabels="true" showTickMarks="true" min="0.1"
+                                    majorTickUnit="0.5" minorTickCount="5" max="1.5" value="0.5"/>
+                        </VBox>
+                    </VBox>
 
-                    </content>
                 </TitledPane>
                 <TitledPane animated="false" text="Parametry symulacji">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
                 </TitledPane>
                 <TitledPane animated="false" text="Eksport danych">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
                 </TitledPane>
             </panes>
         </Accordion>
@@ -44,15 +33,15 @@
         <LayerCanvas fx:id="canvas"/>
     </center>
     <bottom>
-        <TitledPane animated="false" text="Log" BorderPane.alignment="CENTER" />
+        <TitledPane expanded="false" animated="false" text="Log" BorderPane.alignment="CENTER">
+            <TextArea fx:id="logTextArea" editable="false" prefHeight="200.0"/>
+        </TitledPane>
     </bottom>
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <items>
-                <Button mnemonicParsing="false" text="Button" />
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Hyperlink fx:id="aboutUsLink" text="O Projekcie" />
-            </items>
+            <Button mnemonicParsing="false" text="Button"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Hyperlink fx:id="aboutUsLink" text="O Projekcie"/>
         </ToolBar>
     </top>
 </BorderPane>
