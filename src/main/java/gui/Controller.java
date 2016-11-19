@@ -5,16 +5,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
-import javafx.scene.input.ScrollEvent;
 
-import javax.lang.model.type.NullType;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 public class Controller {
     @FXML
@@ -35,29 +31,27 @@ public class Controller {
 
         gc.clearRect(0, 0, w, h);
 
-        for(Map.Entry<String, Layer> layerEntry : model.getLayers()) {
+        for (Map.Entry<String, Layer> layerEntry : model.getLayers()) {
             Layer l = layerEntry.getValue();
-            if(l.isVisible()) l.render(gc, w, h);
+            if (l.isVisible()) l.render(gc, w, h);
         }
     }
 
     @FXML
     public void initialize() {
         zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
                 // newVal.doubleValue();
             }
         });
 
         canvas.setOnResize(new EventHandler<ActionEvent>() {
-            @Override
             public void handle(ActionEvent actionEvent) {
                 renderMap();
             }
         });
 
-        for(Map.Entry<String, Layer> layerEntry : model.getLayers()) {
+        for (Map.Entry<String, Layer> layerEntry : model.getLayers()) {
             Layer l = layerEntry.getValue();
             CheckBox layerToggler = new CheckBox();
             layerToggler.setId(layerEntry.getKey());
@@ -65,7 +59,7 @@ public class Controller {
             layerToggler.setSelected(l.isVisible());
 
             layerToggler.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent e) {
+                public void handle(ActionEvent e) {
                     toggleLayers(e);
                 }
             });
@@ -76,7 +70,7 @@ public class Controller {
     }
 
     private void toggleLayers(ActionEvent actionEvent) {
-        CheckBox source = (CheckBox)actionEvent.getSource();
+        CheckBox source = (CheckBox) actionEvent.getSource();
 
         // For simplicity checkbox id's are directly corresponding with layer id's
         model.toggleLayer(source.getId(), source.isSelected());

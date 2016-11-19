@@ -14,9 +14,14 @@
       <entry name="!?*.aj" />
     </wildcardResourcePatterns>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
+      <profile default="true" name="Default" enabled="true">
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Projekt_lawinowy_main" target="1.8" />
+      <module name="Projekt_lawinowy_package" target="1.8" />
+      <module name="Projekt_lawinowy_test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
