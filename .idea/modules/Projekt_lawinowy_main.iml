@@ -20,6 +20,6 @@
     </orderEntry>
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.7" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.7" level="project" />
-    <orderEntry type="library" name="Gradle: org.reactfx:reactfx:1.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.reactfx:reactfx:2.0-SNAPSHOT" level="project" />
   </component>
 </module>

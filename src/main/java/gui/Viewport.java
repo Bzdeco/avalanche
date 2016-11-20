@@ -1,41 +1,34 @@
 package gui;
 
-import com.sun.corba.se.impl.orbutil.graph.Graph;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.canvas.Canvas;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import layers.GridLayer;
-import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
+import org.reactfx.Subscription;
+import org.reactfx.SuspendableNo;
 
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Viewport {
-    private LayerCanvas cv;
     private GraphicsContext gc;
 
+    private SuspendableNo repaintOccurs = new SuspendableNo();
+    private ObservableSet<EventStream<Void>> viewportChanges = FXCollections.observableSet();
+
     public Viewport(GraphicsContext gc) {
-        final long latency = 10;
-
         this.gc = gc;
-
-        EventStream<Change<Number>> sizeChanges = EventStreams.merge(
-                EventStreams.changesOf(width),
-                EventStreams.changesOf(height)
-            ).reduceSuccessions((a, b) -> a, Duration.ofMillis(latency));
-
-        EventStream<Change<Number>> zoomChanges = EventStreams.changesOf(zoom);
-
-        EventStream<Change<Number>> panChanges = EventStreams.merge(
-                EventStreams.changesOf(panX),
-                EventStreams.changesOf(panY)
-        ).reduceSuccessions((a, b) -> a, Duration.ofMillis(latency));
-
-        EventStreams.merge(sizeChanges, zoomChanges, panChanges).subscribe(__ -> { render(); });
+        viewportChanges.addAll(Stream.of(width, height, zoom, pan)
+                                     .map(a -> EventStreams.invalidationsOf(a))
+                                     .collect(Collectors.toList()));
     }
 
     public ArrayList<Layer> getLayers() {
@@ -44,14 +37,34 @@ public class Viewport {
 
     public void registerLayer(Layer layer) {
         layers.add(layer);
-        EventStreams.changesOf(layer.isVisibleProperty()).subscribe(__ -> { render(); });
+        viewportChanges.add(EventStreams.invalidationsOf(layer.dataProperty()));
+        viewportChanges.add(EventStreams.invalidationsOf(layer.isVisibleProperty()));
+        viewportChanges.add(EventStreams.invalidationsOf(layer.colorProperty()));
     }
 
-    private void render() {
-        gc.clearRect(0, 0, width.get(), height.get());
+    public Subscription enableRendering() {
+        return EventStreams.merge(viewportChanges)
+                    // .emitOn(repaintOccurs.noes()) FIXME
+                    .subscribe(__ -> render());
+    }
 
-        layers.forEach(l -> {
-            if (l.isVisible()) l.render(gc, this);
+    private int tmpTest = 0;
+    private void render() {
+        repaintOccurs.suspendWhile(() -> {
+            gc.clearRect(0, 0, width.get(), height.get());
+
+            layers.forEach(l -> {
+                if (l.isVisible()) l.render(gc, this);
+            });
+
+            gc.setFill(Color.BLACK);
+            gc.fillText(String.valueOf(tmpTest++), 10, 10);
+
+
+            gc.strokeLine(width.get() / 2, height.get() / 2 - 10,
+                          width.get() / 2, height.get() / 2 + 10);
+            gc.strokeLine(width.get() / 2 - 10, height.get() / 2,
+                          width.get() / 2 + 10, height.get() / 2);
         });
     }
 
@@ -61,17 +74,18 @@ public class Viewport {
     private DoubleProperty height = new SimpleDoubleProperty(0);
     private DoubleProperty zoom = new SimpleDoubleProperty(1);
 
-    private DoubleProperty panX = new SimpleDoubleProperty(0);
-    private DoubleProperty panY = new SimpleDoubleProperty(0);
+    private ObjectProperty<Point2D> pan = new SimpleObjectProperty<>(Point2D.ZERO);
+
+    public Point2D getPan() { return pan.get(); }
+    public ObjectProperty<Point2D> panProperty() { return pan; }
+    public void setPan(Point2D pan) { this.pan.set(pan); }
 
     public double getWidth() {
         return width.get();
     }
-
     public DoubleProperty widthProperty() {
         return width;
     }
-
     public void setWidth(double width) {
         this.width.set(width);
     }
@@ -79,11 +93,9 @@ public class Viewport {
     public double getHeight() {
         return height.get();
     }
-
     public DoubleProperty heightProperty() {
         return height;
     }
-
     public void setHeight(double height) {
         this.height.set(height);
     }
@@ -91,33 +103,12 @@ public class Viewport {
     public double getZoom() {
         return zoom.get();
     }
-
     public DoubleProperty zoomProperty() {
         return zoom;
     }
 
     public void setZoom(double zoom) {
         this.zoom.set(zoom);
-    }
-
-    public double getPanX() {
-        return panX.get();
-    }
-
-    public DoubleProperty panXProperty() {
-        return panX;
-    }
-
-    public double getPanY() {
-        return panY.get();
-    }
-
-    public DoubleProperty panYProperty() {
-        return panY;
-    }
-
-    public void setPanY(double panY) {
-        this.panY.set(panY);
     }
 
 }

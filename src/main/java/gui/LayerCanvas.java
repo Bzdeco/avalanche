@@ -1,9 +1,6 @@
 package gui;
 
-import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 public class LayerCanvas extends Pane {
@@ -11,10 +8,6 @@ public class LayerCanvas extends Pane {
 
     public LayerCanvas() {
         getChildren().add(canvas);
-    }
-
-    public GraphicsContext getGraphicsContext2D() {
-        return canvas.getGraphicsContext2D();
     }
 
     @Override
@@ -27,14 +20,11 @@ public class LayerCanvas extends Pane {
         final int h = (int)getHeight() - top - bottom;
         canvas.setLayoutX(left);
         canvas.setLayoutY(top);
-
-        if (w != canvas.getWidth() || h != canvas.getHeight()) {
-            canvas.setWidth(w);
-            canvas.setHeight(h);
-        }
+        canvas.setWidth(w);
+        canvas.setHeight(h);
     }
 
-    public void setCanvasOnScroll(EventHandler<? super ScrollEvent> scrollEvent) {
-        canvas.setOnScroll(scrollEvent);
+    public Canvas getCanvas() {
+        return canvas;
     }
 }

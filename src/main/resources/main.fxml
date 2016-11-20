@@ -11,16 +11,7 @@
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
                 <TitledPane fx:id="viewPane" animated="false" text="Widok">
-                    <VBox spacing="4.0">
-                        <VBox fx:id="layerSelector" spacing="4.0">
-                        </VBox>
-                        <Separator/>
-                        <VBox spacing="4.0">
-                            <Slider fx:id="zoomSlider" showTickLabels="true" showTickMarks="true" min="0.1"
-                                    majorTickUnit="0.5" minorTickCount="5" max="1.5" value="0.5"/>
-                        </VBox>
-                    </VBox>
-
+                    <TreeView fx:id="layerSelector" editable="true"/>
                 </TitledPane>
                 <TitledPane animated="false" text="Parametry symulacji">
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
@@ -32,7 +23,7 @@
         </Accordion>
     </left>
     <center>
-        <LayerCanvas fx:id="canvas"/>
+        <LayerCanvas fx:id="canvasWrapper"/>
     </center>
     <bottom>
         <TitledPane expanded="false" animated="false" text="Log" BorderPane.alignment="CENTER">
@@ -41,7 +32,7 @@
     </bottom>
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <Button mnemonicParsing="false" text="Button"/>
+            <Button fx:id="tmpBtn" mnemonicParsing="false" text="Button"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Hyperlink fx:id="aboutUsLink" text="O Projekcie"/>
         </ToolBar>

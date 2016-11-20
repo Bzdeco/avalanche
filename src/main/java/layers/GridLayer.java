@@ -1,5 +1,6 @@
 package layers;
 
+import com.sun.javafx.util.Utils;
 import gui.Layer;
 import gui.Viewport;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,13 +16,31 @@ public class GridLayer extends Layer {
 
     @Override
     public void render(GraphicsContext gc, Viewport vp) {
-        Color basic = getColor().deriveColor(0, 1, 1, .5);
-        double cellSize = Math.min(vp.getWidth(), vp.getHeight()) / 100;
+        double [][]arr = getData();
+        if(arr == null) return;
 
-        for(int x = 0; x < 100; ++x) {
-            for(int y = 0; y < 100; ++y) {
-                gc.setFill(basic.deriveColor(0, Math.random(), 1, 1));
-                gc.fillRect(x*cellSize,y*cellSize, cellSize, cellSize);
+        Color basic = getColor();
+
+        double cellSize = 16 * vp.getZoom();
+
+        int arrHeight = arr.length;
+        int arrWidth = arr[0].length;
+
+        int cellsX = Utils.clamp(0, (int)Math.ceil(vp.getWidth() / cellSize), arrWidth);
+        int cellsY = Utils.clamp(0, (int)Math.ceil(vp.getHeight() / cellSize), arrHeight);
+
+        int offX = (arrWidth - cellsX) / 2 + (int)Math.ceil(vp.getPan().getX() / cellSize);
+        int offY = (arrHeight - cellsY) / 2 + (int)Math.ceil(vp.getPan().getY() / cellSize);
+
+        for (int y = 0; y < cellsY; ++y) {
+            for (int x = 0; x < cellsX; ++x) {
+                final int idxY = y + offY, idxX = x + offX;
+                if(idxY >= 0 && idxY < arrHeight && idxX >= 0 && idxX < arrWidth)
+                    gc.setFill(basic.deriveColor(0, 1, arr[idxY][idxX], 1));
+                else
+                    gc.setFill(basic.deriveColor(0, 0, 0, 1));
+
+                gc.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
             }
         }
     }
