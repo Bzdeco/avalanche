@@ -21,7 +21,7 @@ public class GridLayer extends Layer {
 
         Color basic = getColor();
 
-        double cellSize = 16 * vp.getZoom();
+        double cellSize = Math.floor(16 * vp.getZoom());
 
         int arrHeight = arr.length;
         int arrWidth = arr[0].length;
