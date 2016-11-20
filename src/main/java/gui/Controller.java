@@ -6,8 +6,11 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
 import layers.*;
@@ -48,12 +51,10 @@ public class Controller {
         vp.heightProperty().bind(canvas.heightProperty());
         vp.widthProperty().bind(canvas.widthProperty());
 
-        // TODO refactor into streams
-        canvas.setOnScroll(scrollEvent -> {
-            double newZoom = vp.getZoom() + scrollEvent.getDeltaY() / 1000;
-            newZoom = Utils.clamp(0.1, newZoom, 2.0);
-            vp.setZoom(newZoom);
-        });
+        EventStreams.eventsOf(canvas, ScrollEvent.SCROLL)
+                    .map(sE -> sE.getDeltaY() / 1000)
+                    .accumulate(vp.getZoom(), (a, b) -> Utils.clamp(0.1, a + b, 2.0))
+                    .feedTo(vp.zoomProperty());
 
         // Bind pan
         StateMachine.init(Tuples.t(vp.getPan(), Point2D.ZERO))
@@ -65,8 +66,8 @@ public class Controller {
                     .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
                 .on(EventStreams.changesOf(vp.zoomProperty()))
                     .transmit((p, c) -> {
-                        final double zoomChange = c.getNewValue().doubleValue() - c.getOldValue().doubleValue();
-                        final Point2D newPan = p._1.multiply(zoomChange); // TODO find correct formula :)
+                        final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
+                        final Point2D newPan = p._1.multiply(nz / oz);
                         return Tuples.t(Tuples.t(newPan, p._2), Optional.of(newPan));
                     })
                 .toEventStream().feedTo(vp.panProperty());
