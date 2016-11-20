@@ -1,6 +1,7 @@
 package layers;
 
 import gui.Layer;
+import gui.Viewport;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -13,7 +14,7 @@ public class VectorLayer extends Layer {
     }
 
     @Override
-    public void render(GraphicsContext gc, double width, double height) {
+    public void render(GraphicsContext gc, Viewport vp) {
 
     }
 }

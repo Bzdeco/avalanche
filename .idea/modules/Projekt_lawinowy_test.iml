@@ -13,7 +13,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar:///usr/lib/jvm/java-8-oracle/jre/lib/ext/jfxrt.jar!/" />
+          <root url="jar:///usr/lib/jvm/java-8-openjdk/jre/lib/ext/jfxrt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -21,6 +21,7 @@
     </orderEntry>
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.7" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.7" level="project" />
+    <orderEntry type="library" name="Gradle: org.reactfx:reactfx:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>

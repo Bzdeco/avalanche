@@ -1,15 +1,15 @@
 package gui;
 
-import javafx.beans.binding.Bindings;
+import com.sun.javafx.util.Utils;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import log.TextAreaAppender;
+import javafx.scene.paint.Color;
 
-import java.util.Map;
+import layers.*;
+import log.TextAreaAppender;
 
 public class Controller {
     @FXML
@@ -24,42 +24,47 @@ public class Controller {
     @FXML
     private TextArea logTextArea;
 
-    private final Model model = new Model();
-
-    private void renderMap() {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        double w = canvas.getWidth();
-        double h = canvas.getHeight();
-
-        gc.clearRect(0, 0, w, h);
-
-        for (Map.Entry<String, Layer> layerEntry : model.getLayers()) {
-            Layer l = layerEntry.getValue();
-            if (l.isVisible()) l.render(gc, w, h);
-        }
-    }
+    private Viewport vp;
 
     @FXML
     public void initialize() {
+        vp = new Viewport(canvas.getGraphicsContext2D());
+
+        registerLayers();
+
         TextAreaAppender.setTextArea(logTextArea);
 
-        Bindings.bindBidirectional(model.getZoomProperty(), zoomSlider.valueProperty());
+        vp.zoomProperty().bindBidirectional(zoomSlider.valueProperty());
 
-        canvas.setOnResize(actionEvent -> { renderMap(); });
+        vp.heightProperty().bind(canvas.heightProperty());
+        vp.widthProperty().bind(canvas.widthProperty());
 
-        for (Map.Entry<String, Layer> layerEntry : model.getLayers()) {
-            Layer l = layerEntry.getValue();
-            CheckBox layerToggler = new CheckBox();
-            layerToggler.setId(layerEntry.getKey());
-            layerToggler.setText(l.getName());
+        canvas.setCanvasOnScroll(scrollEvent -> {
+            double newZoom = vp.getZoom() + scrollEvent.getDeltaY() / 1000;
+            newZoom = Utils.clamp(zoomSlider.getMin(), newZoom, zoomSlider.getMax());
+            vp.setZoom(newZoom);
+        });
 
-            Bindings.bindBidirectional(layerToggler.selectedProperty(), l.isVisibleProperty());
-
-            layerToggler.setOnAction(actionEvent -> { renderMap(); });
-
-            layerSelector.getChildren().add(layerToggler);
+        for (Layer l : vp.getLayers()) {
+            CheckBox layerToggle = new CheckBox();
+            layerToggle.textProperty().bindBidirectional(l.getNameProperty());
+            layerToggle.selectedProperty().bindBidirectional(l.isVisibleProperty());
+            layerSelector.getChildren().add(layerToggle);
         }
+    }
 
-        renderMap();
+    private void registerLayers() {
+        Layer terrain = new GridLayer("Teren", Color.GREEN);
+        terrain.setVisible(true);
+        vp.registerLayer(terrain);
+
+        Layer risk = new GridLayer("Ryzyko lawinowe", Color.RED);
+        risk.setVisible(true);
+        vp.registerLayer(risk);
+
+        vp.registerLayer(new GridLayer("Temperatura gruntu", Color.BLUE));
+        vp.registerLayer(new GridLayer("Grubość pokrywy śnieżnej", Color.BLUE));
+        vp.registerLayer(new VectorLayer("Prędkość wiatru", Color.BLUE));
+        vp.registerLayer(new GridLayer("Opady", Color.BLUE));
     }
 }

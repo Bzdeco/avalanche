@@ -1,6 +1,5 @@
 package gui;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,7 +8,6 @@ import javafx.scene.layout.Pane;
 
 public class LayerCanvas extends Pane {
     private final Canvas canvas = new Canvas();
-    private EventHandler<ActionEvent> onResize;
 
     public LayerCanvas() {
         getChildren().add(canvas);
@@ -17,10 +15,6 @@ public class LayerCanvas extends Pane {
 
     public GraphicsContext getGraphicsContext2D() {
         return canvas.getGraphicsContext2D();
-    }
-
-    public void setOnResize(EventHandler<ActionEvent> onResize) {
-        this.onResize = onResize;
     }
 
     @Override
@@ -37,8 +31,6 @@ public class LayerCanvas extends Pane {
         if (w != canvas.getWidth() || h != canvas.getHeight()) {
             canvas.setWidth(w);
             canvas.setHeight(h);
-
-            onResize.handle(new ActionEvent());
         }
     }
 

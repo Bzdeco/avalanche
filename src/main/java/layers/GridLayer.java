@@ -1,6 +1,7 @@
 package layers;
 
 import gui.Layer;
+import gui.Viewport;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -13,9 +14,9 @@ public class GridLayer extends Layer {
     }
 
     @Override
-    public void render(GraphicsContext gc, double width, double height) {
+    public void render(GraphicsContext gc, Viewport vp) {
         Color basic = getColor().deriveColor(0, 1, 1, .5);
-        double cellSize = Math.min(width, height) / 100;
+        double cellSize = Math.min(vp.getWidth(), vp.getHeight()) / 100;
 
         for(int x = 0; x < 100; ++x) {
             for(int y = 0; y < 100; ++y) {
