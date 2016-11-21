@@ -43,7 +43,7 @@ public class Viewport extends Pane {
         layers.add(Tuples.t(layer, layerCanvas));
         getChildren().add(0, layerCanvas);
 
-        viewportChanges.add(EventStreams.invalidationsOf(layer.dataProperty()));
+        viewportChanges.add(EventStreams.invalidationsOf(layer.isReadyProperty()));
         viewportChanges.add(EventStreams.invalidationsOf(layer.isVisibleProperty()));
         viewportChanges.add(EventStreams.invalidationsOf(layer.colorProperty()));
 
@@ -63,7 +63,7 @@ public class Viewport extends Pane {
     private void render() {
         for(Tuple2<Layer, Canvas> lc : layers) {
             GraphicsContext gc = lc._2.getGraphicsContext2D();
-            if(lc._1.isVisible()) lc._1.render(gc, this);
+            if(lc._1.isVisible() && lc._1.isReady()) lc._1.render(gc, this);
         }
     }
 

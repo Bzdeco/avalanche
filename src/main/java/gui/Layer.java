@@ -27,6 +27,12 @@ public abstract class Layer {
     public final void setVisible(boolean visible) { this.visible.set(visible); }
     public final BooleanProperty isVisibleProperty() { return visible; }
 
+    protected final ReadOnlyBooleanWrapper isReady = new ReadOnlyBooleanWrapper();
+    public final ReadOnlyBooleanProperty isReadyProperty() {
+        return isReady.getReadOnlyProperty();
+    }
+    public final Boolean isReady() { return isReady.get(); }
+
     public abstract void render(GraphicsContext gc, Viewport vp);
 
 

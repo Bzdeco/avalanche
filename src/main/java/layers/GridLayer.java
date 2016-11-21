@@ -6,6 +6,7 @@ import gui.Viewport;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
+import org.reactfx.EventStreams;
 
 // TODO Add some data source / model to layer
 
@@ -13,12 +14,12 @@ public class GridLayer extends Layer {
 
     public GridLayer(String name, Color color) {
         super(name, color);
+        EventStreams.changesOf(dataProperty()).map(c -> c.getNewValue() != null).feedTo(isReady);
     }
 
     @Override
     public void render(GraphicsContext gc, Viewport vp) {
         double [][]arr = getData();
-        if(arr == null) return;
 
         Color layerColor = getColor();
         int layerAlpha = (int)(layerColor.getOpacity() * 0xFF);

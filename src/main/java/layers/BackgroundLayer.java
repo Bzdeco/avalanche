@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 public class BackgroundLayer extends Layer {
     public BackgroundLayer(String name, Color color) {
         super(name, color);
+        isReady.set(true);
     }
 
     @Override

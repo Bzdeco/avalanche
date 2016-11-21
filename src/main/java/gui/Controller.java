@@ -9,7 +9,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -21,7 +20,6 @@ import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 
-import java.awt.*;
 import java.io.File;
 import java.util.Optional;
 
@@ -81,6 +79,13 @@ public class Controller {
 
             CheckBox layerToggle = new CheckBox();
             layerToggle.selectedProperty().bindBidirectional(l.isVisibleProperty());
+            ProgressIndicator layerLoadIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
+            layerLoadIndicator.setPrefWidth(16);
+            layerLoadIndicator.setPrefHeight(16);
+
+            EventStreams.valuesOf(l.isReadyProperty())
+                        .map(r -> r ? null : layerLoadIndicator)
+                        .feedTo(layerToggle.graphicProperty());
 
             TreeItem<String> layerItem = new TreeItem<>();
             layerItem.valueProperty().bindBidirectional(l.nameProperty());
@@ -110,6 +115,7 @@ public class Controller {
             @Override
             protected double[][] call() throws Exception {
                 File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
+                Thread.sleep(3000);
                 return LasRasterizer.rasterize(lasfile);
             }
         };
@@ -118,6 +124,7 @@ public class Controller {
 
         GridLayer terrain = new GridLayer("Teren", Color.GREEN);
         terrain.dataProperty().bind(terrainData.valueProperty());
+
         terrain.setVisible(true);
         vp.registerLayer(terrain);
 
