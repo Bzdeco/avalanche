@@ -4,6 +4,7 @@ import com.sun.javafx.util.Utils;
 import gui.Layer;
 import gui.Viewport;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
 // TODO Add some data source / model to layer
@@ -19,9 +20,14 @@ public class GridLayer extends Layer {
         double [][]arr = getData();
         if(arr == null) return;
 
-        Color basic = getColor();
+        Color layerColor = getColor();
+        int layerAlpha = (int)(layerColor.getOpacity() * 0xFF);
+        int layerArgb = (0xFF << 24)
+                      | ((int)(layerColor.getRed() * 255) << 16)
+                      | ((int)(layerColor.getGreen() * 255) << 8)
+                      | ((int)(layerColor.getBlue() * 255));
 
-        double cellSize = Math.floor(16 * vp.getZoom());
+        double cellSize = Math.max(1, Math.floor(16 * vp.getZoom()));
 
         int arrHeight = arr.length;
         int arrWidth = arr[0].length;
@@ -32,15 +38,20 @@ public class GridLayer extends Layer {
         int offX = (arrWidth - cellsX) / 2 + (int)Math.ceil(vp.getPan().getX() / cellSize);
         int offY = (arrHeight - cellsY) / 2 + (int)Math.ceil(vp.getPan().getY() / cellSize);
 
-        for (int y = 0; y < cellsY; ++y) {
-            for (int x = 0; x < cellsX; ++x) {
-                final int idxY = y + offY, idxX = x + offX;
-                if(idxY >= 0 && idxY < arrHeight && idxX >= 0 && idxX < arrWidth)
-                    gc.setFill(basic.deriveColor(0, 1, arr[idxY][idxX], 1));
-                else
-                    gc.setFill(basic.deriveColor(0, 0, 0, 1));
+        PixelWriter pw = gc.getPixelWriter();
+        final int cs = (int)cellSize;
 
-                gc.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        for(int y = 0; y < cellsY; ++y) {
+            final int idxY = y + offY, sY = y * cs;
+            for (int dy = 0; dy < cs; ++dy) {
+                for (int x = 0; x < cellsX; ++x) {
+                    final int idxX = x + offX, sX = x * cs;
+                    for (int dx = 0; dx < cs; ++dx) {
+                        final int alpha = 0x00FFFFFF | ((idxY >= 0 && idxY < arrHeight && idxX >= 0 && idxX < arrWidth)
+                                                            ? (int)(layerAlpha * arr[idxX][idxY]) << 24 : 0);
+                        pw.setArgb(sX + dx, sY + dy, layerArgb & alpha);
+                    }
+                }
             }
         }
     }

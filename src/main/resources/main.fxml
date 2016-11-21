@@ -3,8 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import gui.LayerCanvas?>
-<?import layers.*?>
+<?import gui.Viewport?>
 
 <BorderPane fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <left>
@@ -23,7 +22,7 @@
         </Accordion>
     </left>
     <center>
-        <LayerCanvas fx:id="canvasWrapper"/>
+        <Viewport fx:id="vp"/>
     </center>
     <bottom>
         <TitledPane expanded="false" animated="false" text="Log" BorderPane.alignment="CENTER">
@@ -32,7 +31,7 @@
     </bottom>
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <Button fx:id="tmpBtn" mnemonicParsing="false" text="Button"/>
+            <Button fx:id="centerView" mnemonicParsing="false" text="Wycentruj"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Hyperlink fx:id="aboutUsLink" text="O Projekcie"/>
         </ToolBar>
