@@ -63,6 +63,7 @@ public class Viewport extends Pane {
     private void render() {
         for(Tuple2<Layer, Canvas> lc : layers) {
             GraphicsContext gc = lc._2.getGraphicsContext2D();
+            gc.clearRect(0,0, getWidth(), getHeight());
             if(lc._1.isVisible() && lc._1.isReady()) lc._1.render(gc, this);
         }
     }

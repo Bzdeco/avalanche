@@ -1,6 +1,6 @@
 package gui;
 
-import backend.LasRasterizer;
+import backend.rasterizer.LasRasterizer;
 import com.sun.javafx.util.Utils;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -13,14 +13,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
-import layers.*;
-import log.TextAreaAppender;
+import gui.layers.*;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 public class Controller {
@@ -111,19 +111,16 @@ public class Controller {
     }
 
     private void registerLayers() {
-        Task<double[][]> terrainData = new Task<double[][]>() {
-            @Override
-            protected double[][] call() throws Exception {
-                File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
-                Thread.sleep(3000);
-                return LasRasterizer.rasterize(lasfile);
-            }
-        };
-
-        new Thread(terrainData).start();
 
         GridLayer terrain = new GridLayer("Teren", Color.GREEN);
-        terrain.dataProperty().bind(terrainData.valueProperty());
+
+        File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
+
+        try {
+            terrain.setData(LasRasterizer.rasterize(lasfile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         terrain.setVisible(true);
         vp.registerLayer(terrain);
