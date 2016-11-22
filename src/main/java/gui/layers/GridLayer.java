@@ -33,8 +33,8 @@ public class GridLayer extends Layer {
         int arrHeight = arr.length;
         int arrWidth = arr[0].length;
 
-        int cellsX = Utils.clamp(0, (int)Math.ceil(vp.getWidth() / cellSize), arrWidth);
-        int cellsY = Utils.clamp(0, (int)Math.ceil(vp.getHeight() / cellSize), arrHeight);
+        int cellsX = Math.max(0, (int)Math.ceil(vp.getWidth() / cellSize));
+        int cellsY = Math.max(0, (int)Math.ceil(vp.getHeight() / cellSize));
 
         int offX = (arrWidth - cellsX) / 2 + (int)Math.ceil(vp.getPan().getX() / cellSize);
         int offY = (arrHeight - cellsY) / 2 + (int)Math.ceil(vp.getPan().getY() / cellSize);
@@ -48,7 +48,7 @@ public class GridLayer extends Layer {
                 for (int x = 0; x < cellsX; ++x) {
                     final int idxX = x + offX, sX = x * cs;
                     for (int dx = 0; dx < cs; ++dx) {
-                        final int alpha = 0x00FFFFFF | ((idxY >= 0 && idxY < arrHeight && idxX >= 0 && idxX < arrWidth)
+                        final int alpha = 0x00FFFFFF | (((idxY >= 0) && (idxY < arrHeight) && (idxX >= 0) && (idxX < arrWidth))
                                                             ? (int) (layerAlpha * arr[idxY][idxX]) << 24 : 0);
                         pw.setArgb(sX + dx, sY + dy, layerArgb & alpha);
                     }
