@@ -111,20 +111,23 @@ public class Controller {
     }
 
     private void registerLayers() {
-
         GridLayer terrain = new GridLayer("Teren", Color.GREEN);
+        GridLayer hillshade = new GridLayer("Zacienienie", Color.YELLOW);
 
         File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
 
         try {
-            terrain.setData(LasRasterizer.rasterize(lasfile));
+            LasRasterizer r = new LasRasterizer(lasfile);
+            terrain.setData(r.getTerrainGrid());
+            hillshade.setData(r.getHillshadeGrid());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         terrain.setVisible(true);
+        hillshade.setVisible(true);
+        vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
-
         vp.registerLayer(new BackgroundLayer("Tło", Color.BLACK));
 
 //        Layer risk = new GridLayer("Ryzyko lawinowe", Color.RED);
