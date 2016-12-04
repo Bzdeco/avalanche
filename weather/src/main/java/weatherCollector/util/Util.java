@@ -1,11 +1,17 @@
 package weatherCollector.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Util {
+    private static final Logger logger = LogManager.getLogger();
+
     public static Integer toInt(String s){
         try{
             return Integer.parseInt(s);
         }
         catch (NumberFormatException e){
+            logger.debug(e);
             return null;
         }
     }
@@ -15,6 +21,7 @@ public class Util {
             return Float.parseFloat(s);
         }
         catch (NumberFormatException e){
+            logger.debug(e);
             return null;
         }
     }
@@ -24,6 +31,7 @@ public class Util {
             return Short.parseShort(s);
         }
         catch (NumberFormatException e){
+            logger.debug(e);
             return null;
         }
     }

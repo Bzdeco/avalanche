@@ -29,7 +29,11 @@ CREATE TABLE weather
   wind_dir              INTEGER,
   precip_amount         REAL,
   precip_interval       SMALLINT,
-  precip_type           VARCHAR(40)
+  precip_type           VARCHAR(40),
+  cloud_level           SMALLINT,
+  cloud_sum             SMALLINT,
+  cloud_low             SMALLINT,
+  snow_level            SMALLINT
 );
 
 ALTER TABLE weather OWNER TO lawiny;
