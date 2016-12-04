@@ -1,7 +1,8 @@
-package backend.parsers.weatherHTML;
+package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
+import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,8 +11,8 @@ import java.util.regex.Pattern;
 
 @Data
 public class PrecipitationM implements Measurement {
-    private final String URL = "SI=kph&CEL=C&WMO=12650&TIME=all&LEVEL=140&REGION=0001&ART=niederschlag";
-    private final String filter = "tr:contains(m2)";
+    private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=niederschlag";
+    private final String filter = "tr:contains(m2), tr:contains(brak komunikatu)";
 
     private Date time;
     private Float amount;   //l/m2
@@ -27,9 +28,11 @@ public class PrecipitationM implements Measurement {
         Pattern pattern = Pattern.compile("\\d+\\.*\\d*");
         String s[] = el.child(1).text().split("l/m2");
         Matcher m = pattern.matcher(s[0]);
-        p.setAmount(m.find() ? Util.toFloat(m.group()) : null);
-
-        m = pattern.matcher(s[1]);
+        boolean found = m.find();
+        p.setAmount(found ? Util.toFloat(m.group()) : null);
+        if (found) {
+            m = pattern.matcher(s[1]);
+        }
         p.setInterval(m.find() ? Util.toShort(m.group()) : null);
 
         String type = el.child(2).text();

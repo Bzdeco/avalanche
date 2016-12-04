@@ -1,7 +1,8 @@
-package backend.parsers.weatherHTML;
+package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
+import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class WindM implements Measurement {
         return windM;
     }
 
-    private enum DIRS {
+    public enum DIRS {
         NW("płn. zach."),
         N("płn."),
         NE("płn. wsch."),

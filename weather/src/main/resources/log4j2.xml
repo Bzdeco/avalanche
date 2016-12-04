@@ -4,14 +4,8 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-        <TextAreaAppender name="JavaFXLogger">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c{1}:%L - %m%n"/>
-        </TextAreaAppender>
     </Appenders>
     <Loggers>
-        <Logger name="gui.Main" level="info">
-            <AppenderRef ref="JavaFXLogger"/>
-        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>

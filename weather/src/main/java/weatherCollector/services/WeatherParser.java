@@ -1,21 +1,26 @@
-package backend.parsers.weatherHTML;
+package weatherCollector.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
+import weatherCollector.parser.dto.Measurement;
+import weatherCollector.parser.dto.PrecipitationM;
+import weatherCollector.parser.dto.TempM;
+import weatherCollector.parser.dto.WindM;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class WeatherParser {
     private static final Logger logger = LogManager.getLogger();
     private static final String baseURL = "http://www.weatheronline.pl/weather/maps/city?";
-    
+
     public List<Measurement> getTemperature() throws IOException {
         logger.info("Getting data about temperature.");
         return getMeasurement(new TempM());
@@ -33,7 +38,7 @@ public class WeatherParser {
 
     private <T extends Measurement> List<Measurement> getMeasurement(T measurementType) throws IOException {
         Document doc = Jsoup.connect(baseURL + measurementType.getURL()).get();
-        Elements elements = doc.select(measurementType.getFilter());
+        org.jsoup.select.Elements elements = doc.select(measurementType.getFilter());
         List<Measurement> measurements = new ArrayList<>();
         for (Element el : elements) {
             try {

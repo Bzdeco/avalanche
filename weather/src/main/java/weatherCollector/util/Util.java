@@ -1,4 +1,4 @@
-package backend.parsers.weatherHTML;
+package weatherCollector.util;
 
 public class Util {
     public static Integer toInt(String s){
