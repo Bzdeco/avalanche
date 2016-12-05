@@ -286,9 +286,7 @@ class EdgePool implements Iterable<QuadEdge> {
   public List<IQuadEdge> getEdges() {
     ArrayList<IQuadEdge> eList = new ArrayList<>(nAllocated);
     for (Page p : pages) {
-      for (int j = 0; j < p.nAllocated; j++) {
-        eList.add(p.edges[j]);
-      }
+        eList.addAll(Arrays.asList(p.edges).subList(0, p.nAllocated));
     }
     return eList;
   }

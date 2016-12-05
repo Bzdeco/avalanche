@@ -1,6 +1,9 @@
 package gui;
 
+import backend.rasterizer.HillshadeGridTask;
 import backend.rasterizer.LasRasterizer;
+import backend.rasterizer.LasTinTask;
+import backend.rasterizer.TerrainGridTask;
 import com.sun.javafx.util.Utils;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -18,6 +21,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
+import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +30,9 @@ import java.util.Optional;
 public class Controller {
     @FXML
     public Button centerView;
+
+    @FXML
+    private ProgressBar progress;
 
     @FXML
     private TreeView layerSelector;
@@ -116,13 +123,33 @@ public class Controller {
 
         File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
 
-        try {
-            LasRasterizer r = new LasRasterizer(lasfile);
-            terrain.setData(r.getTerrainGrid());
-            hillshade.setData(r.getHillshadeGrid());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LasTinTask makeTin = new LasTinTask(lasfile);
+
+        Thread t1 = new Thread(makeTin);
+        t1.setDaemon(true);
+        t1.start();
+
+        progress.progressProperty().bind(makeTin.progressProperty());
+
+        makeTin.setOnSucceeded(ev -> {
+            VirtualIncrementalTin tin = (VirtualIncrementalTin)ev.getSource().getValue();
+            TerrainGridTask makeTerrainGrid = new TerrainGridTask(tin, makeTin.getGrid());
+
+            Thread t2 = new Thread(makeTerrainGrid);
+            t2.setDaemon(true);
+            t2.start();
+
+            terrain.dataProperty().bind(makeTerrainGrid.valueProperty());
+
+            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25);
+
+            Thread t3 = new Thread(makeHillshadeGrid);
+            t3.setDaemon(true);
+            t3.start();
+
+            hillshade.dataProperty().bind(makeHillshadeGrid.valueProperty());
+        });
+
 
         terrain.setVisible(true);
         hillshade.setVisible(true);

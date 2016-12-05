@@ -28,4 +28,8 @@ jar {
     version = '0.1.0'
 }
 
+run {
+    jvmArgs = ['-ea', '-Xmx2048m']
+}
+
 mainClassName = 'gui.Main'

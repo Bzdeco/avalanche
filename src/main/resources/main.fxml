@@ -32,6 +32,7 @@
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <Button fx:id="centerView" mnemonicParsing="false" text="Wycentruj"/>
+            <ProgressBar fx:id="progress"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Hyperlink fx:id="aboutUsLink" text="O Projekcie"/>
         </ToolBar>

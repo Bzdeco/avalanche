@@ -6,27 +6,59 @@ import java.io.PrintStream;
 import java.util.List;
 
 import com.sun.javafx.util.Utils;
-import tinfour.common.IIncrementalTin;
-import tinfour.common.Vertex;
+import javafx.scene.control.ProgressBar;
 
+import org.reactfx.EventStreams;
 import tinfour.gwr.BandwidthSelectionMethod;
 import tinfour.gwr.SurfaceModel;
 import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.interpolation.IInterpolatorOverTin;
-import tinfour.utils.TinInstantiationUtility;
 
 import tinfour.testutils.GridSpecification;
 import tinfour.testutils.InterpolationMethod;
 import tinfour.testutils.VertexLoader;
+import tinfour.virtual.VirtualIncrementalTin;
 
 
 public class LasRasterizer {
-    private GridSpecification grid;
-    private IIncrementalTin tin;
+    public LasRasterizer(File lasfile, ProgressBar p) {
 
-    public LasRasterizer(File lasfile) throws IOException {
+
+
+        /*PrintStream ps = System.out;
+
         VertexLoader loader = new VertexLoader();
-        List<Vertex> vertexList = loader.readLasFile(lasfile, null, null);
+
+        loader.setPreSortEnabed(true);
+
+        IMonitorWithCancellation mon = new IMonitorWithCancellation() {
+            @Override
+            public int getReportingIntervalInPercent() {
+                return 5;
+            }
+
+            @Override
+            public void reportProgress(int progressValueInPercent) {
+                System.out.format("Progress: %d\n", progressValueInPercent);
+            }
+
+            @Override
+            public void reportDone() {}
+
+            @Override
+            public void postMessage(String message) {
+                System.out.println(message);
+            }
+
+            @Override
+            public boolean isCanceled() { return false; }
+        };
+
+        long time0 = System.nanoTime();
+        List<Vertex> vertexList = loader.readLasFile(lasfile, null, mon);
+        long time1 = System.nanoTime();
+
+        ps.format("Time to load LAS file (milliseconds):  %11.3f\n", (time1 - time0) / 1000000.0);
 
         int nVertices = vertexList.size();
         double xmin = loader.getXMin();
@@ -35,6 +67,9 @@ public class LasRasterizer {
         double ymax = loader.getYMax();
 
         double area = (xmax - xmin) * (ymax - ymin);
+
+        ps.format("Area: %11.3f\n", area);
+
         double cellSize = 0.87738 * Math.sqrt(area / nVertices);
 
         double geoScaleX = 0;
@@ -52,53 +87,16 @@ public class LasRasterizer {
         grid = new GridSpecification(GridSpecification.CellPosition.CenterOfCell, cellSize, xmin, xmax, ymin, ymax,
                                      geoScaleX, geoScaleY, geoOffsetX, geoOffsetY);
 
-        TinInstantiationUtility tiu = new TinInstantiationUtility(0.5, nVertices);
-        Class<?> tinClass = tiu.getTinClass();
+        tin = new VirtualIncrementalTin(cellSize);
 
-        tin = tiu.constructInstance(tinClass, cellSize);
+        time0 = System.nanoTime();
+        tin.add(vertexList, mon);
+        time1 = System.nanoTime();
 
-        tin.add(vertexList, null);
+        ps.format("Time to build TIN:  %11.3f\n", (time1 - time0) / 1000000.0);*/
     }
 
-    public double[][] getTerrainGrid() {
-        int nRows = grid.getRowCount();
-        int nCols = grid.getColumnCount();
-        double xLL = grid.getLowerLeftX();
-        double yUL = grid.getUpperRightY();
-        double cellSize = grid.getCellSize();
-
-        IInterpolatorOverTin interpolator = InterpolationMethod.NaturalNeighbor.getInterpolator(tin);
-
-        double results[][] = new double[nRows][nCols];
-
-        double eMin = Double.POSITIVE_INFINITY;
-        double eMax = Double.NEGATIVE_INFINITY;
-
-        for (int iRow = 0; iRow < nRows; iRow++) {
-            final double[] row = results[iRow];
-            final double yRow = yUL - iRow * cellSize;
-            for (int iCol = 0; iCol < nCols; iCol++) {
-                final double xCol = iCol * cellSize + xLL;
-                final double val = interpolator.interpolate(xCol, yRow, null);
-                row[iCol] = val;
-                if(!Double.isNaN(val)) {
-                    eMin = Math.min(eMin, val);
-                    eMax = Math.max(eMax, val);
-                }
-            }
-        }
-
-        for (int iRow = 0; iRow < nRows; iRow++) {
-            for (int iCol = 0; iCol < nCols; iCol++) {
-                double val = (results[iRow][iCol] - eMin) / (eMax - eMin);
-                results[iRow][iCol] = Double.isNaN(val) ? 0 : val;
-            }
-        }
-
-        return results;
-    }
-
-    public double[][] getHillshadeGrid() {
+    /*public double[][] getHillshadeGrid(double sunAzimuth, double sunElevation) {
         int nRows = grid.getRowCount();
         int nCols = grid.getColumnCount();
         double xLL = grid.getLowerLeftX();
@@ -107,8 +105,6 @@ public class LasRasterizer {
 
         double ambient = 0.25;
         double directLight = 1.0 - ambient;
-        double sunAzimuth = Math.toRadians(135);
-        double sunElevation = Math.toRadians(45);
 
         // create a unit vector pointing at illumination source
         double cosA = Math.cos(sunAzimuth);
@@ -142,6 +138,6 @@ public class LasRasterizer {
         }
 
         return results;
-    }
+    }*/
 }
 
