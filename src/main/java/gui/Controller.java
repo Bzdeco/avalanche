@@ -2,6 +2,7 @@ package gui;
 
 import backend.rasterizer.HillshadeGridTask;
 import backend.rasterizer.LasTinTask;
+import backend.rasterizer.SteepnessGridTask;
 import backend.rasterizer.TerrainGridTask;
 import com.sun.javafx.util.Utils;
 import javafx.fxml.FXML;
@@ -123,6 +124,11 @@ public class Controller {
             .step(0,   0,   0,   0,   0)
             .build());
 
+        GridLayer steepness = new GridLayer("Nachylenie terenu", ColorRamp.create()
+            .step(-(float)Math.PI,  0,   0, 255, 255)
+            .step((float)Math.PI, 255,   0,   0, 255)
+            .build());
+
         File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
 
         LasTinTask makeTin = new LasTinTask(lasfile);
@@ -135,6 +141,8 @@ public class Controller {
 
         makeTin.setOnSucceeded(ev -> {
             VirtualIncrementalTin tin = (VirtualIncrementalTin)ev.getSource().getValue();
+
+            // Terrain
             TerrainGridTask makeTerrainGrid = new TerrainGridTask(tin, makeTin.getGrid());
 
             Thread t2 = new Thread(makeTerrainGrid);
@@ -143,6 +151,7 @@ public class Controller {
 
             terrain.dataProperty().bind(makeTerrainGrid.valueProperty());
 
+            // Hillshade
             HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25);
 
             Thread t3 = new Thread(makeHillshadeGrid);
@@ -150,11 +159,23 @@ public class Controller {
             t3.start();
 
             hillshade.dataProperty().bind(makeHillshadeGrid.valueProperty());
+
+            // Steepness
+            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid());
+
+            Thread t4 = new Thread(makeSteepnessGrid);
+            t4.setDaemon(true);
+            t4.start();
+
+            steepness.dataProperty().bind(makeSteepnessGrid.valueProperty());
         });
 
 
         terrain.setVisible(true);
         hillshade.setVisible(true);
+        steepness.setVisible(true);
+
+        vp.registerLayer(steepness);
         vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
         vp.registerLayer(new BackgroundLayer("Tło"));

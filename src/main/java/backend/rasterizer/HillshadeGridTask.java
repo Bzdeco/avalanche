@@ -28,11 +28,6 @@ public class HillshadeGridTask extends Task<float[][]> {
 
     @Override
     protected float[][] call() {
-        int nRows = grid.getRowCount();
-        int nCols = grid.getColumnCount();
-        double xLL = grid.getLowerLeftX();
-        double yUL = grid.getUpperRightY();
-        double cellSize = grid.getCellSize();
 
         double directLight = 1.0 - ambient;
 
