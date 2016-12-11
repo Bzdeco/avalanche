@@ -1,6 +1,5 @@
 package backend.rasterizer;
 
-import com.sun.javafx.util.Utils;
 import javafx.concurrent.Task;
 import tinfour.gwr.BandwidthSelectionMethod;
 import tinfour.gwr.SurfaceModel;
@@ -8,7 +7,7 @@ import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.testutils.GridSpecification;
 import tinfour.virtual.VirtualIncrementalTin;
 
-public class HillshadeGridTask extends Task<double[][]> {
+public class HillshadeGridTask extends Task<float[][]> {
     private VirtualIncrementalTin tin;
     private GridSpecification grid;
 
@@ -28,7 +27,7 @@ public class HillshadeGridTask extends Task<double[][]> {
     }
 
     @Override
-    protected double[][] call() {
+    protected float[][] call() {
         int nRows = grid.getRowCount();
         int nCols = grid.getColumnCount();
         double xLL = grid.getLowerLeftX();
@@ -47,27 +46,17 @@ public class HillshadeGridTask extends Task<double[][]> {
         double zSun = sinE;
 
         GwrTinInterpolator interpolator = new GwrTinInterpolator(tin);
-        double results[][] = new double[nRows][nCols];
 
-        for (int iRow = 0; iRow < nRows; iRow++) {
-            double[] row = results[iRow];
-            double yRow = yUL - iRow * cellSize;
-            for (int iCol = 0; iCol < nCols; iCol++) {
-                double xCol = iCol * cellSize + xLL;
-                double z = interpolator.interpolate(SurfaceModel.CubicWithCrossTerms,
-                        BandwidthSelectionMethod.FixedProportionalBandwidth, 1.0,
-                        xCol, yRow, null);
-                if (Double.isNaN(z)) {
-                    row[iCol] = 0;
-                } else {
-                    double[] n = interpolator.getSurfaceNormal();
-                    // n[0], n[1], n[2]  give x, y, and z values
-                    double cosTheta = Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
-                    row[iCol] = Utils.clamp(0, cosTheta * directLight + ambient, 1);
-                }
-            }
-        }
+        return Utils.renderGrid(grid, (xCol, yRow) -> {
+            double z = interpolator.interpolate(SurfaceModel.CubicWithCrossTerms,
+                    BandwidthSelectionMethod.FixedProportionalBandwidth, 1.0,
+                    xCol, yRow, null);
+            if(Double.isNaN(z)) return 0;
 
-        return results;
+            double[] n = interpolator.getSurfaceNormal();
+            // n[0], n[1], n[2]  give x, y, and z values
+            double cosTheta = Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
+            return Utils.clamp(0, cosTheta * directLight + ambient, 1);
+        });
     }
 }

@@ -1,11 +1,9 @@
 package gui;
 
 import backend.rasterizer.HillshadeGridTask;
-import backend.rasterizer.LasRasterizer;
 import backend.rasterizer.LasTinTask;
 import backend.rasterizer.TerrainGridTask;
 import com.sun.javafx.util.Utils;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -14,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Color;
 
 import gui.layers.*;
 import org.reactfx.EventStreams;
@@ -24,7 +21,6 @@ import org.reactfx.util.Tuples;
 import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 public class Controller {
@@ -98,19 +94,13 @@ public class Controller {
             layerItem.valueProperty().bindBidirectional(l.nameProperty());
             layerItem.setGraphic(layerToggle);
 
-            TreeItem<String> colorSelect = new TreeItem<>("Kolor");
-            ColorPicker picker = new ColorPicker();
-            picker.setValue(l.getColor());
-            colorSelect.setGraphic(picker);
-
             TreeItem<String> alphaSlider = new TreeItem<>("Alpha");
             Slider slider = new Slider(0.1, 1.0, 0.80);
             alphaSlider.setGraphic(slider);
 
             slider.valueProperty().bindBidirectional(layer._2.opacityProperty());
-            picker.valueProperty().bindBidirectional(layer._1.colorProperty());
 
-            layerItem.getChildren().addAll(colorSelect, alphaSlider);
+            layerItem.getChildren().add(alphaSlider);
             layersRoot.getChildren().add(layerItem);
         }
 
@@ -118,8 +108,20 @@ public class Controller {
     }
 
     private void registerLayers() {
-        GridLayer terrain = new GridLayer("Teren", Color.GREEN);
-        GridLayer hillshade = new GridLayer("Zacienienie", Color.YELLOW);
+        GridLayer terrain = new GridLayer("Teren", ColorRamp.create()
+                .step(4000,    255, 255, 255, 255)
+                .step(2800,    110, 110, 110, 255)
+                .step(1700,    158,   0,   0, 255)
+                .step(1200,    161,  67,   0, 255)
+                .step(500,     232, 215, 125, 255)
+                .step(50,       16, 122,  47, 255)
+                .step(0,        0,  97,  71, 255)
+                .build());
+
+        GridLayer hillshade = new GridLayer("Zacienienie", ColorRamp.create()
+            .step(1, 255, 255, 255, 127)
+            .step(0,   0,   0,   0,   0)
+            .build());
 
         File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
 
@@ -155,7 +157,7 @@ public class Controller {
         hillshade.setVisible(true);
         vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
-        vp.registerLayer(new BackgroundLayer("Tło", Color.BLACK));
+        vp.registerLayer(new BackgroundLayer("Tło"));
 
 //        Layer risk = new GridLayer("Ryzyko lawinowe", Color.RED);
 //        risk.setVisible(true);

@@ -1,32 +1,34 @@
 package gui.layers;
 
-import com.sun.javafx.util.Utils;
 import gui.Layer;
 import gui.Viewport;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.paint.Color;
 import org.reactfx.EventStreams;
+
+import java.util.function.Function;
 
 // TODO Add some data source / model to layer
 
 public class GridLayer extends Layer {
+    private ObjectProperty<float[][]> data = new SimpleObjectProperty<>();
+    public float[][] getData() { return data.get(); }
+    public ObjectProperty<float[][]> dataProperty() { return data; }
+    public void setData(float[][] data) { this.data.set(data); }
 
-    public GridLayer(String name, Color color) {
-        super(name, color);
+    private Function<Float, Integer> colorMapper;
+
+    public GridLayer(String name, Function<Float, Integer> colorMapper) {
+        super(name);
+        this.colorMapper = colorMapper;
         EventStreams.changesOf(dataProperty()).map(c -> c.getNewValue() != null).feedTo(isReady);
     }
 
     @Override
     public void render(GraphicsContext gc, Viewport vp) {
-        double [][]arr = getData();
-
-        Color layerColor = getColor();
-        int layerAlpha = (int)(layerColor.getOpacity() * 0xFF);
-        int layerArgb = (0xFF << 24)
-                      | ((int)(layerColor.getRed() * 255) << 16)
-                      | ((int)(layerColor.getGreen() * 255) << 8)
-                      | ((int)(layerColor.getBlue() * 255));
+        float [][]arr = getData();
 
         double cellSize = Math.max(1, Math.floor(16 * vp.getZoom()));
 
@@ -42,15 +44,18 @@ public class GridLayer extends Layer {
         PixelWriter pw = gc.getPixelWriter();
         final int cs = (int)cellSize;
 
-        for(int y = 0; y < cellsY; ++y) {
+        for (int y = 0; y < cellsY; ++y) {
             final int idxY = y + offY, sY = y * cs;
-            for (int dy = 0; dy < cs; ++dy) {
-                for (int x = 0; x < cellsX; ++x) {
-                    final int idxX = x + offX, sX = x * cs;
-                    for (int dx = 0; dx < cs; ++dx) {
-                        final int alpha = 0x00FFFFFF | (((idxY >= 0) && (idxY < arrHeight) && (idxX >= 0) && (idxX < arrWidth))
-                                                            ? (int) (layerAlpha * arr[idxY][idxX]) << 24 : 0);
-                        pw.setArgb(sX + dx, sY + dy, layerArgb & alpha);
+            if (idxY >= 0 && idxY < arrHeight) {
+                final float[] row = arr[idxY];
+                for (int dy = 0; dy < cs; ++dy) {
+                    for (int x = 0; x < cellsX; ++x) {
+                        final int idxX = x + offX, sX = x * cs;
+                        if(idxX >= 0 && idxX < arrWidth) {
+                            for (int dx = 0; dx < cs; ++dx) {
+                                pw.setArgb(sX + dx, sY + dy, colorMapper.apply(row[idxX]));
+                            }
+                        }
                     }
                 }
             }

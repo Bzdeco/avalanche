@@ -8,17 +8,11 @@ public abstract class Layer {
     private final BooleanProperty visible = new SimpleBooleanProperty(false);
 
     private final StringProperty name = new SimpleStringProperty();
-    private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.BLACK);
-
-    protected Color getColor() { return color.get(); }
-    protected ObjectProperty<Color> colorProperty() { return color; }
-
     protected String getName() { return name.get(); }
     protected  StringProperty nameProperty() { return name; }
 
-    public Layer(String name, Color color) {
+    public Layer(String name) {
         this.name.set(name);
-        this.color.set(color);
     }
 
     public final boolean isVisible() {
@@ -34,11 +28,4 @@ public abstract class Layer {
     public final Boolean isReady() { return isReady.get(); }
 
     public abstract void render(GraphicsContext gc, Viewport vp);
-
-
-    public double[][] getData() { return data.get(); }
-    public ObjectProperty<double[][]> dataProperty() { return data; }
-    public void setData(double[][] data) { this.data.set(data); }
-
-    private ObjectProperty<double[][]> data = new SimpleObjectProperty<>();
 }

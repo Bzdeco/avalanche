@@ -45,7 +45,6 @@ public class Viewport extends Pane {
 
         viewportChanges.add(EventStreams.invalidationsOf(layer.isReadyProperty()));
         viewportChanges.add(EventStreams.invalidationsOf(layer.isVisibleProperty()));
-        viewportChanges.add(EventStreams.invalidationsOf(layer.colorProperty()));
 
         // Fix for not invalidating size on parent component
         if(layers.size() < 2) {
