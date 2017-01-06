@@ -127,6 +127,8 @@ public class Controller {
             .build());
 
         File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
+//        File lasfile = new File(getClass().getClassLoader().getResource("helen.las").getFile());
+
 
         LasTinTask makeTin = new LasTinTask(lasfile);
 
@@ -140,7 +142,7 @@ public class Controller {
             VirtualIncrementalTin tin = (VirtualIncrementalTin)ev.getSource().getValue();
 
             NormalVector normalVector = new NormalVector(tin, makeTin.getGrid());
-            normalVector.getNormalVectors();
+            double[][][] norm = normalVector.getNormalVectors();
 
             // Terrain
             TerrainGridTask makeTerrainGrid = new TerrainGridTask(tin, makeTin.getGrid());
@@ -152,7 +154,7 @@ public class Controller {
             terrain.dataProperty().bind(makeTerrainGrid.valueProperty());
 
             // Hillshade
-            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25, normalVector);
+            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25, norm);
 
             Thread t3 = new Thread(makeHillshadeGrid);
             t3.setDaemon(true);
@@ -161,7 +163,7 @@ public class Controller {
             hillshade.dataProperty().bind(makeHillshadeGrid.valueProperty());
 
             // Steepness
-            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid(), normalVector);
+            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid(), norm);
 
             Thread t4 = new Thread(makeSteepnessGrid);
             t4.setDaemon(true);

@@ -16,11 +16,10 @@ public class HillshadeGridTask extends Task<float[][]> {
     private double sunElevation;
     private double ambient;
 
-    public HillshadeGridTask(VirtualIncrementalTin tin, GridSpecification grid, double ambient, NormalVector normalVector) {
+    public HillshadeGridTask(VirtualIncrementalTin tin, GridSpecification grid, double ambient, double[][][] normalVector) {
         this.tin = tin;
         this.grid = grid;
-        this.normVectors = normalVector.getNormalVectors();
-
+        this.normVectors = normalVector;
         // TODO calc from center of grid
         this.sunAzimuth = Math.toRadians(135);
         this.sunElevation = Math.toRadians(45);
@@ -42,10 +41,10 @@ public class HillshadeGridTask extends Task<float[][]> {
         double ySun = sinA * cosE;
         double zSun = sinE;
 
-        GwrTinInterpolator interpolator = new GwrTinInterpolator(tin);
-
-        return Utils.renderGrid(grid, (xCol, yRow) -> {
-            double[] n = normVectors[(int)xCol][(int)yRow];
+        return Utils.renderGridNorm(grid, (iCol, iRow) -> {
+            double[] n = normVectors[(int)iRow][(int)iCol];
+            if(n[0] == -1) //not a number
+                return 0;
             // n[0], n[1], n[2]  give x, y, and z values
             double cosTheta = Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
             return Utils.clamp(0, cosTheta * directLight + ambient, 1);
