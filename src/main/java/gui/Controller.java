@@ -1,9 +1,6 @@
 package gui;
 
-import backend.rasterizer.HillshadeGridTask;
-import backend.rasterizer.LasTinTask;
-import backend.rasterizer.SteepnessGridTask;
-import backend.rasterizer.TerrainGridTask;
+import backend.rasterizer.*;
 import com.sun.javafx.util.Utils;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -142,6 +139,9 @@ public class Controller {
         makeTin.setOnSucceeded(ev -> {
             VirtualIncrementalTin tin = (VirtualIncrementalTin)ev.getSource().getValue();
 
+            NormalVector normalVector = new NormalVector(tin, makeTin.getGrid());
+            normalVector.getNormalVectors();
+
             // Terrain
             TerrainGridTask makeTerrainGrid = new TerrainGridTask(tin, makeTin.getGrid());
 
@@ -152,7 +152,7 @@ public class Controller {
             terrain.dataProperty().bind(makeTerrainGrid.valueProperty());
 
             // Hillshade
-            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25);
+            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25, normalVector);
 
             Thread t3 = new Thread(makeHillshadeGrid);
             t3.setDaemon(true);
@@ -161,12 +161,12 @@ public class Controller {
             hillshade.dataProperty().bind(makeHillshadeGrid.valueProperty());
 
             // Steepness
-            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid());
+            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid(), normalVector);
 
             Thread t4 = new Thread(makeSteepnessGrid);
             t4.setDaemon(true);
             t4.start();
-
+            float[][] steepn = makeSteepnessGrid.valueProperty().getValue();
             steepness.dataProperty().bind(makeSteepnessGrid.valueProperty());
         });
 

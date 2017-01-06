@@ -11,28 +11,23 @@ import tinfour.virtual.VirtualIncrementalTin;
 public class SteepnessGridTask extends Task<float[][]> {
     private VirtualIncrementalTin tin;
     private GridSpecification grid;
+    private double[][][] normVectors;
 
-    public SteepnessGridTask(VirtualIncrementalTin tin, GridSpecification grid) {
+    public SteepnessGridTask(VirtualIncrementalTin tin, GridSpecification grid, NormalVector normalVector) {
         this.tin = tin;
         this.grid = grid;
+        this.normVectors = normalVector.getNormalVectors();
     }
 
     @Override
     protected float[][] call() {
-        GwrTinInterpolator interpolator = new GwrTinInterpolator(tin);
-
-        return Utils.renderGrid(grid, (xCol, yRow) -> {
-            double z = interpolator.interpolate(SurfaceModel.CubicWithCrossTerms,
-                    BandwidthSelectionMethod.FixedProportionalBandwidth, 1.0,
-                    xCol, yRow, null);
-
-            if(Double.isNaN(z)) return 0;
-
-            double[] n = interpolator.getSurfaceNormal();
+        float[][] result = Utils.renderGrid(grid, (xCol, yRow) -> {
+            double[] n = normVectors[(int)xCol][(int)yRow];
 
             // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
             double r = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
             return Math.acos(n[2] / r);
         });
+        return result;
     }
 }
