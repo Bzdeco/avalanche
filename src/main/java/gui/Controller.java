@@ -21,6 +21,8 @@ import tinfour.virtual.VirtualIncrementalTin;
 import java.io.File;
 import java.util.Optional;
 
+import backend.resourceHandler;
+
 public class Controller {
     @FXML
     public Button centerView;
@@ -126,7 +128,7 @@ public class Controller {
             .step((float)Math.PI, 255,   0,   0, 255)
             .build());
 
-        File lasfile = new File(getClass().getClassLoader().getResource("sample.las").getFile());
+        File lasfile = new File(resourceHandler.getMainDataFilePath());
 //        File lasfile = new File(getClass().getClassLoader().getResource("helen.las").getFile());
 
 

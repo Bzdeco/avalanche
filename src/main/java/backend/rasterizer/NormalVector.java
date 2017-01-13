@@ -1,32 +1,31 @@
 package backend.rasterizer;
 
+import backend.serializers.DataSerializer;
+import backend.resourceHandler;
 import tinfour.gwr.BandwidthSelectionMethod;
 import tinfour.gwr.SurfaceModel;
 import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.testutils.GridSpecification;
 import tinfour.virtual.VirtualIncrementalTin;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
 public class NormalVector {
     private VirtualIncrementalTin tin;
     private GwrTinInterpolator interpolator;
     private GridSpecification grid;
     private double[][][] normalVectors;
+    private DataSerializer<double[][][]> dataSerializer;
 
     public NormalVector(VirtualIncrementalTin tin, GridSpecification grid) {
         this.tin = tin;
         this.grid = grid;
         this.normalVectors = null;
         this.interpolator = null;
+        this.dataSerializer = new DataSerializer<>(resourceHandler.getNormalVectorsSerialized());
     }
 
     public double[][][] getNormalVectors() {
         if (normalVectors == null) {
-            this.interpolator = new GwrTinInterpolator(tin);
-            countNormalVectors();
+            this.calculateOrDeserializeNormalVectors();
         }
         return normalVectors;
     }
@@ -59,15 +58,15 @@ public class NormalVector {
             }
         }
         this.normalVectors = result;
-//        try {
-//            FileOutputStream fileOut = new FileOutputStream("src/main/resources/norm.ser");
-//            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//            out.writeObject(normalVectors);
-//            out.close();
-//            fileOut.close();
-//            System.out.printf("Serialized data is saved in src/main/resources/norm.ser");
-//        } catch (IOException i) {
-//            i.printStackTrace();
-//        }
+    }
+
+    private void calculateOrDeserializeNormalVectors() {
+        if (this.dataSerializer.isSerializedDataExistence()) {
+            this.normalVectors = this.dataSerializer.deserialize();
+        } else {
+            this.interpolator = new GwrTinInterpolator(this.tin);
+            this.countNormalVectors();
+            this.dataSerializer.serialize(this.normalVectors);
+        }
     }
 }
