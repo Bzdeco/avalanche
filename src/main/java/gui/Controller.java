@@ -17,7 +17,6 @@ import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 import tinfour.testutils.GridSpecification;
-import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
 import java.util.Optional;
@@ -47,26 +46,26 @@ public class Controller {
         TextAreaAppender.setTextArea(logTextArea);
 
         EventStreams.eventsOf(vp, ScrollEvent.SCROLL)
-                    .map(sE -> sE.getDeltaY() / 1000)
-                    .accumulate(vp.getZoom(), (a, b) -> Utils.clamp(1/16, a + b, 2.0))
-                    .feedTo(vp.zoomProperty());
+                .map(sE -> sE.getDeltaY() / 1000)
+                .accumulate(vp.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
+                .feedTo(vp.zoomProperty());
 
         // Bind pan
         StateMachine.init(Tuples.t(vp.getPan(), Point2D.ZERO))
                 .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_PRESSED))
-                    .transition((p, m) -> Tuples.t(p._1, new Point2D(m.getX(), m.getY())))
+                .transition((p, m) -> Tuples.t(p._1, new Point2D(m.getX(), m.getY())))
                 .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_DRAGGED))
-                    .emit((p, m) -> Optional.of(p._1.add(p._2.subtract(m.getX(), m.getY()))))
+                .emit((p, m) -> Optional.of(p._1.add(p._2.subtract(m.getX(), m.getY()))))
                 .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_RELEASED))
-                    .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
+                .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
                 .on(EventStreams.changesOf(vp.zoomProperty()))
-                    .transmit((p, c) -> {
-                        final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
-                        final Point2D newPan = p._1.multiply(nz / oz);
-                        return Tuples.t(Tuples.t(newPan, p._2), Optional.of(newPan));
-                    })
+                .transmit((p, c) -> {
+                    final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
+                    final Point2D newPan = p._1.multiply(nz / oz);
+                    return Tuples.t(Tuples.t(newPan, p._2), Optional.of(newPan));
+                })
                 .on(EventStreams.eventsOf(centerView, MouseEvent.MOUSE_CLICKED)) // Reset view
-                    .transmit((p, c) -> Tuples.t(Tuples.t(Point2D.ZERO, Point2D.ZERO), Optional.of(Point2D.ZERO)))
+                .transmit((p, c) -> Tuples.t(Tuples.t(Point2D.ZERO, Point2D.ZERO), Optional.of(Point2D.ZERO)))
                 .toEventStream().feedTo(vp.panProperty());
 
         createLayerControls();
@@ -88,8 +87,8 @@ public class Controller {
             layerLoadIndicator.setPrefHeight(16);
 
             EventStreams.valuesOf(l.isReadyProperty())
-                        .map(r -> r ? null : layerLoadIndicator)
-                        .feedTo(layerToggle.graphicProperty());
+                    .map(r -> r ? null : layerLoadIndicator)
+                    .feedTo(layerToggle.graphicProperty());
 
             TreeItem<String> layerItem = new TreeItem<>();
             layerItem.valueProperty().bindBidirectional(l.nameProperty());
@@ -110,29 +109,29 @@ public class Controller {
 
     private void registerLayers() {
         GridLayer terrain = new GridLayer("Teren", ColorRamp.create()
-                .step(4000,    255, 255, 255, 255)
-                .step(2800,    110, 110, 110, 255)
-                .step(1700,    158,   0,   0, 255)
-                .step(1200,    161,  67,   0, 255)
-                .step(500,     232, 215, 125, 255)
-                .step(50,       16, 122,  47, 255)
-                .step(0,        0,  97,  71, 255)
+                .step(4000, 255, 255, 255, 255)
+                .step(2800, 110, 110, 110, 255)
+                .step(1700, 158, 0, 0, 255)
+                .step(1200, 161, 67, 0, 255)
+                .step(500, 232, 215, 125, 255)
+                .step(50, 16, 122, 47, 255)
+                .step(0, 0, 97, 71, 255)
                 .build());
 
         GridLayer hillshade = new GridLayer("Zacienienie", ColorRamp.create()
-            .step(1, 255, 255, 255, 127)
-            .step(0,   0,   0,   0,   0)
-            .build());
+                .step(1, 255, 255, 255, 127)
+                .step(0, 0, 0, 0, 0)
+                .build());
 
         GridLayer steepness = new GridLayer("Nachylenie terenu", ColorRamp.create()
-            .step(-(float)Math.PI,  0,   0, 255, 255)
-            .step((float)Math.PI, 255,   0,   0, 255)
-            .build());
+                .step(-(float) Math.PI, 0, 0, 255, 255)
+                .step((float) Math.PI, 255, 0, 0, 255)
+                .build());
 
         GridLayer curvature = new GridLayer("Krzywizna terenu", ColorRamp.create()
-                .step(-1,   0,   0, 255, 255)
-                .step(0,   0, 255,   0, 255)
-                .step( 1, 255,   0,   0, 255)
+                .step(-1, 0, 0, 255, 255)
+                .step(0, 0, 255, 0, 255)
+                .step(1, 255, 0, 0, 255)
                 .build());
 
         File lasfile = new File(resourceHandler.getMainDataFilePath());
@@ -141,12 +140,12 @@ public class Controller {
         progress.progressProperty().bind(makeTin.progressProperty());
         makeTin.rnext(tin -> {
             GridSpecification grid = makeTin.getGrid();
-            (new TerrainGridTask(tin, grid)).rnext(terrain.dataProperty(), dem -> {
+            (new CachedTask<>(resourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty(), dem -> {
                 (new CurvatureGridTask(dem)).rnext(curvature.dataProperty());
             });
-            (new CachedTask<>(resourceHandler.getNormalVectorsSerialized(), new NormalsTask(tin, grid))).rnext(norm -> {
-                (new HillshadeGridTask(norm, 0.25f)).rnext(hillshade.dataProperty());
-                (new SteepnessGridTask(norm)).rnext(steepness.dataProperty());
+            (new CachedTask<>(resourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
+                (new CachedTask<>(resourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());
+                (new CachedTask<>(resourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty());
             });
         });
 

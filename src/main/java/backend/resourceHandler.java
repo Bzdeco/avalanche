@@ -3,8 +3,13 @@ package backend;
 public class resourceHandler {
     private static final String mainDataFile = "sample.las";
     private static String mainDataFilePath;
+
     private static String extensionRemoved;
-    private static String normalVectorsSerialized;
+
+    private static String terrainDataFilePath;
+    private static String normalsDataFilePath;
+    private static String hillShadeDataFilePath;
+    private static String steepnessDataFilePath;
 
     static {
         try {
@@ -17,14 +22,29 @@ public class resourceHandler {
         if (mainDataFilePath.indexOf(".") > 0)
             extensionRemoved = mainDataFilePath.substring(0, mainDataFilePath.lastIndexOf("."));
 
-        normalVectorsSerialized = extensionRemoved + "_normalVectors.ser";
+        terrainDataFilePath = extensionRemoved + "_terrain.ser";
+        normalsDataFilePath = extensionRemoved + "_normals.ser";
+        hillShadeDataFilePath = extensionRemoved + "_hillShade.ser";
+        steepnessDataFilePath = extensionRemoved + "_steepness.ser";
     }
 
     public static String getMainDataFilePath() {
         return mainDataFilePath;
     }
 
-    public static String getNormalVectorsSerialized() {
-        return normalVectorsSerialized;
+    public static String getTerrainDataFilePath() {
+        return terrainDataFilePath;
+    }
+
+    public static String getNormalsFilePath() {
+        return normalsDataFilePath;
+    }
+
+    public static String getHillShadeDataFilePath() {
+        return hillShadeDataFilePath;
+    }
+
+    public static String getSteepnessDataFilePath() {
+        return steepnessDataFilePath;
     }
 }
