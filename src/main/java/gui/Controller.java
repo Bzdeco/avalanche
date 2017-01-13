@@ -16,6 +16,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
+import tinfour.testutils.GridSpecification;
 import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
@@ -129,51 +130,17 @@ public class Controller {
             .build());
 
         File lasfile = new File(resourceHandler.getMainDataFilePath());
-//        File lasfile = new File(getClass().getClassLoader().getResource("helen.las").getFile());
-
 
         LasTinTask makeTin = new LasTinTask(lasfile);
-
-        Thread t1 = new Thread(makeTin);
-        t1.setDaemon(true);
-        t1.start();
-
         progress.progressProperty().bind(makeTin.progressProperty());
-
-        makeTin.setOnSucceeded(ev -> {
-            VirtualIncrementalTin tin = (VirtualIncrementalTin)ev.getSource().getValue();
-
-            NormalVector normalVector = new NormalVector(tin, makeTin.getGrid());
-            double[][][] norm = normalVector.getNormalVectors();
-
-            // Terrain
-            TerrainGridTask makeTerrainGrid = new TerrainGridTask(tin, makeTin.getGrid());
-
-            Thread t2 = new Thread(makeTerrainGrid);
-            t2.setDaemon(true);
-            t2.start();
-
-            terrain.dataProperty().bind(makeTerrainGrid.valueProperty());
-
-            // Hillshade
-            HillshadeGridTask makeHillshadeGrid = new HillshadeGridTask(tin, makeTin.getGrid(), 0.25, norm);
-
-            Thread t3 = new Thread(makeHillshadeGrid);
-            t3.setDaemon(true);
-            t3.start();
-
-            hillshade.dataProperty().bind(makeHillshadeGrid.valueProperty());
-
-            // Steepness
-            SteepnessGridTask makeSteepnessGrid = new SteepnessGridTask(tin, makeTin.getGrid(), norm);
-
-            Thread t4 = new Thread(makeSteepnessGrid);
-            t4.setDaemon(true);
-            t4.start();
-            float[][] steepn = makeSteepnessGrid.valueProperty().getValue();
-            steepness.dataProperty().bind(makeSteepnessGrid.valueProperty());
+        makeTin.rnext(tin -> {
+            GridSpecification grid = makeTin.getGrid();
+            (new TerrainGridTask(tin, grid)).rnext(terrain.dataProperty());
+            (new CachedTask<>(resourceHandler.getNormalVectorsSerialized(), new NormalsTask(tin, grid))).rnext(norm -> {
+                (new HillshadeGridTask(tin, grid, 0.25, norm)).rnext(hillshade.dataProperty());
+                (new SteepnessGridTask(tin, makeTin.getGrid(), norm)).rnext(steepness.dataProperty());
+            });
         });
-
 
         terrain.setVisible(true);
         hillshade.setVisible(true);

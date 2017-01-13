@@ -2,7 +2,6 @@ package backend.rasterizer;
 
 import tinfour.testutils.GridSpecification;
 
-import java.util.function.BinaryOperator;
 import java.util.function.DoubleBinaryOperator;
 
 public class Utils extends com.sun.javafx.util.Utils {

@@ -6,7 +6,7 @@ import tinfour.testutils.GridSpecification;
 import tinfour.testutils.InterpolationMethod;
 import tinfour.virtual.VirtualIncrementalTin;
 
-public class TerrainGridTask extends Task<float[][]> {
+public class TerrainGridTask extends ChainTask<float[][]> {
     private VirtualIncrementalTin tin;
     private GridSpecification grid;
 
@@ -16,7 +16,7 @@ public class TerrainGridTask extends Task<float[][]> {
     }
 
     @Override
-    protected float[][] call() {
+    public float[][] call() {
         IInterpolatorOverTin interpolator = InterpolationMethod.NaturalNeighbor.getInterpolator(tin);
         return Utils.renderGrid(grid, (xCol, yRow) -> interpolator.interpolate(xCol, yRow, null));
     }

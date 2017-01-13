@@ -10,8 +10,6 @@ import org.reactfx.EventStreams;
 
 import java.util.function.Function;
 
-// TODO Add some data source / model to layer
-
 public class GridLayer extends Layer {
     private ObjectProperty<float[][]> data = new SimpleObjectProperty<>();
     public float[][] getData() { return data.get(); }

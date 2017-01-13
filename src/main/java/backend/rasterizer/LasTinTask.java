@@ -10,7 +10,7 @@ import tinfour.virtual.VirtualIncrementalTin;
 import java.io.File;
 import java.util.List;
 
-public class LasTinTask extends Task<VirtualIncrementalTin> {
+public class LasTinTask extends ChainTask<VirtualIncrementalTin> {
     private File lasfile;
 
     private VertexLoader loader = new VertexLoader();
@@ -52,7 +52,7 @@ public class LasTinTask extends Task<VirtualIncrementalTin> {
     }
 
     @Override
-    protected VirtualIncrementalTin call() throws Exception {
+    public VirtualIncrementalTin call() throws Exception {
         List<Vertex> vertexList = loader.readLasFile(lasfile, null, mon);
 
         verticesLoaded = true;

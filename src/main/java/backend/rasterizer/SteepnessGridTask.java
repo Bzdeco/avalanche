@@ -1,28 +1,25 @@
 package backend.rasterizer;
 
 import javafx.concurrent.Task;
-import tinfour.gwr.BandwidthSelectionMethod;
-import tinfour.gwr.SurfaceModel;
-import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.testutils.GridSpecification;
 import tinfour.virtual.VirtualIncrementalTin;
 
 
-public class SteepnessGridTask extends Task<float[][]> {
+public class SteepnessGridTask extends ChainTask<float[][]> {
     private VirtualIncrementalTin tin;
     private GridSpecification grid;
-    private double[][][] normVectors;
+    private float[][][] normVectors;
 
-    public SteepnessGridTask(VirtualIncrementalTin tin, GridSpecification grid, double[][][] normalVector) {
+    public SteepnessGridTask(VirtualIncrementalTin tin, GridSpecification grid, float[][][] normalVector) {
         this.tin = tin;
         this.grid = grid;
         this.normVectors = normalVector;
     }
 
     @Override
-    protected float[][] call() {
+    public float[][] call() {
         float[][] result = Utils.renderGridNorm(grid, (iCol, iRow) -> {
-            double[] n = normVectors[(int)iRow][(int)iCol];
+            float[] n = normVectors[(int)iRow][(int)iCol];
             if(n[0] == -1) //not a number
                 return 0;
             // https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates

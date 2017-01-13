@@ -1,22 +1,18 @@
 package backend.rasterizer;
 
-import javafx.concurrent.Task;
-import tinfour.gwr.BandwidthSelectionMethod;
-import tinfour.gwr.SurfaceModel;
-import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.testutils.GridSpecification;
 import tinfour.virtual.VirtualIncrementalTin;
 
-public class HillshadeGridTask extends Task<float[][]> {
+public class HillshadeGridTask extends ChainTask<float[][]> {
     private VirtualIncrementalTin tin;
     private GridSpecification grid;
-    private double[][][] normVectors;
+    private float[][][] normVectors;
 
     private double sunAzimuth;
     private double sunElevation;
     private double ambient;
 
-    public HillshadeGridTask(VirtualIncrementalTin tin, GridSpecification grid, double ambient, double[][][] normalVector) {
+    public HillshadeGridTask(VirtualIncrementalTin tin, GridSpecification grid, double ambient, float[][][] normalVector) {
         this.tin = tin;
         this.grid = grid;
         this.normVectors = normalVector;
@@ -28,7 +24,7 @@ public class HillshadeGridTask extends Task<float[][]> {
     }
 
     @Override
-    protected float[][] call() {
+    public float[][] call() {
 
         double directLight = 1.0 - ambient;
 
@@ -42,7 +38,7 @@ public class HillshadeGridTask extends Task<float[][]> {
         double zSun = sinE;
 
         return Utils.renderGridNorm(grid, (iCol, iRow) -> {
-            double[] n = normVectors[(int)iRow][(int)iCol];
+            float[] n = normVectors[(int)iRow][(int)iCol];
             if(n[0] == -1) //not a number
                 return 0;
             // n[0], n[1], n[2]  give x, y, and z values
