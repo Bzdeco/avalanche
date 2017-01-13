@@ -3,6 +3,7 @@ package backend.rasterizer;
 import tinfour.testutils.GridSpecification;
 
 import java.util.function.DoubleBinaryOperator;
+import java.util.function.Function;
 
 public class Utils extends com.sun.javafx.util.Utils {
     public static float[][] renderGrid(GridSpecification grid, DoubleBinaryOperator inter) {
@@ -26,15 +27,15 @@ public class Utils extends com.sun.javafx.util.Utils {
         return results;
     }
 
-    public static float[][] renderGridNorm(GridSpecification grid, DoubleBinaryOperator inter) {
-        int nRows = grid.getRowCount();
-        int nCols = grid.getColumnCount();
+    public static <U> float[][] gmap2f(U[][] arr, Function<U, Float> f) {
+        int nRows = arr.length;
+        int nCols = arr[0].length;
 
         float results[][] = new float[nRows][nCols];
 
         for (int iRow = 0; iRow < nRows; iRow++) {
             for (int iCol = 0; iCol < nCols; iCol++) {
-                results[iRow][iCol] = (float)inter.applyAsDouble(iCol, iRow);
+                results[iRow][iCol] = f.apply(arr[iRow][iCol]);
             }
         }
 

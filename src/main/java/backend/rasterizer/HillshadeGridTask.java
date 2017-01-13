@@ -10,12 +10,12 @@ public class HillshadeGridTask extends ChainTask<float[][]> {
 
     private double sunAzimuth;
     private double sunElevation;
-    private double ambient;
 
-    public HillshadeGridTask(VirtualIncrementalTin tin, GridSpecification grid, double ambient, float[][][] normalVector) {
-        this.tin = tin;
-        this.grid = grid;
+    private float ambient;
+
+    public HillshadeGridTask(float[][][] normalVector, float ambient) {
         this.normVectors = normalVector;
+
         // TODO calc from center of grid
         this.sunAzimuth = Math.toRadians(135);
         this.sunElevation = Math.toRadians(45);
@@ -26,7 +26,7 @@ public class HillshadeGridTask extends ChainTask<float[][]> {
     @Override
     public float[][] call() {
 
-        double directLight = 1.0 - ambient;
+        float directLight = 1f - ambient;
 
         // create a unit vector pointing at illumination source
         double cosA = Math.cos(sunAzimuth);
@@ -37,12 +37,10 @@ public class HillshadeGridTask extends ChainTask<float[][]> {
         double ySun = sinA * cosE;
         double zSun = sinE;
 
-        return Utils.renderGridNorm(grid, (iCol, iRow) -> {
-            float[] n = normVectors[(int)iRow][(int)iCol];
-            if(n[0] == -1) //not a number
-                return 0;
+        return Utils.gmap2f(normVectors, n -> {
+            if(n[0] == -1) return 0f; //not a number
             // n[0], n[1], n[2]  give x, y, and z values
-            double cosTheta = Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
+            float cosTheta = (float)Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
             return Utils.clamp(0, cosTheta * directLight + ambient, 1);
         });
     }

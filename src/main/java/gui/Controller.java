@@ -129,23 +129,31 @@ public class Controller {
             .step((float)Math.PI, 255,   0,   0, 255)
             .build());
 
+        GridLayer curvature = new GridLayer("Krzywizna terenu", ColorRamp.create()
+                .step(-1,   0,   0, 255, 255)
+                .step(0,   0, 255,   0, 255)
+                .step( 1, 255,   0,   0, 255)
+                .build());
+
         File lasfile = new File(resourceHandler.getMainDataFilePath());
 
         LasTinTask makeTin = new LasTinTask(lasfile);
         progress.progressProperty().bind(makeTin.progressProperty());
         makeTin.rnext(tin -> {
             GridSpecification grid = makeTin.getGrid();
-            (new TerrainGridTask(tin, grid)).rnext(terrain.dataProperty());
+            (new TerrainGridTask(tin, grid)).rnext(terrain.dataProperty(), dem -> {
+                (new CurvatureGridTask(dem)).rnext(curvature.dataProperty());
+            });
             (new CachedTask<>(resourceHandler.getNormalVectorsSerialized(), new NormalsTask(tin, grid))).rnext(norm -> {
-                (new HillshadeGridTask(tin, grid, 0.25, norm)).rnext(hillshade.dataProperty());
-                (new SteepnessGridTask(tin, makeTin.getGrid(), norm)).rnext(steepness.dataProperty());
+                (new HillshadeGridTask(norm, 0.25f)).rnext(hillshade.dataProperty());
+                (new SteepnessGridTask(norm)).rnext(steepness.dataProperty());
             });
         });
 
         terrain.setVisible(true);
         hillshade.setVisible(true);
-        steepness.setVisible(true);
 
+        vp.registerLayer(curvature);
         vp.registerLayer(steepness);
         vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
