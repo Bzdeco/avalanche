@@ -17,7 +17,7 @@ public class resourceHandler {
         if (mainDataFilePath.indexOf(".") > 0)
             extensionRemoved = mainDataFilePath.substring(0, mainDataFilePath.lastIndexOf("."));
 
-        normalVectorsSerialized = mainDataFilePath + "_normalVectors.ser";
+        normalVectorsSerialized = extensionRemoved + "_normalVectors.ser";
     }
 
     public static String getMainDataFilePath() {

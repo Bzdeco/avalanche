@@ -18,18 +18,14 @@ public class DataSerializer<Type> {
             this.serializedData = new File(this.filePath);
 
             if (this.serializedData.exists() && !this.serializedData.isDirectory()) {
-                this.serializedDataInS = new FileInputStream(this.filePath);
-                this.serializedDataInO = new ObjectInputStream(this.serializedDataInS);
+                this.serializedDataExistence = true;
             } else {
                 this.serializedDataExistence = false;
-                return;
             }
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             this.serializedDataExistence = false;
             exception.printStackTrace();
-            return;
         }
-        serializedDataExistence = true;
     }
 
     public boolean isSerializedDataExistence() {
@@ -52,13 +48,16 @@ public class DataSerializer<Type> {
 
     public Type deserialize() {
         Type object;
-        System.out.println("DD");
-        System.out.println(this.filePath);
 
         if (this.serializedDataExistence) {
             try {
+                this.serializedDataInS = new FileInputStream(this.filePath);
+                this.serializedDataInO = new ObjectInputStream(this.serializedDataInS);
+
                 object = (Type) serializedDataInO.readObject();
-                this.closeInputs();
+
+                this.serializedDataInS.close();
+                this.serializedDataInO.close();
             } catch (Exception exception) {
                 exception.printStackTrace();
                 return null;
@@ -69,20 +68,5 @@ public class DataSerializer<Type> {
         }
 
         return object;
-    }
-
-    public void closeInputs() {
-        try {
-            this.serializedDataInS.close();
-            this.serializedDataInO.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        this.closeInputs();
     }
 }
