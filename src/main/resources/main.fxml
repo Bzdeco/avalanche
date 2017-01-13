@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import gui.Viewport?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import gui.Viewport?>
-
-<BorderPane fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/8">
     <left>
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
@@ -25,8 +24,28 @@
         <Viewport fx:id="vp"/>
     </center>
     <bottom>
-        <TitledPane expanded="false" animated="false" text="Log" BorderPane.alignment="CENTER">
-            <TextArea fx:id="logTextArea" editable="false" prefHeight="200.0"/>
+        <TitledPane expanded="false" animated="false" text="Pogoda" BorderPane.alignment="CENTER">
+            <VBox prefHeight="200.0" prefWidth="100.0">
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <Button fx:id="playBtn" mnemonicParsing="false" text="Play"/>
+                    <Label text="From"/>
+                    <DatePicker fx:id="fromDate"/>
+                    <Label text="To"/>
+                    <DatePicker fx:id="toDate"/>
+                    <Button fx:id="submitBtn" mnemonicParsing="false" text="Submit"/>
+                </HBox>
+                <!--<ScrollPane prefHeight="200.0" prefWidth="200.0">-->
+                <ScrollPane>
+                    <TableView fx:id="tableView">
+                        <!--<columns>-->
+                        <!--<TableColumn fx:id="playBtn" prefWidth="75.0" text="time" />-->
+                        <!--<TableColumn fx:id="playBtn" prefWidth="110.0" text="temperature" />-->
+                        <!--<TableColumn fx:id="playBtn" prefWidth="53.0" text="wind" />-->
+                        <!--<TableColumn fx:id="playBtn" prefWidth="109.0" text="precipitation" />-->
+                        <!--</columns>-->
+                    </TableView>
+                </ScrollPane>
+            </VBox>
         </TitledPane>
     </bottom>
     <top>
