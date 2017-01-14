@@ -4,13 +4,13 @@ import tinfour.gwr.BandwidthSelectionMethod;
 import tinfour.gwr.SurfaceModel;
 import tinfour.interpolation.GwrTinInterpolator;
 import tinfour.testutils.GridSpecification;
-import tinfour.virtual.VirtualIncrementalTin;
+import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
 public class NormalsTask extends ChainTask<float[][][]>{
     private GridSpecification grid;
-    private VirtualIncrementalTin tin;
+    private SemiVirtualIncrementalTin tin;
 
-    public NormalsTask(VirtualIncrementalTin tin, GridSpecification grid) {
+    public NormalsTask(SemiVirtualIncrementalTin tin, GridSpecification grid) {
         this.grid = grid;
         this.tin = tin;
     }

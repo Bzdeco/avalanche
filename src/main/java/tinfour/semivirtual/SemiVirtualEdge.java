@@ -15,7 +15,7 @@
  * ---------------------------------------------------------------------
  */
 
-/*
+ /*
  * -----------------------------------------------------------------------
  *
  * Revision History:
@@ -25,31 +25,50 @@
  *
  * Notes:
  *
+ *  TO DO:  Recently found a need to add the update method for cases
+ *          where the geometry of an edge is changed by the flip or
+ *          the split operation which were introduced for performing
+ *          constraint restorations.  However, I wonder if this could
+ *          be avoided by simple changing the code for getA() and getB()
+ *          to always consult the state data in the edge pool rather than
+ *          maintaining local copies of a,b.  This would be less error
+ *          vulnerable to coding errors.  But we must check to see how
+ *          often getA() and getB() are called.  If its more than a
+ *          couple, we probably should keep local copies.  If it's less
+ *          than an average of 2, we would probably gain performance by
+ *          not maintaining local copies and would benefit by being able
+ *          to get rid of the update() method.
+ *
  * -----------------------------------------------------------------------
  */
-package tinfour.virtual;
+
+package tinfour.semivirtual;
 
 import tinfour.common.IQuadEdge;
+import static tinfour.common.QuadEdge.CONSTRAINT_AREA_BASE_FLAG;
+import static tinfour.common.QuadEdge.CONSTRAINT_AREA_FLAG;
+import static tinfour.common.QuadEdge.CONSTRAINT_FLAG;
+import static tinfour.common.QuadEdge.CONSTRAINT_INDEX_MASK;
+import static tinfour.common.QuadEdge.CONSTRAINT_INDEX_MAX;
 import tinfour.common.Vertex;
-import static tinfour.virtual.VirtualEdgePage.INDEX_MASK;
-import static tinfour.virtual.VirtualEdgePage.INDICES_PER_PAGE;
+import static tinfour.semivirtual.SemiVirtualEdgePage.INDEX_MASK;
+import static tinfour.semivirtual.SemiVirtualEdgePage.INDICES_PER_PAGE;
 
 /**
  * Provides methods and elements implementing the QuadEdge data structure
  * using a virtual representation of the links based on integer arrays
  * rather than direct class instances.
  */
-public final class VirtualEdge implements IQuadEdge {
+public final class SemiVirtualEdge implements IQuadEdge {
 
   private static final int LOW_BIT = 1;
   private static final int MASK_LOW_BIT_CLEAR = ~LOW_BIT;
 
-  final VirtualEdgePool pool;
-  VirtualEdgePage page;
+  final SemiVirtualEdgePool pool;
+  SemiVirtualEdgePage page;
   int index;
   int indexOnPage;
-  Vertex a;
-  Vertex b;
+
 
   /**
    * Constructs a virtual edge tied to the specifed edge pool.
@@ -58,15 +77,13 @@ public final class VirtualEdge implements IQuadEdge {
    * @param page The page on which this edge is to be tied
    * @param index The index at which this edge is to be tied.
    */
-  VirtualEdge(VirtualEdgePool pool, VirtualEdgePage page, int index) {
+  SemiVirtualEdge(SemiVirtualEdgePool pool, SemiVirtualEdgePage page, int index) {
     this.pool = pool;
     this.index = index;
     this.page = page;
     indexOnPage = index & INDEX_MASK;
-    int side = index & LOW_BIT;
-    int offset = indexOnPage & MASK_LOW_BIT_CLEAR;
-    a = page.vertices[offset | side];
-    b = page.vertices[offset | (side ^ LOW_BIT)];
+
+
   }
 
   /**
@@ -74,7 +91,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param pool
    */
-  VirtualEdge(VirtualEdgePool pool) {
+  SemiVirtualEdge(SemiVirtualEdgePool pool) {
     this.pool = pool;
   }
 
@@ -83,8 +100,8 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @return a valid instance.
    */
-  VirtualEdge copy() {
-    return new VirtualEdge(pool, page, index);
+  SemiVirtualEdge copy() {
+    return new SemiVirtualEdge(pool, page, index);
   }
 
   /**
@@ -93,8 +110,8 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @return a valid instance.
    */
-  VirtualEdge getUnassignedEdge() {
-    return new VirtualEdge(pool);
+  SemiVirtualEdge getUnassignedEdge() {
+    return new SemiVirtualEdge(pool);
   }
 
   /**
@@ -102,12 +119,11 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance
    */
-  void loadFromEdge(VirtualEdge e) {
+  void loadFromEdge(SemiVirtualEdge e) {
     this.page = e.page;
     this.index = e.index;
     this.indexOnPage = e.indexOnPage;
-    this.a = e.a;
-    this.b = e.b;
+
   }
 
   /**
@@ -115,7 +131,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance.
    */
-  void loadDualFromEdge(VirtualEdge e) {
+  void loadDualFromEdge(SemiVirtualEdge e) {
     // one issue to be careful about is that e is often the
     // same instance as the current instance (when we get an
     // edges own dual). so we have to use a temporary variable for the vertices.
@@ -124,10 +140,7 @@ public final class VirtualEdge implements IQuadEdge {
     page = e.page;
     index = e.index ^ LOW_BIT;
     indexOnPage = e.indexOnPage ^ LOW_BIT;
-    Vertex aE = e.a;
-    Vertex bE = e.b;
-    a = bE;
-    b = aE;
+
   }
 
   /**
@@ -135,7 +148,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance
    */
-  void loadDualFromForwardOfEdge(VirtualEdge e) {
+  void loadDualFromForwardOfEdge(SemiVirtualEdge e) {
     int forwardIndex = e.page.links[e.indexOnPage * 2];
     loadEdgeForIndex(forwardIndex ^ LOW_BIT);
   }
@@ -145,7 +158,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance
    */
-  void loadDualFromReverseOfEdge(VirtualEdge e) {
+  void loadDualFromReverseOfEdge(SemiVirtualEdge e) {
     int reverseIndex = e.page.links[e.indexOnPage * 2 + 1];
     loadEdgeForIndex(reverseIndex ^ LOW_BIT);
   }
@@ -160,10 +173,7 @@ public final class VirtualEdge implements IQuadEdge {
     this.page = pool.pages[index / INDICES_PER_PAGE];
     this.index = index;
     this.indexOnPage = index & INDEX_MASK;
-    int side = index & LOW_BIT;
-    int offset = indexOnPage & MASK_LOW_BIT_CLEAR;
-    a = page.vertices[offset | side];
-    b = page.vertices[offset | (side ^ LOW_BIT)];
+
   }
 
   /**
@@ -171,7 +181,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance
    */
-  public void loadForwardFromEdge(VirtualEdge e) {
+  public void loadForwardFromEdge(SemiVirtualEdge e) {
     int forwardIndex = e.page.links[e.indexOnPage * 2];
     loadEdgeForIndex(forwardIndex);
   }
@@ -181,28 +191,33 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e a valid instance
    */
-  public void loadReverseFromEdge(VirtualEdge e) {
+  public void loadReverseFromEdge(SemiVirtualEdge e) {
     int reverseIndex = e.page.links[e.indexOnPage * 2 + 1];
     loadEdgeForIndex(reverseIndex);
   }
 
-  private VirtualEdge getEdgeForIndex(final int index) {
+  private SemiVirtualEdge getEdgeForIndex(final int index) {
     final int iPage = index / INDICES_PER_PAGE;
-    return new VirtualEdge(pool, pool.pages[iPage], index);
+    return new SemiVirtualEdge(pool, pool.pages[iPage], index);
   }
 
   @Override
   public Vertex getA() {
-    return a;
+    int side = index & LOW_BIT;
+    int offset = indexOnPage & MASK_LOW_BIT_CLEAR;
+   return page.vertices[offset | side];
+
   }
 
   @Override
   public Vertex getB() {
-    return b;
+       int side = index & LOW_BIT;
+    int offset = indexOnPage & MASK_LOW_BIT_CLEAR;
+    return page.vertices[offset | (side ^ LOW_BIT)];
   }
 
   @Override
-  public VirtualEdge getForward() {
+  public SemiVirtualEdge getForward() {
     int forwardIndex = page.links[indexOnPage * 2];
     return getEdgeForIndex(forwardIndex);
   }
@@ -215,7 +230,7 @@ public final class VirtualEdge implements IQuadEdge {
    */
   public Vertex getTriangleApex() {
     final int forwardIndex = page.links[indexOnPage * 2];
-    final VirtualEdgePage fpage = pool.pages[forwardIndex / INDICES_PER_PAGE];
+    final SemiVirtualEdgePage fpage = pool.pages[forwardIndex / INDICES_PER_PAGE];
     final int forwardIndexOnPage = forwardIndex & INDEX_MASK;
     return fpage.vertices[forwardIndexOnPage ^ LOW_BIT];
   }
@@ -227,7 +242,7 @@ public final class VirtualEdge implements IQuadEdge {
    */
   public boolean isExterior() {
     final int forwardIndex = page.links[indexOnPage * 2];
-    final VirtualEdgePage fpage = pool.pages[forwardIndex / INDICES_PER_PAGE];
+    final SemiVirtualEdgePage fpage = pool.pages[forwardIndex / INDICES_PER_PAGE];
     final int forwardIndexOnPage = forwardIndex & INDEX_MASK;
     return (fpage.vertices[forwardIndexOnPage | LOW_BIT] == null);
   }
@@ -239,7 +254,7 @@ public final class VirtualEdge implements IQuadEdge {
    * @return a new instances
    */
   @Override
-  public VirtualEdge getReverse() {
+  public SemiVirtualEdge getReverse() {
     int reverseIndex = page.links[indexOnPage * 2 + 1];
     return getEdgeForIndex(reverseIndex);
   }
@@ -250,7 +265,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @return a new instances
    */
-  public VirtualEdge getDualFromReverse() {
+  public SemiVirtualEdge getDualFromReverse() {
     int reverseIndex = page.links[indexOnPage * 2 + 1];
     int dualIndexOfReverse = reverseIndex ^ LOW_BIT;
     return getEdgeForIndex(dualIndexOfReverse);
@@ -263,7 +278,7 @@ public final class VirtualEdge implements IQuadEdge {
    * @return a new instances
    */
   @Override
-  public VirtualEdge getDual() {
+  public SemiVirtualEdge getDual() {
     int dualIndex = index ^ LOW_BIT; // toggle low order bit
     return getEdgeForIndex(dualIndex);
   }
@@ -290,7 +305,7 @@ public final class VirtualEdge implements IQuadEdge {
    * @return a new instances
    */
   @Override
-  public VirtualEdge getBaseReference() {
+  public SemiVirtualEdge getBaseReference() {
     return getEdgeForIndex(index & MASK_LOW_BIT_CLEAR);
   }
 
@@ -311,7 +326,7 @@ public final class VirtualEdge implements IQuadEdge {
    * @return a new instances
    */
   @Override
-  public VirtualEdge getForwardFromDual() {
+  public SemiVirtualEdge getForwardFromDual() {
     int forwardIndex = page.links[(indexOnPage ^ LOW_BIT) * 2];
     return getEdgeForIndex(forwardIndex);
   }
@@ -322,7 +337,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @return a new instances
    */
-  public VirtualEdge getDualFromForward() {
+  public SemiVirtualEdge getDualFromForward() {
     final int forwardIndex = page.links[indexOnPage * 2];
     final int dualIndexOfForward = forwardIndex ^ LOW_BIT;
     return getEdgeForIndex(dualIndexOfForward);
@@ -335,7 +350,7 @@ public final class VirtualEdge implements IQuadEdge {
    * @return a new instances
    */
   @Override
-  public VirtualEdge getReverseFromDual() {
+  public SemiVirtualEdge getReverseFromDual() {
     int reverseIndex = page.links[(indexOnPage ^ LOW_BIT) * 2 + 1];
     return getEdgeForIndex(reverseIndex);
   }
@@ -347,6 +362,8 @@ public final class VirtualEdge implements IQuadEdge {
 
   @Override
   public double getLength() {
+    Vertex a = getA();
+    Vertex b = getB();
     if (a == null || b == null) {
       return Double.NaN;
     }
@@ -359,6 +376,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @return a zero or a one.
    */
+  @Override
   public int getSide() {
     return index & LOW_BIT;
   }
@@ -371,7 +389,7 @@ public final class VirtualEdge implements IQuadEdge {
    */
   public void setA(Vertex a) {
     page.vertices[indexOnPage] = a;
-    this.a = a;
+
   }
 
   /**
@@ -382,7 +400,7 @@ public final class VirtualEdge implements IQuadEdge {
    */
   public void setB(Vertex b) {
     page.vertices[indexOnPage ^ LOW_BIT] = b;
-    this.b = b;
+
   }
 
   /**
@@ -390,7 +408,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param forward the forward reference/
    */
-  public void setDualForward(VirtualEdge forward) {
+  public void setDualForward(SemiVirtualEdge forward) {
     int dualIndex = index ^ LOW_BIT;
     int dualIndexOnPage = dualIndex & INDEX_MASK;
     page.links[dualIndexOnPage * 2] = forward.index;
@@ -402,7 +420,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param reverse the forward reference/
    */
-  public void setDualReverse(VirtualEdge reverse) {
+  public void setDualReverse(SemiVirtualEdge reverse) {
     int dualIndex = index ^ LOW_BIT;
     int dualIndexOnPage = dualIndex & INDEX_MASK;
     page.links[dualIndexOnPage * 2 + 1] = reverse.index;
@@ -414,7 +432,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e the forward reference/
    */
-  public void setForward(VirtualEdge e) {
+  public void setForward(SemiVirtualEdge e) {
     page.links[indexOnPage * 2] = e.index;
     e.page.links[e.indexOnPage * 2 + 1] = index;
   }
@@ -424,7 +442,7 @@ public final class VirtualEdge implements IQuadEdge {
    *
    * @param e the forward reference/
    */
-  public void setReverse(VirtualEdge e) {
+  public void setReverse(SemiVirtualEdge e) {
     page.links[indexOnPage * 2 + 1] = e.index;
     e.page.links[e.indexOnPage * 2] = index;
   }
@@ -441,12 +459,13 @@ public final class VirtualEdge implements IQuadEdge {
     int offset = indexOnPage & MASK_LOW_BIT_CLEAR;
     page.vertices[offset | side] = a;
     page.vertices[offset | (side ^ LOW_BIT)] = b;
-    this.a = a;
-    this.b = b;
+
   }
 
   @Override
   public String toString() {
+    Vertex a = getA();
+    Vertex b = getB();
     if (a == null && b == null) {
       return String.format("%9d -- Undefined", getIndex());
     }
@@ -455,8 +474,8 @@ public final class VirtualEdge implements IQuadEdge {
     String s = String.format("%9d  %9s <-- (%9s,%9s) --> %9s",
       index,
       (r == 0 ? "null" : Integer.toString(r)),
-      (a == null ? "gv" : Integer.toString(a.getIndex())),
-      (b == null ? "gv" : Integer.toString(b.getIndex())),
+      (a == null ? "gv" : a.getLabel()),
+      (b == null ? "gv" : b.getLabel()),
       (f == 0 ? "null" : Integer.toString(f))
     );
     return s;
@@ -471,10 +490,126 @@ public final class VirtualEdge implements IQuadEdge {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof VirtualEdge) {
-      return index == ((VirtualEdge) o).getIndex();
+    if (o instanceof SemiVirtualEdge) {
+      return index == ((SemiVirtualEdge) o).getIndex();
     }
     return false;
   }
+
+  @Override
+  public int getConstraintIndex() {
+    if (page.constraints == null) {
+      return 0;
+    }
+    int test = page.constraints[indexOnPage / 2];
+    // the CONSTRAINT_FLAG is also the sign bit.
+    if (test < 0) {
+      return test & CONSTRAINT_INDEX_MASK;
+    }
+    return 0;
+  }
+
+  @Override
+  public void setConstraintIndex(int constraintIndex) {
+    if (constraintIndex < 0 || constraintIndex > CONSTRAINT_INDEX_MAX) {
+      throw new IllegalArgumentException(
+        "Constraint index " + constraintIndex
+        + " is out of range [0.." + CONSTRAINT_INDEX_MAX + "]");
+    }
+
+    // this one sets the constraint index, but does not affect
+    // whether the edge is constrained or not.  An edge that is
+    // a constraint-area member may have a constraint index even if
+    // it is not a constrained edge.
+    int ix = indexOnPage / 2;
+    int c[] = page.readyConstraints();
+    c[ix] = ((c[ix] & ~CONSTRAINT_INDEX_MASK) | constraintIndex);
+  }
+
+  @Override
+  public void setConstrained(int constraintIndex) {
+    if (constraintIndex < 0 || constraintIndex > CONSTRAINT_INDEX_MAX) {
+      throw new IllegalArgumentException(
+        "Constraint index " + constraintIndex
+        + " is out of range [0.." + CONSTRAINT_INDEX_MAX + "]");
+    }
+
+    int ix = indexOnPage / 2; // both sides of the edge are constrained.
+    int c[] = page.readyConstraints();
+    c[ix] = CONSTRAINT_FLAG | (c[ix] & ~CONSTRAINT_INDEX_MASK) | constraintIndex;
+
+  }
+
+  @Override
+  public boolean isConstrained() {
+    if (page.constraints == null) {
+      return false;
+    } else {
+      // the CONSTRAINT_FLAG is also the sign bit.
+      return page.constraints[indexOnPage / 2] < 0;
+    }
+  }
+
+  @Override
+  public boolean isConstrainedAreaEdge() {
+    if (page.constraints == null) {
+      return false;
+    } else {
+      // this test requires that the edge be both constrained
+      // and have its constrained-area flag set.
+      // recall that the CONSTRAINT_FLAG is also the sign bit.
+      int test = page.constraints[indexOnPage / 2];
+      return test < 0 & (test & CONSTRAINT_AREA_FLAG) != 0;
+    }
+  }
+
+  @Override
+  public boolean isConstrainedAreaMember() {
+    if (page.constraints == null) {
+      return false;
+    } else {
+      // this tests to see if the edge is a constrained-area member
+      // and doesn't care whether or not it is a constraint edge.
+      return (page.constraints[indexOnPage / 2] & CONSTRAINT_AREA_FLAG) != 0;
+    }
+  }
+
+  public boolean isConstraintAreaOnThisSide() {
+    if (page.constraints == null) {
+      return false;
+    } else {
+      int flags = page.constraints[indexOnPage / 2];
+      if ((flags & CONSTRAINT_AREA_FLAG) == 0) {
+        return false;
+      }else{
+        int side = indexOnPage & LOW_BIT;
+        if (side == 0) {
+          return (flags & CONSTRAINT_AREA_BASE_FLAG) != 0;
+        } else {
+          return (flags & CONSTRAINT_AREA_BASE_FLAG) == 0;
+        }
+      }
+    }
+  }
+
+  @Override
+  public void setConstrainedAreaMemberFlag() {
+    int ix = indexOnPage / 2;
+    int side = indexOnPage & LOW_BIT;
+    int constraintAreaFlag;
+    if (side == 0) {
+      constraintAreaFlag = CONSTRAINT_AREA_FLAG | CONSTRAINT_AREA_BASE_FLAG;
+    } else {
+      constraintAreaFlag = CONSTRAINT_AREA_FLAG;
+    }
+    int c[] = page.readyConstraints();
+    c[ix] |= constraintAreaFlag;
+  }
+
+  @Override
+  public Iterable<IQuadEdge> pinwheel() {
+    return new SemiVirtualPinwheel(this);
+  }
+
 
 }

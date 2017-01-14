@@ -72,9 +72,24 @@
  * If instances are not managed by an EdgePool, the index value is free
  * for use in other interpretations.
  *
- * In derived classes, the index value is available for other uses.
- * In the case of QuadEdgePartner, the plan to use it in the Constrained
- * Delaunay Triangulation as a bitmap to indicate constrained edges.
+ * CONSTRAINTS
+ *   In QuadEdgePartner, the index value is used as a way of indicating
+ * whether the edge is a constrained edge according to the definition
+ * of a Constrained Delaunay Triangulation.   To conserve memory and
+ * keep the size of the class small, the low order two bytes are
+ * allocated to indicating the "constraint index". The use of a constraint
+ * index is also intended to support operations in which the constraint index
+ * of an edge can be traced back to the constraint that defined it.
+ * So, typically, the constraint index is an index back to the list of
+ * constraints that was added to the incremental-TIN implementation.
+ * If the lower two bytes of the QuadEdgePartner's index element are clear,
+ * so that (index&0xffff) == 0, the edge is considered not constrained.  When
+ * the constraint-index is set using the setConstraint() method, the code adds
+ * one to the value stored. The getConstraintIndex() method masks out the
+ * index field and subtracts a value of 1 from the result before returning it.
+ * The consequence of this design choice is that the maximum value that can
+ * be stored in the low-order two bytes of the index element is (2^16-1)-1,
+ * or 65534...
  *
  * Special considerations for setForward() and setReverse()
  *   Even though this class does implement the IQuadEdge interface, the
@@ -95,6 +110,42 @@ package tinfour.common;
  * ACM Transactions on Graphics, 4(2), 1985, p. 75-123.</cite>
  */
 public class QuadEdge implements IQuadEdge {
+
+  /**
+   * The maximum value of a constraint index based in space
+   * allocated for its storage. This is a value of (2^20-1).
+   * In practice this value is larger than the available
+   * memory on many contemporary computers would allow.
+  */
+  public static final int CONSTRAINT_INDEX_MAX = 1048575;
+
+  /**
+   * A mask that can be anded with the QuadEdgePartner's
+   * index field to extract the constraint index,
+   * equivalent to the 20 low-order bits.
+   */
+  public static final int CONSTRAINT_INDEX_MASK = 0x000fffff;
+
+  /**
+   * A bit indicating that an edge is constrained. This bit just happens
+   * to be the sign bit, a feature that is exploited by the isConstrained()
+   * method.
+   */
+  public static final int CONSTRAINT_FLAG = (1<<31);
+
+  /**
+   * A bit indicating that an edge is part of a constrained area.
+   */
+  public static final int CONSTRAINT_AREA_FLAG = (1<<30);
+
+  /**
+   * A bit indicating that the constrained area is to the base side
+   * of the edge.  This bit is only meaningful when CONSTRAINT_AREA_FLAG is set.
+   * If CONSTRAINT_AREA_FLAG is set, then this bit tells which side the
+   * constraint area lies on: if the bit is set, it's on the base side
+   * and if the bit is clear, it's on the dual side.
+   */
+  public static final int CONSTRAINT_AREA_BASE_FLAG = (1<<29);
 
   /**
    * An arbitrary index value. For IncrementalTin, the index
@@ -312,16 +363,54 @@ public class QuadEdge implements IQuadEdge {
   }
 
   /**
+   * Gets the index of the constraint associated with this edge.
+   * Constraint index values must be in the range 0 to Integer.MAX_VALUE,
+   * with negative numbers being reserved for internal use by the
+   * Tinfour library,
+   *
+   * @return if constrained, a positive integer; otherwise, a negative value.
+   */
+  @Override
+  public int getConstraintIndex() {
+    return dual.getConstraintIndex();
+  }
+
+
+  @Override
+  public void setConstraintIndex(int constraintIndex) {
+    dual.setConstraintIndex(constraintIndex);
+  }
+
+  /**
+   * Gets the index of the constrain associated with
+   *
+   * @return true if the edge is constrained; otherwise, false.
+   */
+  @Override
+  public boolean isConstrained() {
+    return dual.isConstrained();
+  }
+
+  @Override
+  public void setConstrained(int constraintIndex){
+    dual.setConstrained(constraintIndex);
+  }
+
+  /**
    * Sets all vertices and link references to null (the link to a dual
    * is not affected).
    */
   public void clear() {
+    // note that the index of the partner is set to -1,
+    // but the index of the base, which is used for management purposes
+    // is left alone.
     this.v = null;
     this.f = null;
     this.r = null;
     dual.v = null;
     dual.f = null;
     dual.r = null;
+    dual.index = 0;
   }
 
   /**
@@ -346,26 +435,17 @@ public class QuadEdge implements IQuadEdge {
     if (a == null && b == null) {
       return String.format("%9d/%d  -- Undefined", getIndex(), getSide());
     }
-    String s = String.format("%9s  %9s <-- (%9s,%9s) --> %9s",
+    String s = String.format("%9s  %9s <-- (%9s,%9s) --> %9s%s",
       getName(),
       (r == null ? "null" : r.getName()),
-      (a == null ? "gv" : Integer.toString(a.getIndex())),
-      (b == null ? "gv" : Integer.toString(b.getIndex())),
-      (f == null ? "null" : f.getName())
+      (a == null ? "gv" : a.getLabel()),
+      (b == null ? "gv" : b.getLabel()),
+      (f == null ? "null" : f.getName()),
+      (this.isConstrained()?"    constrained":"")
     );
     return s;
   }
 
-  /**
-   * Sets the forward link of the edge to value which is, by convention,
-   * not part of a valid graph (and thus is "dead"). The reverse link
-   * of the specified edge is not set to this reference. Intended for use
-   * for temporary storage and memory management during processing.
-   * @param m a valid or null reference.
-   */
-  public void makeDeadLink(final QuadEdge m) {
-    f = m;
-  }
 
   /**
    * Gets the length of the edge.
@@ -385,10 +465,11 @@ public class QuadEdge implements IQuadEdge {
    * Indicates which side of an edge a particular QuadEdge instance is
    * attached to. The side value is a strictly arbitrary index used for
    * algorithms that need to be able to assign a unique index to
-   * both edges.
+   * both sides of an edge.
    *
    * @return a value of 0 or 1.
    */
+  @Override
   public int getSide() {
     return 0;
   }
@@ -412,5 +493,30 @@ public class QuadEdge implements IQuadEdge {
     int hash = 7;
     hash = 11 * hash + this.index;
     return hash;
+  }
+
+  @Override
+  public boolean isConstrainedAreaMember() {
+    return dual.isConstrainedAreaMember();
+  }
+
+  @Override
+  public boolean isConstrainedAreaEdge() {
+    return dual.isConstrainedAreaEdge();
+  }
+
+  @Override
+  public void setConstrainedAreaMemberFlag() {
+    dual.index |= CONSTRAINT_AREA_FLAG | CONSTRAINT_AREA_BASE_FLAG;
+  }
+
+
+  public boolean isConstraintAreaOnThisSide(){
+      return (dual.index&CONSTRAINT_AREA_BASE_FLAG)!=0;
+  }
+
+  @Override
+  public Iterable<IQuadEdge>pinwheel(){
+    return new QuadEdgePinwheel(this);
   }
 }

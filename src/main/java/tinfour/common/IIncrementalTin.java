@@ -27,6 +27,7 @@
  *
  * -----------------------------------------------------------------------
  */
+
 package tinfour.common;
 
 import java.awt.geom.Rectangle2D;
@@ -290,5 +291,61 @@ public interface IIncrementalTin {
   public void setResolutionRuleForMergedVertices(
     final VertexMergerGroup.ResolutionRule resolutionRule);
 
+
+  /**
+   * Adds constraints to the TIN.
+   * <p>
+   * <strong>Using Constraints</strong>
+   * <p>
+   * There are a number of important restrictions to the use of constraints.
+   * Constraints must only be added to the TIN once, after all other vertices
+   * have already been added. Furthermore, the addConstraint method can only
+   * be called once. Logic is implemented as a safety measure to ensure that
+   * these restrictions are not accidentally violated.
+   * <p>
+   * There are also important restrictions on the geometry of constraints.
+   * Most importantly, constraints must never intersect each other except
+   * at the endpoints of the segments that define them (i.e. segments
+   * in constraints must never cross each other). Due to the high cost of
+   * processing required to check that this restriction is observed,
+   * it is not  directly enforced by the Tinfour implementations.
+   * <p>
+   * <strong>Restoring Conformity</strong>
+   * <p>
+   * When constraints are added to a Delaunay triangulation, they often
+   * violate the Delaunay criterion and result in a non-conforming
+   * mesh. The addConstraint method can optionally restore conformity
+   * by inserting synthetic points into the the constraint edges.
+   * The cost of this process is additional processing time and
+   * an increase in the number of points in the TIN.
+   * <p>When points are synthesized, it is necessary to interpolate
+   * a value for the z-coordinate. At this time, the specific interpolation
+   * process is undefined. The current Tinfour implementations
+   * use linear interpolation between constraint points. While no
+   * viable alternative approach is currently under consideration, the
+   * choice of interpolation method is subject to change in the future.
+   *
+   * @param constraints a valid, potentially empty list.
+   * @param restoreConformity restores conformity
+   */
+   public void addConstraints(
+     List<IConstraint> constraints, boolean restoreConformity);
+
+
+   /**
+    * Gets a shallow copy of the list of constraints currently
+    * stored in the TIN.
+    * @return a valid, potentially empty list of constraint instances.
+    */
+   public List<IConstraint>getConstraints();
+
+   /**
+    * Gets the number of synthetic vertices added to the TIN.
+    * Vertices can be synthesized as part of the Delaunay restoration
+    * process when adding constraints. Future implementations of additional
+    * functions (such as Delaunay refinement) may also add synthetic points.
+    * @return a positive integer, potentially zero.
+    */
+   public int getSyntheticVertexCount();
 
 }

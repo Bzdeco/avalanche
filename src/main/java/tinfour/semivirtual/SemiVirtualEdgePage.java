@@ -27,12 +27,12 @@
  *
  * -----------------------------------------------------------------------
  */
-package tinfour.virtual;
+package tinfour.semivirtual;
 
 import java.util.Arrays;
 import tinfour.common.Vertex;
 
-class VirtualEdgePage {
+class SemiVirtualEdgePage {
 
   /** The number of pairs per page is limited to the range of the
    * short integer used for the freePairs array, so the maximum
@@ -59,9 +59,10 @@ class VirtualEdgePage {
   final Vertex[] vertices;
   final int[] links;
   short[] freePairs;
-  VirtualEdgePage nextPage;
+  int []constraints;
+  SemiVirtualEdgePage nextPage;
 
-  VirtualEdgePage(int pageID) {
+  SemiVirtualEdgePage(int pageID) {
 
     this.pageID = pageID;
     pageOffset = pageID * INDICES_PER_PAGE;
@@ -72,6 +73,7 @@ class VirtualEdgePage {
   void clear() {
     nPairsAllocated = 0;
     freePairs = null;
+    constraints = null;
     Arrays.fill(vertices, 0, vertices.length, null);
     Arrays.fill(links, 0, links.length, 0);
   }
@@ -82,6 +84,7 @@ class VirtualEdgePage {
     }
     nPairsAllocated = 0;
     freePairs = null;
+    constraints = null;
   }
 
   int allocateEdge(Vertex a, Vertex b) {
@@ -177,6 +180,14 @@ class VirtualEdgePage {
     //  allocations = scratch;
     //}
     return allocations;
+  }
+
+  @SuppressWarnings("PMD.MethodReturnsInternalArray")
+  int [] readyConstraints() {
+     if(constraints==null){
+       constraints = new int[PAIRS_PER_PAGE];
+     }
+     return constraints;
   }
 
 }

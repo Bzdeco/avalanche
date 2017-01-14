@@ -52,20 +52,33 @@
  * floats as a way of conserving memory space.
  *
  * Recall that the size of a object instance must be a multiple of 8.
- * On a 32 bit JVM and many 64 bit JVM's, the design of this class results
- * in the following layout:
+ * On a 32 bit JVM and many 64 bit JVM's, the design of this class
+ * results  in the following layout:
  *    Java overhead:                      8 bytes  (JVM dependent)
  *    Class reference (used by Java)      4 bytes
  *    int index                           4 bytes
  *    double x                            8 bytes
  *    double y                            8 bytes
  *    float  z                            4 bytes
- *    padding (reserved by Java)          4 bytes (not committed at this time)
+ *    byte   status                       1 byte
+ *    padding (reserved by Java)          3 bytes (not committed at this time)
  *    --------------------------        ---------
  *    Total                              40 bytes
- *  So there is room to add one or more data elements totaling
- *  to 4 bytes or less without increasing the memory use for
- *  instances of this class.
+ *
+ *  Because of byte alignment, the one-byte status element does not
+ *  actually change the overall size of the Vertex objects.
+ *  And, in fact, there is room to add one or more data elements totaling
+ *  to 3 bytes or less without increasing the memory use for
+ *  instances of this class. This use can be accomplished by applications
+ *  that use Tinfour by creating derived classes from this class.
+ *  However, testing shows that, to make this approach work, some implementations
+ *  of Java require that the elements to exploit the padding must be declared
+ *  in the base class.  So the following elements are declared with
+ *  protected scope and left for the use of derived classed as required
+ *  by applications that use Tinfour:
+ *     reserved0
+ *     reserved1
+ *     reserved2
  *
  *--------------------------------------------------------------------------
  */
@@ -77,8 +90,20 @@ package tinfour.common;
 public class Vertex implements ISamplePoint {
 
   /**
+   * A bit flag indicating that the vertex is synthetic and was created
+   * through some form of mesh processing rather than being supplied
+   * as a data sample.
+   */
+  public static final int BIT_SYNTHETIC = 0x01;
+
+  /**
+   * A bit flag indicating that the vertex is a member of a constraint edge.
+   */
+  public static final int BIT_CONSTRAINT = 0x02;
+
+  /**
    * An indexing value assigned to the Vertex. In this package, it is used
-   * primary for diagnostic purposes and labeling graphics. 
+   * primary for diagnostic purposes and labeling graphics.
    * Note that unlike the horizontal and vertical coordinates
    * for the vertex, the index element is not declared final, and may
    * be modified by the application code as needed.
@@ -99,6 +124,24 @@ public class Vertex implements ISamplePoint {
    * variable of (x,y).
    */
   final float z;
+
+  /**
+   * The bit-mapped status flags for the vertex. The assignment of meaning
+   * to the bits for this field are defined by static members of this class.
+   */
+  protected byte status;
+  /**
+   * An unused field reserved for use by applications and derived classes
+   */
+  protected byte reserved0;
+  /**
+   * An unused field reserved for use by applications and derived classes
+   */
+  protected byte reserved1;
+  /**
+   * An unused field reserved for use by applications and derived classes
+   */
+  protected byte reserved2;
 
   /**
    * Construct a vertex with the specified coordinates and z value. Intended
@@ -137,9 +180,24 @@ public class Vertex implements ISamplePoint {
 
   }
 
+  /**
+   * Gets a string intended for labeling the vertex in images or
+   * reports. The default label is the index of the vertex preceeded
+   * by the letter S if the vertex is synthetic.  Note that the
+   * index of a vertex is not necessarily unique but left to the
+   * requirements of the application that constructs it.
+   * @return a valid, non-empty string.
+   */
+  public String getLabel(){
+    return (isSynthetic() ? "S" : "") + Integer.toString(index);
+  }
+
+
+
   @Override
   public String toString() {
-    String s = index + ": "
+    String s = (isSynthetic() ? "S" : " ")
+      + index + ": "
       + "x=" + x + ", "
       + "y=" + y + ", "
       + "z=" + z;
@@ -266,5 +324,71 @@ public class Vertex implements ISamplePoint {
   public void setIndex(final int index) {
     this.index = index;
   }
+
+
+  /**
+   * Indicates whether a vertex is synthetic (was created through
+   * a Tinfour procedure rather than supplied by an application).
+   * @return true if vertex is synthetic; otherwise, false
+   */
+  public boolean isSynthetic(){
+    return (status&BIT_SYNTHETIC)!=0;
+  }
+
+
+  /**
+   * Sets or clears the is-synthetic status of a vertex.
+   * @param synthetic true if vertex is synthetic; otherwise, false
+   */
+  public void setSynthetic(boolean synthetic) {
+    if (synthetic) {
+      status |= BIT_SYNTHETIC;
+    } else {
+      status &= ~BIT_SYNTHETIC;
+    }
+  }
+
+
+  /**
+   * Sets or clears the is-constraint-member status of a vertex.
+   * @param constraintMember true if vertex is a constraint member; otherwise, false
+   */
+  public void setConstraintMember(boolean constraintMember) {
+    if (constraintMember) {
+      status |= BIT_CONSTRAINT;
+    } else {
+      status &= ~BIT_CONSTRAINT;
+    }
+  }
+
+  /**
+   * Sets the status value of the vertex.  This method is intended to
+   * provide an efficient way of setting multiple status flags at once.
+   * @param status a valid status value.  Because the status is defined as
+   * a single byte, higher-order bytes will be ignored.
+   */
+  public void setStatus(int status){
+    this.status=(byte)status;
+  }
+
+
+  /**
+   * Gets the current value of the status flags for this vertex.
+   * @return a positive integer in the range 0 to 255.
+   */
+  public int getStatus(){
+    return ((int)status)&0xff;
+  }
+
+
+  /**
+   * Indicates whether a vertex is a constraint member..
+   * @return true if vertex is a constraint member; otherwise, false
+   */
+  public boolean isConstraintMember(){
+    return (status&BIT_CONSTRAINT)!=0;
+  }
+
+
 
 }

@@ -5,12 +5,12 @@ import tinfour.common.IMonitorWithCancellation;
 import tinfour.common.Vertex;
 import tinfour.testutils.GridSpecification;
 import tinfour.testutils.VertexLoader;
-import tinfour.virtual.VirtualIncrementalTin;
+import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
 import java.io.File;
 import java.util.List;
 
-public class LasTinTask extends ChainTask<VirtualIncrementalTin> {
+public class LasTinTask extends ChainTask<SemiVirtualIncrementalTin> {
     private File lasfile;
 
     private VertexLoader loader = new VertexLoader();
@@ -52,7 +52,7 @@ public class LasTinTask extends ChainTask<VirtualIncrementalTin> {
     }
 
     @Override
-    public VirtualIncrementalTin call() throws Exception {
+    public SemiVirtualIncrementalTin call() throws Exception {
         List<Vertex> vertexList = loader.readLasFile(lasfile, null, mon);
 
         verticesLoaded = true;
@@ -82,7 +82,7 @@ public class LasTinTask extends ChainTask<VirtualIncrementalTin> {
         grid = new GridSpecification(GridSpecification.CellPosition.CenterOfCell, cellSize, xmin, xmax, ymin, ymax,
                 geoScaleX, geoScaleY, geoOffsetX, geoOffsetY);
 
-        VirtualIncrementalTin tin = new VirtualIncrementalTin(cellSize);
+        SemiVirtualIncrementalTin tin = new SemiVirtualIncrementalTin(cellSize);
         tin.add(vertexList, mon);
 
         return tin;

@@ -1,10 +1,10 @@
 package backend.rasterizer;
 
 import tinfour.testutils.GridSpecification;
-import tinfour.virtual.VirtualIncrementalTin;
+import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
 public class HillshadeGridTask extends ChainTask<float[][]> {
-    private VirtualIncrementalTin tin;
+    private SemiVirtualIncrementalTin tin;
     private GridSpecification grid;
     private float[][][] normVectors;
 
