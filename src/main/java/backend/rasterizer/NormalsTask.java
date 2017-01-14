@@ -8,14 +8,16 @@ import tinfour.virtual.VirtualIncrementalTin;
 
 public class NormalsTask extends ChainTask<float[][][]>{
     private GridSpecification grid;
-    private GwrTinInterpolator interpolator;
+    private VirtualIncrementalTin tin;
 
     public NormalsTask(VirtualIncrementalTin tin, GridSpecification grid) {
         this.grid = grid;
-        this.interpolator = new GwrTinInterpolator(tin);
+        this.tin = tin;
     }
 
     public float[][][] call() {
+        GwrTinInterpolator interpolator = new GwrTinInterpolator(tin);
+
         int nRows = grid.getRowCount();
         int nCols = grid.getColumnCount();
         double xLL = grid.getLowerLeftX();

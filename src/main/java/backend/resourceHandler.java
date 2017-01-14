@@ -1,7 +1,7 @@
 package backend;
 
 public class resourceHandler {
-    private static final String mainDataFile = "sample.las";
+    private static final String mainDataFile = "helen.las";
     private static String mainDataFilePath;
 
     private static String extensionRemoved;

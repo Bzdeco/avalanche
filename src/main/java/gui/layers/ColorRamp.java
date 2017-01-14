@@ -36,8 +36,9 @@ public class ColorRamp {
             if(lower == null) lower = ramp.firstEntry();
             if(upper == null) upper = ramp.lastEntry();
 
-            Float lower_key = lower.getKey();
-            float t = (val - lower_key) / (upper.getKey() - lower_key);
+            float lower_key  = lower.getKey();
+            float diff = upper.getKey() - lower_key;
+            float t = (diff == 0) ? 0 : (val - lower_key) / diff;
 
             return ColorRamp.lerp(lower.getValue(), upper.getValue(), t);
         };

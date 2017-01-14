@@ -1,6 +1,5 @@
 package backend.rasterizer;
 
-
 import backend.serializers.DataSerializer;
 
 public class CachedTask<T> extends ChainTask<T> {

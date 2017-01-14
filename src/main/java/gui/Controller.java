@@ -17,6 +17,7 @@ import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 import tinfour.testutils.GridSpecification;
+import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
 import java.util.Optional;
@@ -129,19 +130,19 @@ public class Controller {
                 .build());
 
         GridLayer curvature = new GridLayer("Krzywizna terenu", ColorRamp.create()
-                .step(-1, 0, 0, 255, 255)
-                .step(0, 0, 255, 0, 255)
-                .step(1, 255, 0, 0, 255)
+                .step(-1,   0,   0, 255, 255)
+                .step( 0,   0, 255,   0, 255)
+                .step( 1, 255,   0,   0, 255)
                 .build());
-
         File lasfile = new File(resourceHandler.getMainDataFilePath());
 
         LasTinTask makeTin = new LasTinTask(lasfile);
         progress.progressProperty().bind(makeTin.progressProperty());
         makeTin.rnext(tin -> {
             GridSpecification grid = makeTin.getGrid();
+            System.out.println((float)grid.getCellSize());
             (new CachedTask<>(resourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty(), dem -> {
-                (new CurvatureGridTask(dem)).rnext(curvature.dataProperty());
+                (new CurvatureGridTask(dem, grid.getCellSize())).rnext(curvature.dataProperty());
             });
             (new CachedTask<>(resourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
                 (new CachedTask<>(resourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());

@@ -40,7 +40,7 @@ public class LasTinTask extends ChainTask<VirtualIncrementalTin> {
 
         @Override
         public boolean isCanceled() { return LasTinTask.this.isCancelled(); }
-    };;
+    };
 
     public LasTinTask(File lasfile) {
         this.lasfile = lasfile;
