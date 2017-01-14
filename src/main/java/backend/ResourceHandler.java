@@ -1,19 +1,23 @@
 package backend;
 
-public class resourceHandler {
-    private static final String mainDataFile = "helen.las";
+public class ResourceHandler {
+    private static final String mainDataFile = "sample.las";
     private static String mainDataFilePath;
 
     private static String extensionRemoved;
 
-    private static String terrainDataFilePath;
-    private static String normalsDataFilePath;
-    private static String hillShadeDataFilePath;
-    private static String steepnessDataFilePath;
+    private static String terrainDataFilePath,
+            normalsDataFilePath,
+            hillShadeDataFilePath,
+            steepnessDataFilePath,
+            dbDriver,
+            dbUrl,
+            dbUser,
+            dbPass;
 
     static {
         try {
-            mainDataFilePath = resourceHandler.class.getClassLoader().getResource(mainDataFile).getFile().toString();
+            mainDataFilePath = ResourceHandler.class.getClassLoader().getResource(mainDataFile).getFile().toString();
         } catch (Exception exception) {
             exception.printStackTrace();
             System.exit(1);
@@ -26,6 +30,10 @@ public class resourceHandler {
         normalsDataFilePath = extensionRemoved + "_normals.ser";
         hillShadeDataFilePath = extensionRemoved + "_hillShade.ser";
         steepnessDataFilePath = extensionRemoved + "_steepness.ser";
+        dbDriver = "org.postgresql.Driver";
+        dbUrl = "jdbc:postgresql://digitalnoodles.co.uk:5432/lawiny_test";
+        dbUser = "lawiny";
+        dbPass = "l1234";
     }
 
     public static String getMainDataFilePath() {
@@ -47,4 +55,12 @@ public class resourceHandler {
     public static String getSteepnessDataFilePath() {
         return steepnessDataFilePath;
     }
+
+    public static String getDbDriver() { return dbDriver; }
+
+    public static String getDbUrl() {return dbUrl;}
+
+    public static String getDbUser() {return dbUser;}
+
+    public static String getDbPass() {return dbPass;}
 }

@@ -1,7 +1,11 @@
 package gui;
 
+import backend.AvalancheModel;
 import backend.rasterizer.*;
+import backend.service.WeatherAnimateTask;
+import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -12,19 +16,22 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 import gui.layers.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 import tinfour.testutils.GridSpecification;
-import tinfour.virtual.VirtualIncrementalTin;
 
 import java.io.File;
 import java.util.Optional;
 
-import backend.resourceHandler;
+import backend.ResourceHandler;
 
 public class Controller {
+    private static final Logger logger = LogManager.getLogger();
+
     @FXML
     public Button centerView;
 
@@ -41,10 +48,52 @@ public class Controller {
     private Viewport vp;
 
     @FXML
+    private DatePicker fromDate;
+
+    @FXML
+    private DatePicker toDate;
+
+    @FXML
+    private Button playBtn;
+
+    @FXML
+    private Button submitBtn;
+
+    @FXML
+    private TableView tableView;
+
+    private AvalancheModel avalancheModel = new AvalancheModel();
+
+    @FXML
     public void initialize() {
         registerLayers();
 
-        TextAreaAppender.setTextArea(logTextArea);
+        submitBtn.setOnAction(event -> {
+            WeatherConnector con = new WeatherConnector(tableView);
+            con.buildData(fromDate.getValue(), toDate.getValue());
+        });
+
+        playBtn.setOnAction(event -> {
+            int start = tableView.getSelectionModel().getSelectedIndex();
+            if (start == -1)
+                start = 0;
+            ObservableList<ObservableList<String>> list = (ObservableList<ObservableList<String>>) tableView.getItems();
+
+            WeatherAnimateTask weatherAnimateTask = new WeatherAnimateTask(start, list, avalancheModel);
+
+            Thread t1 = new Thread(weatherAnimateTask);
+            t1.start();
+
+        });
+
+
+        tableView.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue)
+                        -> {
+                    avalancheModel.setCurrentWeather((ObservableList<String>) newValue);
+                    logger.info("Current weather set to: \n" + avalancheModel.getCurrentWeather().toString());
+                });
+
 
         EventStreams.eventsOf(vp, ScrollEvent.SCROLL)
                 .map(sE -> sE.getDeltaY() / 1000)
@@ -130,23 +179,23 @@ public class Controller {
                 .build());
 
         GridLayer curvature = new GridLayer("Krzywizna terenu", ColorRamp.create()
-                .step(-1,   0,   0, 255, 255)
-                .step( 0,   0, 255,   0, 255)
-                .step( 1, 255,   0,   0, 255)
+                .step(-1, 0, 0, 255, 255)
+                .step(0, 0, 255, 0, 255)
+                .step(1, 255, 0, 0, 255)
                 .build());
-        File lasfile = new File(resourceHandler.getMainDataFilePath());
+
+        File lasfile = new File(ResourceHandler.getMainDataFilePath());
 
         LasTinTask makeTin = new LasTinTask(lasfile);
         progress.progressProperty().bind(makeTin.progressProperty());
         makeTin.rnext(tin -> {
             GridSpecification grid = makeTin.getGrid();
-            System.out.println((float)grid.getCellSize());
-            (new CachedTask<>(resourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty(), dem -> {
+            (new CachedTask<>(ResourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty(), dem -> {
                 (new CurvatureGridTask(dem, grid.getCellSize())).rnext(curvature.dataProperty());
             });
-            (new CachedTask<>(resourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
-                (new CachedTask<>(resourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());
-                (new CachedTask<>(resourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty());
+            (new CachedTask<>(ResourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
+                (new CachedTask<>(ResourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());
+                (new CachedTask<>(ResourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty());
             });
         });
 
