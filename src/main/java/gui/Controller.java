@@ -92,12 +92,10 @@ public class Controller {
         });
 
 
-        tableView.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue)
-                        -> {
-                    avalancheModel.setCurrentWeather((ObservableList<String>) newValue);
-                    logger.info("Current weather set to: \n" + avalancheModel.getCurrentWeather().toString());
-                });
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            avalancheModel.setCurrentWeather((ObservableList<String>) newValue);
+            logger.info("Current weather set to: \n" + avalancheModel.getCurrentWeather().toString());
+        });
 
 
         EventStreams.eventsOf(vp, ScrollEvent.SCROLL)
@@ -195,12 +193,12 @@ public class Controller {
         progress.progressProperty().bind(makeTin.progressProperty());
         makeTin.rnext(tin -> {
             GridSpecification grid = makeTin.getGrid();
-            (new CachedTask<>(ResourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty(), dem -> {
-                (new CurvatureGridTask(dem, grid.getCellSize())).rnext(curvature.dataProperty());
-            });
+            (new CachedTask<>(ResourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty());
             (new CachedTask<>(ResourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
                 (new CachedTask<>(ResourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());
-                (new CachedTask<>(ResourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty());
+                (new CachedTask<>(ResourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty(), steep -> {
+                    (new CurvatureGridTask(steep)).rnext(curvature.dataProperty());
+                });
             });
         });
 
