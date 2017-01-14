@@ -43,9 +43,6 @@ public class WeatherConnector {
 
     public void buildData(LocalDate from, LocalDate to) {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
-//for tests
-//        from = LocalDate.of(2016,12,01);
-//        to = LocalDate.of(2016,12,30);
 
         if (from == null || to == null) {
             logger.info("Choose dates first.");
@@ -72,18 +69,15 @@ public class WeatherConnector {
                     //We are using non property style for making dynamic table
                     final int j = i;
                     TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
-                    col.setCellValueFactory(
-                            new Callback<TableColumn.CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
-                                public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableList, String> param) {
-                                    Object prop = param.getValue().get(j);
-                                    if (j == 6) {
-                                        Short windDirEnum = Util.toShort(prop.toString());
-                                        return new SimpleStringProperty(prop != null && windDirEnum != null ?
-                                                (Dirs.values()[windDirEnum]).toString() : "null");
-                                    }
-                                    return new SimpleStringProperty(prop != null ? prop.toString() : "null");
-                                }
-                            });
+                    col.setCellValueFactory(param -> {
+                        Object prop = ((TableColumn.CellDataFeatures<ObservableList, String>)param).getValue().get(j);
+                        if (j == 6) {
+                            Short windDirEnum = Util.toShort(prop.toString());
+                            return new SimpleStringProperty(prop != null && windDirEnum != null ?
+                                    (Dirs.values()[windDirEnum]).toString() : "null");
+                        }
+                        return new SimpleStringProperty(prop != null ? prop.toString() : "null");
+                    });
 
                     tableView.getColumns().addAll(col);
                     logger.debug("Column [{}] ", i);

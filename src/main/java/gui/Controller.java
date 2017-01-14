@@ -25,6 +25,8 @@ import org.reactfx.util.Tuples;
 import tinfour.testutils.GridSpecification;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import backend.ResourceHandler;
@@ -42,9 +44,6 @@ public class Controller {
     private TreeView layerSelector;
 
     @FXML
-    private TextArea logTextArea;
-
-    @FXML
     private Viewport vp;
 
     @FXML
@@ -57,9 +56,6 @@ public class Controller {
     private Button playBtn;
 
     @FXML
-    private Button submitBtn;
-
-    @FXML
     private TableView tableView;
 
     private AvalancheModel avalancheModel = new AvalancheModel();
@@ -68,10 +64,19 @@ public class Controller {
     public void initialize() {
         registerLayers();
 
-        submitBtn.setOnAction(event -> {
-            WeatherConnector con = new WeatherConnector(tableView);
-            con.buildData(fromDate.getValue(), toDate.getValue());
+        WeatherConnector con = new WeatherConnector(tableView);
+        LocalDate now = LocalDate.now(), wago = now.minus(1, ChronoUnit.WEEKS);
+
+        EventStreams.changesOf(fromDate.valueProperty()).subscribe(val -> {
+            con.buildData(val.getNewValue(), toDate.getValue());
         });
+
+        EventStreams.changesOf(toDate.valueProperty()).subscribe(val -> {
+            con.buildData(fromDate.getValue(), val.getNewValue());
+        });
+
+        fromDate.setValue(wago);
+        toDate.setValue(now);
 
         playBtn.setOnAction(event -> {
             int start = tableView.getSelectionModel().getSelectedIndex();
@@ -207,14 +212,5 @@ public class Controller {
         vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
         vp.registerLayer(new BackgroundLayer("Tło"));
-
-//        Layer risk = new GridLayer("Ryzyko lawinowe", Color.RED);
-//        risk.setVisible(true);
-//        vp.registerLayer(risk);
-//
-//        vp.registerLayer(new GridLayer("Temperatura gruntu", Color.BLUE));
-//        vp.registerLayer(new GridLayer("Grubość pokrywy śnieżnej", Color.BLUE));
-//        vp.registerLayer(new VectorLayer("Prędkość wiatru", Color.BLUE));
-//        vp.registerLayer(new GridLayer("Opady", Color.BLUE));
     }
 }
