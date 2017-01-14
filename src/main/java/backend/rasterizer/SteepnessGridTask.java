@@ -9,11 +9,10 @@ public class SteepnessGridTask extends ChainTask<float[][]> {
 
     @Override
     public float[][] call() {
-        float[][] result = Utils.gmap2f(normVectors, n -> {
+        return Utils.gmap2f(normVectors, n -> {
             if(n[0] == -1) return 0f;
             float r = (float)Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
             return (float)Math.acos(n[2] / r);
         });
-        return result;
     }
 }

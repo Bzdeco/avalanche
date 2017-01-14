@@ -1,5 +1,6 @@
-package backend.rasterizer;
+package backend.rasterizer.tasks;
 
+import backend.rasterizer.GridTin;
 import javafx.concurrent.Task;
 import tinfour.common.IMonitorWithCancellation;
 import tinfour.common.Vertex;
@@ -10,12 +11,10 @@ import tinfour.semivirtual.SemiVirtualIncrementalTin;
 import java.io.File;
 import java.util.List;
 
-public class LasTinTask extends ChainTask<SemiVirtualIncrementalTin> {
+public class LasTin extends Task<GridTin> {
     private File lasfile;
 
     private VertexLoader loader = new VertexLoader();
-
-    private GridSpecification grid;
 
     private Boolean verticesLoaded = false;
 
@@ -39,20 +38,16 @@ public class LasTinTask extends ChainTask<SemiVirtualIncrementalTin> {
         }
 
         @Override
-        public boolean isCanceled() { return LasTinTask.this.isCancelled(); }
+        public boolean isCanceled() { return LasTin.this.isCancelled(); }
     };
 
-    public LasTinTask(File lasfile) {
+    public LasTin(File lasfile) {
         this.lasfile = lasfile;
         loader.setPreSortEnabed(true);
     }
 
-    public GridSpecification getGrid() {
-        return grid;
-    }
-
     @Override
-    public SemiVirtualIncrementalTin call() throws Exception {
+    public GridTin call() throws Exception {
         List<Vertex> vertexList = loader.readLasFile(lasfile, null, mon);
 
         verticesLoaded = true;
@@ -79,12 +74,13 @@ public class LasTinTask extends ChainTask<SemiVirtualIncrementalTin> {
             geoOffsetY = loader.getGeoOffsetY();
         }
 
-        grid = new GridSpecification(GridSpecification.CellPosition.CenterOfCell, cellSize, xmin, xmax, ymin, ymax,
+        GridSpecification grid = new GridSpecification(GridSpecification.CellPosition.CenterOfCell,
+                cellSize, xmin, xmax, ymin, ymax,
                 geoScaleX, geoScaleY, geoOffsetX, geoOffsetY);
 
         SemiVirtualIncrementalTin tin = new SemiVirtualIncrementalTin(cellSize);
         tin.add(vertexList, mon);
 
-        return tin;
+        return new GridTin(tin, grid);
     }
 }

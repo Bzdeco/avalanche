@@ -18,8 +18,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
-        logger.info("logging test.Teskt {} ze zmiennymi {}", 1, 2);
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
+        Parent root = loader.load();
+        Controller ctrl = loader.getController();
+
+        primaryStage.setOnCloseRequest(ev -> {
+            try {
+                ctrl.deinitialize();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
         primaryStage.setTitle("Projekt lawinowy");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

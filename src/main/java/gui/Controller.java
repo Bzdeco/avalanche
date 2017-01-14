@@ -1,7 +1,9 @@
 package gui;
 
 import backend.AvalancheModel;
-import backend.rasterizer.*;
+import backend.rasterizer.TerrainProps;
+import backend.rasterizer.tasks.LasTin;
+import backend.rasterizer.tasks.TinTerrain;
 import backend.service.WeatherAnimateTask;
 import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
@@ -11,7 +13,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -22,17 +23,21 @@ import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
-import tinfour.testutils.GridSpecification;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import backend.ResourceHandler;
 
 public class Controller {
     private static final Logger logger = LogManager.getLogger();
+
+    private ExecutorService executor = Executors.newFixedThreadPool(4);
 
     @FXML
     public Button centerView;
@@ -161,7 +166,7 @@ public class Controller {
     }
 
     private void registerLayers() {
-        GridLayer terrain = new GridLayer("Teren", ColorRamp.create()
+        MultiGridLayer terrain = new MultiGridLayer("Teren", TerrainProps.ALTITUDE, ColorRamp.create()
                 .step(4000, 255, 255, 255, 255)
                 .step(2800, 110, 110, 110, 255)
                 .step(1700, 158, 0, 0, 255)
@@ -176,12 +181,12 @@ public class Controller {
                 .step(0, 0, 0, 0, 0)
                 .build());
 
-        GridLayer steepness = new GridLayer("Nachylenie terenu", ColorRamp.create()
+        MultiGridLayer grade = new MultiGridLayer("Nachylenie terenu", TerrainProps.GRADE, ColorRamp.create()
                 .step(-(float) Math.PI, 0, 0, 255, 255)
                 .step((float) Math.PI, 255, 0, 0, 255)
                 .build());
 
-        GridLayer curvature = new GridLayer("Krzywizna terenu", ColorRamp.create()
+        MultiGridLayer curvature = new MultiGridLayer("Krzywizna terenu", TerrainProps.CURVATURE, ColorRamp.create()
                 .step(-1, 0, 0, 255, 255)
                 .step(0, 0, 255, 0, 255)
                 .step(1, 255, 0, 0, 255)
@@ -189,26 +194,30 @@ public class Controller {
 
         File lasfile = new File(ResourceHandler.getMainDataFilePath());
 
-        LasTinTask makeTin = new LasTinTask(lasfile);
+        LasTin makeTin = new LasTin(lasfile);
         progress.progressProperty().bind(makeTin.progressProperty());
-        makeTin.rnext(tin -> {
-            GridSpecification grid = makeTin.getGrid();
-            (new CachedTask<>(ResourceHandler.getTerrainDataFilePath(), new TerrainGridTask(tin, grid))).rnext(terrain.dataProperty());
-            (new CachedTask<>(ResourceHandler.getNormalsFilePath(), new NormalsTask(tin, grid))).rnext(norm -> {
-                (new CachedTask<>(ResourceHandler.getHillShadeDataFilePath(), new HillshadeGridTask(norm, 0.25f))).rnext(hillshade.dataProperty());
-                (new CachedTask<>(ResourceHandler.getSteepnessDataFilePath(), new SteepnessGridTask(norm))).rnext(steepness.dataProperty(), steep -> {
-                    (new CurvatureGridTask(steep)).rnext(curvature.dataProperty());
-                });
-            });
-        });
+
+        TinTerrain makeTerrain = new TinTerrain(makeTin);
+        terrain.dataProperty().bind(makeTerrain.valueProperty());
+        grade.dataProperty().bind(makeTerrain.valueProperty());
+        curvature.dataProperty().bind(makeTerrain.valueProperty());
+
+        executor.execute(makeTin);
+        executor.execute(makeTerrain);
 
         terrain.setVisible(true);
         hillshade.setVisible(true);
 
         vp.registerLayer(curvature);
-        vp.registerLayer(steepness);
+        vp.registerLayer(grade);
         vp.registerLayer(hillshade);
         vp.registerLayer(terrain);
         vp.registerLayer(new BackgroundLayer("Tło"));
+    }
+
+    public void deinitialize() throws InterruptedException {
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.SECONDS);
+        executor.shutdownNow();
     }
 }
