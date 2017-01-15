@@ -2,6 +2,8 @@ package gui;
 
 import backend.AvalancheModel;
 import backend.rasterizer.TerrainProps;
+import backend.rasterizer.tasks.AvalancheRisk;
+import backend.rasterizer.tasks.Hillshade;
 import backend.rasterizer.tasks.LasTin;
 import backend.rasterizer.tasks.TinTerrain;
 import backend.service.WeatherAnimateTask;
@@ -153,7 +155,7 @@ public class Controller {
             layerItem.setGraphic(layerToggle);
 
             TreeItem<String> alphaSlider = new TreeItem<>("Alpha");
-            Slider slider = new Slider(0.1, 1.0, 0.80);
+            Slider slider = new Slider(0.1, 1.0, 0.50);
             alphaSlider.setGraphic(slider);
 
             slider.valueProperty().bindBidirectional(layer._2.opacityProperty());
@@ -177,7 +179,7 @@ public class Controller {
                 .build());
 
         GridLayer hillshade = new GridLayer("Zacienienie", ColorRamp.create()
-                .step(1, 255, 255, 255, 127)
+                .step(1, 255, 255, 255, 255)
                 .step(0, 0, 0, 0, 0)
                 .build());
 
@@ -194,6 +196,13 @@ public class Controller {
                 .step(1     , 255,   0,   0, 255)
                 .build());
 
+        GridLayer risk = new GridLayer("Ryzyko lawinowe", ColorRamp.create()
+                .step(0,   0, 255,   0, 255)
+                .step(2, 255, 255,   0, 255)
+                .step(4, 255,   0,   0, 255)
+                .step(5, 127,   0,  63, 255)
+                .build());
+
         File lasfile = new File(ResourceHandler.getMainDataFilePath());
 
         LasTin makeTin = new LasTin(lasfile);
@@ -204,12 +213,18 @@ public class Controller {
         grade.dataProperty().bind(makeTerrain.valueProperty());
         curvature.dataProperty().bind(makeTerrain.valueProperty());
 
+        Hillshade makeHillshade = new Hillshade(makeTerrain, 1); // TODO ambient from weather
+        hillshade.dataProperty().bind(makeHillshade.valueProperty());
+
+        AvalancheRisk makeRisk = new AvalancheRisk(makeTerrain, makeHillshade);
+        risk.dataProperty().bind(makeRisk.valueProperty());
+
         executor.execute(makeTin);
         executor.execute(makeTerrain);
+        executor.execute(makeHillshade);
+        executor.execute(makeRisk);
 
-        terrain.setVisible(true);
-        hillshade.setVisible(true);
-
+        vp.registerLayer(risk);
         vp.registerLayer(curvature);
         vp.registerLayer(grade);
         vp.registerLayer(hillshade);

@@ -1,21 +1,22 @@
-package backend.rasterizer;
+package backend.rasterizer.tasks;
 
+import backend.rasterizer.TerrainProps;
+import backend.rasterizer.Utils;
 import javafx.concurrent.Task;
-import tinfour.testutils.GridSpecification;
-import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
-public class HillshadeGridTask extends Task<float[][]> {
-    private SemiVirtualIncrementalTin tin;
-    private GridSpecification grid;
-    private float[][][] normVectors;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+public class Hillshade extends Task<float[][]> {
+    private Future<float[][][]> fterrain;
 
     private double sunAzimuth;
     private double sunElevation;
 
     private float ambient;
 
-    public HillshadeGridTask(float[][][] normalVector, float ambient) {
-        this.normVectors = normalVector;
+    public Hillshade(Future<float[][][]> terrain, float ambient) {
+        this.fterrain = terrain;
 
         // TODO calc from center of grid
         this.sunAzimuth = Math.toRadians(135);
@@ -25,7 +26,8 @@ public class HillshadeGridTask extends Task<float[][]> {
     }
 
     @Override
-    public float[][] call() {
+    public float[][] call() throws ExecutionException, InterruptedException {
+        float[][][] terrain = fterrain.get();
 
         float directLight = 1f - ambient;
 
@@ -38,10 +40,10 @@ public class HillshadeGridTask extends Task<float[][]> {
         double ySun = sinA * cosE;
         double zSun = sinE;
 
-        return Utils.gmap2f(normVectors, n -> {
-            if(n[0] == -1) return 0f; //not a number
-            // n[0], n[1], n[2]  give x, y, and z values
-            float cosTheta = (float)Math.max(0, n[0] * xSun + n[1] * ySun + n[2] * zSun);
+        return Utils.gmap2f(terrain, n -> {
+            float cosTheta = (float)Math.max(0, n[TerrainProps.NORMALX] * xSun
+                                              + n[TerrainProps.NORMALY] * ySun
+                                              + n[TerrainProps.NORMALZ] * zSun);
             return Utils.clamp(0, cosTheta * directLight + ambient, 1);
         });
     }
