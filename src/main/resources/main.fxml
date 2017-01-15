@@ -29,7 +29,6 @@
             <VBox prefHeight="250.0">
                 <children>
                     <ToolBar>
-                        <Button fx:id="playBtn" mnemonicParsing="false" text="Play"/>
                         <Separator orientation="VERTICAL"/>
                         <Label text="Początek"/>
                         <DatePicker fx:id="fromDate"/>

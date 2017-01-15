@@ -1,11 +1,13 @@
 package gui;
 
 import backend.AvalancheModel;
+import backend.rasterizer.RiskProps;
 import backend.rasterizer.TerrainProps;
 import backend.rasterizer.tasks.*;
 import backend.service.WeatherAnimateTask;
 import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
+import dto.WeatherDto;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -67,19 +69,20 @@ public class Controller {
     @FXML
     private TableView tableView;
 
-    private AvalancheModel avalancheModel = new AvalancheModel();
-
     private MultiGridLayer terrain;
     private MultiGridLayer curvature;
-    private GridLayer      hillshade;
     private MultiGridLayer grade;
-    private GridLayer      risk;
+
+    private MultiGridLayer hillshade;
+    private MultiGridLayer risk;
+
+    private AvalancheRisk calculateRisk;
 
     @FXML
     public void initialize() {
-        initWeather();
         registerLayers();
         loadFile();
+        initWeather();
 
         initZoomAndPan();
         createLayerControls();
@@ -109,6 +112,12 @@ public class Controller {
             terrain.dataProperty().bind(makeTerrain.valueProperty());
             grade.dataProperty().bind(makeTerrain.valueProperty());
             curvature.dataProperty().bind(makeTerrain.valueProperty());
+
+            calculateRisk = new AvalancheRisk(makeTerrain);
+            calculateRisk.setExecutor(executor);
+            risk.dataProperty().bind(calculateRisk.valueProperty());
+            hillshade.dataProperty().bind(calculateRisk.valueProperty());
+
         } else {
             Platform.exit();
         }
@@ -170,7 +179,7 @@ public class Controller {
                 .step(0, 0, 97, 71, 255)
                 .build());
 
-        hillshade = new GridLayer("Zacienienie", ColorRamp.create()
+        hillshade = new MultiGridLayer("Zacienienie", RiskProps.HILLSHADE, ColorRamp.create()
                 .step(1, 255, 255, 255, 255)
                 .step(0, 0, 0, 0, 0)
                 .build());
@@ -188,7 +197,7 @@ public class Controller {
                 .step(1     , 255,   0,   0, 255)
                 .build());
 
-        risk = new GridLayer("Ryzyko lawinowe", ColorRamp.create()
+        risk = new MultiGridLayer("Ryzyko lawinowe", RiskProps.RISK, ColorRamp.create()
                 .step(0,   0, 255,   0, 255)
                 .step(2, 255, 255,   0, 255)
                 .step(4, 255,   0,   0, 255)
@@ -218,18 +227,10 @@ public class Controller {
         fromDate.setValue(wago);
         toDate.setValue(now);
 
-        playBtn.setOnAction(event -> {
-            int start = tableView.getSelectionModel().getSelectedIndex();
-            if (start == -1)
-                start = 0;
-            ObservableList<ObservableList<String>> list = (ObservableList<ObservableList<String>>) tableView.getItems();
-            executor.submit(new WeatherAnimateTask(start, list, avalancheModel));
-        });
-
-
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            avalancheModel.setCurrentWeather((ObservableList<String>) newValue);
-            logger.info("Current weather set to: \n" + avalancheModel.getCurrentWeather().toString());
+            WeatherDto w = new WeatherDto((ObservableList<String>) newValue);
+            calculateRisk.setWeather(w);
+            calculateRisk.restart();
         });
     }
 
