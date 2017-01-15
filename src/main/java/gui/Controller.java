@@ -39,7 +39,7 @@ import backend.ResourceHandler;
 public class Controller {
     private static final Logger logger = LogManager.getLogger();
 
-    private ExecutorService executor = Executors.newFixedThreadPool(4);
+    private ExecutorService executor = Executors.newFixedThreadPool(6);
 
     @FXML
     public Button centerView;
@@ -208,12 +208,12 @@ public class Controller {
         LasTin makeTin = new LasTin(lasfile);
         progress.progressProperty().bind(makeTin.progressProperty());
 
-        TinTerrain makeTerrain = new TinTerrain(makeTin);
+        TinTerrain makeTerrain = new TinTerrain(executor, 4, makeTin);
         terrain.dataProperty().bind(makeTerrain.valueProperty());
         grade.dataProperty().bind(makeTerrain.valueProperty());
         curvature.dataProperty().bind(makeTerrain.valueProperty());
 
-        Hillshade makeHillshade = new Hillshade(makeTerrain, 1); // TODO ambient from weather
+        Hillshade makeHillshade = new Hillshade(makeTerrain, 0.25f); // TODO ambient from weather
         hillshade.dataProperty().bind(makeHillshade.valueProperty());
 
         AvalancheRisk makeRisk = new AvalancheRisk(makeTerrain, makeHillshade);
