@@ -186,10 +186,12 @@ public class Controller {
                 .step((float) Math.PI, 255, 0, 0, 255)
                 .build());
 
-        MultiGridLayer curvature = new MultiGridLayer("Krzywizna terenu", TerrainProps.CURVATURE, ColorRamp.create()
-                .step(-1, 0, 0, 255, 255)
-                .step(0, 0, 255, 0, 255)
-                .step(1, 255, 0, 0, 255)
+        MultiGridLayer curvature = new MultiGridLayer("Krzywizna terenu", TerrainProps.PROFCURV, ColorRamp.create()
+                .step(-1    ,   0,   0, 255, 255)
+                .step(-0.01f,   0, 255, 255, 255)
+                .step(0     ,   0, 255,   0, 255)
+                .step(0.01f , 255, 255,   0, 255)
+                .step(1     , 255,   0,   0, 255)
                 .build());
 
         File lasfile = new File(ResourceHandler.getMainDataFilePath());

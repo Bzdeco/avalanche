@@ -1,9 +1,10 @@
 package backend.rasterizer;
 
+import javafx.concurrent.Task;
 import tinfour.testutils.GridSpecification;
 import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
-public class HillshadeGridTask extends ChainTask<float[][]> {
+public class HillshadeGridTask extends Task<float[][]> {
     private SemiVirtualIncrementalTin tin;
     private GridSpecification grid;
     private float[][][] normVectors;

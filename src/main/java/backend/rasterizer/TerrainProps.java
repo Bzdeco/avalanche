@@ -7,5 +7,6 @@ public class TerrainProps {
     public static final int NORMALZ   = 3;
     public static final int ASPECT    = 4;
     public static final int GRADE     = 5;
-    public static final int CURVATURE = 6;
+    public static final int PROFCURV  = 6;
+    public static final int PLANCURV  = 7;
 }
