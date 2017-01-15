@@ -75,7 +75,14 @@ public class AvalancheRisk extends Service<float[][][]> {
                         r[RiskProps.HILLSHADE] = hillshade;
 
 
-                        r[RiskProps.RISK] = 1f;
+                        float risk = 1f;
+
+                        if(t[TerrainProps.PROFCURV] > 0) risk += 0.5;
+                        if(t[TerrainProps.PLANCURV] > 0) risk += 0.5;
+                        if(t[TerrainProps.GRADE] < Math.toRadians(15) && t[TerrainProps.GRADE] > 60) risk = 1;
+                        if(hillshade > 2*ambient) risk += 0.5;
+
+                        r[RiskProps.RISK] = risk;
                     }
                 }
 
