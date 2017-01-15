@@ -3,44 +3,21 @@ package backend.serializers;
 import java.io.*;
 
 public class DataSerializer<Type> {
-    private String filePath;
-    private boolean serializedDataExistence;
     private File serializedData;
-    private FileInputStream serializedDataInS;
-    private ObjectInputStream serializedDataInO;
-    private FileOutputStream serializedDataOutS;
-    private ObjectOutputStream serializedDataOutO;
 
-    public DataSerializer(String filePath) {
-        this.filePath = filePath;
-
-        try {
-            this.serializedData = new File(this.filePath);
-
-            if (this.serializedData.exists() && !this.serializedData.isDirectory()) {
-                this.serializedDataExistence = true;
-            } else {
-                this.serializedDataExistence = false;
-            }
-        } catch (Exception exception) {
-            this.serializedDataExistence = false;
-            exception.printStackTrace();
-        }
-    }
-
-    public boolean isSerializedDataExistence() {
-        return serializedDataExistence;
+    public DataSerializer(File serializedData) {
+        this.serializedData = serializedData;
     }
 
     public void serialize(Type object) {
         try {
-            this.serializedDataOutS = new FileOutputStream(this.filePath);
-            this.serializedDataOutO = new ObjectOutputStream(this.serializedDataOutS);
+            FileOutputStream serializedDataOutS = new FileOutputStream(serializedData);
+            ObjectOutputStream serializedDataOutO = new ObjectOutputStream(serializedDataOutS);
 
             serializedDataOutO.writeObject(object);
 
-            this.serializedDataOutS.close();
-            this.serializedDataOutO.close();
+            serializedDataOutS.close();
+            serializedDataOutO.close();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -49,21 +26,16 @@ public class DataSerializer<Type> {
     public Type deserialize() {
         Type object;
 
-        if (this.serializedDataExistence) {
-            try {
-                this.serializedDataInS = new FileInputStream(this.filePath);
-                this.serializedDataInO = new ObjectInputStream(this.serializedDataInS);
+        try {
+            FileInputStream serializedDataInS = new FileInputStream(serializedData);
+            ObjectInputStream serializedDataInO = new ObjectInputStream(serializedDataInS);
 
-                object = (Type) serializedDataInO.readObject();
+            object = (Type) serializedDataInO.readObject();
 
-                this.serializedDataInS.close();
-                this.serializedDataInO.close();
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return null;
-            }
-
-        } else {
+            serializedDataInS.close();
+            serializedDataInO.close();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             return null;
         }
 

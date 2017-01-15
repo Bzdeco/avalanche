@@ -49,6 +49,8 @@
     </bottom>
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <Button fx:id="saveBtn" mnemonicParsing="false" text="Zapisz teren" onMouseClicked="#saveTerrain"/>
+            <Separator orientation="VERTICAL"/>
             <Button fx:id="centerView" mnemonicParsing="false" text="Wycentruj"/>
             <ProgressBar fx:id="progress"/>
             <Pane HBox.hgrow="ALWAYS"/>
