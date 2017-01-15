@@ -6,7 +6,9 @@ import backend.rasterizer.Utils;
 import dto.WeatherDto;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import net.e175.klaus.solarpositioning.*;
 
+import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -30,14 +32,24 @@ public class AvalancheRisk extends Service<float[][][]> {
             public float[][][] call() throws ExecutionException, InterruptedException {
                 // Hillshade calculation according to current weather
                 float ambient = 0.25f;
-                double sunAzimuth = Math.toRadians(135);
-                double sunElevation = Math.toRadians(45);
+
+                GregorianCalendar dateTime = new GregorianCalendar();
+                dateTime.setTime(weather.getTime());
+
+                AzimuthZenithAngle position = Grena3.calculateSolarPosition(
+                        dateTime,
+                        49.232528, // latitude (degrees)
+                        19.981833, // longitude (degrees)
+                        DeltaT.estimate(dateTime)); // avg. air temperature (°C)
+
+                double sunAzimuth = Math.toRadians(position.getAzimuth());
+                double sunZenith = Math.toRadians(position.getZenithAngle());
 
                 float directLight = 1f - ambient;
                 double cosA = Math.cos(sunAzimuth);
                 double sinA = Math.sin(sunAzimuth);
-                double cosE = Math.cos(sunElevation);
-                double sinE = Math.sin(sunElevation);
+                double cosE = Math.sin(sunZenith); // Inverted (sin, cos) because we want elevation
+                double sinE = Math.cos(sunZenith);
                 double xSun = cosA * cosE;
                 double ySun = sinA * cosE;
                 double zSun = sinE;
@@ -62,7 +74,8 @@ public class AvalancheRisk extends Service<float[][][]> {
 
                         r[RiskProps.HILLSHADE] = hillshade;
 
-                        r[RiskProps.RISK] = 5f;
+
+                        r[RiskProps.RISK] = 1f;
                     }
                 }
 

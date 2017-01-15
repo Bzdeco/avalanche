@@ -5,11 +5,73 @@ import backend.Utils.Util;
 import javafx.collections.ObservableList;
 import lombok.Data;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Data
 public class WeatherDto {
     private Date time;
+
+    public Date getTime() {
+        return time;
+    }
+
+    public Float getTemp() {
+        return temp;
+    }
+
+    public String getTempDesc() {
+        return tempDesc;
+    }
+
+    public Short getWindAvg() {
+        return windAvg;
+    }
+
+    public Short getWindMax() {
+        return windMax;
+    }
+
+    public Short getWindDirDeg() {
+        return windDirDeg;
+    }
+
+    public Dirs getWindDir() {
+        return windDir;
+    }
+
+    public Float getPrecipAmount() {
+        return precipAmount;
+    }
+
+    public Short getPrecipInterval() {
+        return precipInterval;
+    }
+
+    public String getPrecipType() {
+        return precipType;
+    }
+
+    public Short getCloudLevel() {
+        return cloudLevel;
+    }
+
+    public Short getCloudSum() {
+        return cloudSum;
+    }
+
+    public Short getCloudLow() {
+        return cloudLow;
+    }
+
+    public Short getSnowLevel() {
+        return snowLevel;
+    }
+
     private Float temp;
     private String tempDesc;
 
@@ -29,7 +91,10 @@ public class WeatherDto {
     private Short snowLevel;   //cm
 
     public WeatherDto(ObservableList<String> row) {
-//        this.time = (row.get(0) == null? null : Date.valueOf(row.get(0).toString()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime d = formatter.parse(row.get(0), LocalDateTime::from);
+        this.time = Date.from(d.atZone(ZoneId.systemDefault()).toInstant());
+
         this.temp = Util.toFloat(row.get(1));
         this.tempDesc = row.get(2);
         this.windAvg = Util.toShort(row.get(3));
