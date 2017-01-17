@@ -11,6 +11,6 @@ public class AvalancheModel {
     }
 
     synchronized public void setCurrentWeather(ObservableList<String> row) {
-        this.currentWeather = new WeatherDto(row);
+        this.currentWeather = new WeatherDto.Builder().build(row);
     }
 }

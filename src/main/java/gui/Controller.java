@@ -1,13 +1,14 @@
 package gui;
 
-import backend.AvalancheModel;
 import backend.rasterizer.RiskProps;
 import backend.rasterizer.TerrainProps;
 import backend.rasterizer.tasks.*;
-import backend.service.WeatherAnimateTask;
 import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
 import dto.WeatherDto;
+import gui.layers.BackgroundLayer;
+import gui.layers.ColorRamp;
+import gui.layers.MultiGridLayer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -15,11 +16,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-
-import gui.layers.*;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,19 +33,13 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
-
-import backend.ResourceHandler;
 
 public class Controller {
     private static final Logger logger = LogManager.getLogger();
-
-    private ExecutorService executor = Executors.newFixedThreadPool(6);
-
     @FXML
     public Button centerView;
-
+    private ExecutorService executor = Executors.newFixedThreadPool(6);
     @FXML
     private ProgressBar progress;
 
@@ -228,7 +220,7 @@ public class Controller {
         toDate.setValue(now);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            WeatherDto w = new WeatherDto((ObservableList<String>) newValue);
+            WeatherDto w = new WeatherDto.Builder().build((ObservableList<String>) newValue);
             calculateRisk.setWeather(w);
             calculateRisk.restart();
         });
