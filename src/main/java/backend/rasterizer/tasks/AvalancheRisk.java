@@ -85,11 +85,11 @@ public class AvalancheRisk extends Service<float[][][]> {
                         if (t[TerrainProps.PROFCURV] > 1E-3) {
                             risk += 0.5;   //teren wklęsły
                             if (t[TerrainProps.PROFCURV] > 1E-2)
-                                risk += 0.2; //teren bardzo wklesly - żleby
+                                risk += 0.2; //teren bardzo wklesly
                         } else if (t[TerrainProps.PROFCURV] < -1E-3) {
                             risk += 0.2;//teren wypukły
                             if (t[TerrainProps.PROFCURV] > 1E-2)
-                                risk += 0.2;
+                                risk += 0.2;//bardziej wypukły
                         } else{
                             risk = 0;//teren w przybliżeniu płaski
                             r[RiskProps.RISK] = risk;
@@ -97,11 +97,11 @@ public class AvalancheRisk extends Service<float[][][]> {
                         }
 
                         if (t[TerrainProps.PLANCURV] > 1E-3) {
-                            risk += 0.5;//teren wklęsły
+                            risk += 0.5;//żleby
                             if (t[TerrainProps.PLANCURV] > 1E-2)
-                                risk += 0.2;//teren bardzo wklesly - żleby
+                                risk += 0.2;//strome żleby
                         } else if (t[TerrainProps.PLANCURV] < -1E-3) {
-                            risk += 0.2;//teren wypukły
+                            risk += 0.2;//grzędy
                             if (t[TerrainProps.PLANCURV] > 1E-2)
                                 risk += 0.2;
                         } else{
