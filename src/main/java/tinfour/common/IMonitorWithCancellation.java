@@ -52,14 +52,13 @@ package tinfour.common;
  * the SwingUtility class to ensure the operation executed in the
  * Event Dispatch Thread.
  * <code>
- *     void reportProgress(int progressValueInPercent){
- *         final int value = progressValueInPercent;
- *         SwingUtilities.invokeLater(new Runnable(){
- *              setValue(value);
- *         });
- *     }
+ * void reportProgress(int progressValueInPercent){
+ * final int value = progressValueInPercent;
+ * SwingUtilities.invokeLater(new Runnable(){
+ * setValue(value);
+ * });
+ * }
  * </code>
- *
  */
 public interface IMonitorWithCancellation {
 
@@ -70,9 +69,10 @@ public interface IMonitorWithCancellation {
      * doing so could adversely affect the performance of the process.
      * Values smaller than 5 percent or greater than 25 percent are generally
      * not recommended.
+     *
      * @return a value between 1 and 100.
      */
-    public int getReportingIntervalInPercent();
+    int getReportingIntervalInPercent();
 
     /**
      * Report progress to monitoring implementation.  Note that in many
@@ -81,9 +81,10 @@ public interface IMonitorWithCancellation {
      * use by tasks that <strong>do not run in the Event Dispatching Thread</strong>
      * it is imperative that the implementation handle thread-safety
      * issues correctly.
+     *
      * @param progressValueInPercent the estimated degree of completion, in percent
      */
-    public void reportProgress(int progressValueInPercent);
+    void reportProgress(int progressValueInPercent);
 
     /**
      * Called when the progress is done.  Within the Tinfour package
@@ -92,7 +93,7 @@ public interface IMonitorWithCancellation {
      * Tinfour methods reusing the progress monitor for each and reporting
      * done according to their own custom logic.
      */
-    public void reportDone();
+    void reportDone();
 
 
     /**
@@ -101,9 +102,10 @@ public interface IMonitorWithCancellation {
      * of messages is left to the implementation class.
      * In general, it is recommended that messages be short strings suitable
      * for use in user interfaces and logs.
+     *
      * @param message a valid string
      */
-    public void postMessage(String message);
+    void postMessage(String message);
 
     /**
      * Indicates whether the calling application would like this
@@ -111,8 +113,9 @@ public interface IMonitorWithCancellation {
      * to not call this method or to ignore its result. So there is no
      * guarantee that having an implementation of this method return
      * "true" will ensure termination.
+     *
      * @return true if the process is canceled and should be voluntarily
      * interrupted; false if the process is not canceled.
      */
-    public boolean isCanceled();
+    boolean isCanceled();
 }

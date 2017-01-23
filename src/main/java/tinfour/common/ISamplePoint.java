@@ -31,8 +31,7 @@ package tinfour.common;
  * Defines a sample point interface to be used for spatial
  * data analysis.
  */
-public interface ISamplePoint
-{
+public interface ISamplePoint {
 
     /**
      * Get the X coordinate of the sample point

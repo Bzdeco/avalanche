@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * -----------------------------------------------------------------------
- *
- * Revision History:
- * Date Name Description
- * ------ --------- -------------------------------------------------
- * 08/2014 G. Lucas Created
- *
- * Notes:
- *
- * -----------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------
+
+  Revision History:
+  Date Name Description
+  ------ --------- -------------------------------------------------
+  08/2014 G. Lucas Created
+
+  Notes:
+
+  -----------------------------------------------------------------------
  */
 package tinfour.gwr;
 
@@ -32,14 +32,14 @@ package tinfour.gwr;
  */
 public enum SurfaceModel {
     /**
-     *  z(x,y) = b0 + b1*x + b2*y
+     * z(x,y) = b0 + b1*x + b2*y
      */
     Planar(3, "PLN"),
 
     /**
-     *  z(x,y) = b0 + b1*x + b2*y + b3*x*y
+     * z(x,y) = b0 + b1*x + b2*y + b3*x*y
      */
-    PlanarWithCrossTerms(4,"PWC"),
+    PlanarWithCrossTerms(4, "PWC"),
 
     /**
      * z(x, y) = b0 + b1*x + b2*y + b3*x^2 +b4*y^2
@@ -55,7 +55,7 @@ public enum SurfaceModel {
      * z(x, y) = b0 + b1*x + b2*y + b3*x^2 +b4*y^2
      * + b5*x^3 + b6*y^3.
      */
-    Cubic(7,"CUB"),
+    Cubic(7, "CUB"),
 
     /**
      * z(x, y) = b0 + b1*x + b2*y + b3*x^2 +b4*y^2 + b5*x*y
@@ -83,10 +83,11 @@ public enum SurfaceModel {
     /**
      * Gets a three letter abbreviation indicating the model type,
      * intended for tabular data output.
+     *
      * @return a three letter abbreviation.
      */
-    public String getAbbreviation(){
-      return abbreviation;
+    public String getAbbreviation() {
+        return abbreviation;
     }
 
 }

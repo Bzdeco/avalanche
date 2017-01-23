@@ -111,412 +111,435 @@ package tinfour.common;
  */
 public class QuadEdge implements IQuadEdge {
 
-  /**
-   * The maximum value of a constraint index based in space
-   * allocated for its storage. This is a value of (2^20-1).
-   * In practice this value is larger than the available
-   * memory on many contemporary computers would allow.
-  */
-  public static final int CONSTRAINT_INDEX_MAX = 1048575;
+    /**
+     * The maximum value of a constraint index based in space
+     * allocated for its storage. This is a value of (2^20-1).
+     * In practice this value is larger than the available
+     * memory on many contemporary computers would allow.
+     */
+    public static final int CONSTRAINT_INDEX_MAX = 1048575;
 
-  /**
-   * A mask that can be anded with the QuadEdgePartner's
-   * index field to extract the constraint index,
-   * equivalent to the 20 low-order bits.
-   */
-  public static final int CONSTRAINT_INDEX_MASK = 0x000fffff;
+    /**
+     * A mask that can be anded with the QuadEdgePartner's
+     * index field to extract the constraint index,
+     * equivalent to the 20 low-order bits.
+     */
+    public static final int CONSTRAINT_INDEX_MASK = 0x000fffff;
 
-  /**
-   * A bit indicating that an edge is constrained. This bit just happens
-   * to be the sign bit, a feature that is exploited by the isConstrained()
-   * method.
-   */
-  public static final int CONSTRAINT_FLAG = (1<<31);
+    /**
+     * A bit indicating that an edge is constrained. This bit just happens
+     * to be the sign bit, a feature that is exploited by the isConstrained()
+     * method.
+     */
+    public static final int CONSTRAINT_FLAG = (1 << 31);
 
-  /**
-   * A bit indicating that an edge is part of a constrained area.
-   */
-  public static final int CONSTRAINT_AREA_FLAG = (1<<30);
+    /**
+     * A bit indicating that an edge is part of a constrained area.
+     */
+    public static final int CONSTRAINT_AREA_FLAG = (1 << 30);
 
-  /**
-   * A bit indicating that the constrained area is to the base side
-   * of the edge.  This bit is only meaningful when CONSTRAINT_AREA_FLAG is set.
-   * If CONSTRAINT_AREA_FLAG is set, then this bit tells which side the
-   * constraint area lies on: if the bit is set, it's on the base side
-   * and if the bit is clear, it's on the dual side.
-   */
-  public static final int CONSTRAINT_AREA_BASE_FLAG = (1<<29);
+    /**
+     * A bit indicating that the constrained area is to the base side
+     * of the edge.  This bit is only meaningful when CONSTRAINT_AREA_FLAG is set.
+     * If CONSTRAINT_AREA_FLAG is set, then this bit tells which side the
+     * constraint area lies on: if the bit is set, it's on the base side
+     * and if the bit is clear, it's on the dual side.
+     */
+    public static final int CONSTRAINT_AREA_BASE_FLAG = (1 << 29);
 
-  /**
-   * An arbitrary index value. For IncrementalTin, the index
-   * is used to manage the edge pool.
-   */
-  int index;
+    /**
+     * An arbitrary index value. For IncrementalTin, the index
+     * is used to manage the edge pool.
+     */
+    int index;
 
-  /**
-   * The dual of this edge (always valid, never null.
-   */
-  QuadEdge dual;
-  /**
-   * The initial vertex of this edge, the second vertex of
-   * the dual.
-   */
-  Vertex v;
-  /**
-   * The forward link of this edge.
-   */
-  QuadEdge f;
-  /**
-   * The reverse link of this edge.
-   */
-  QuadEdge r;
+    /**
+     * The dual of this edge (always valid, never null.
+     */
+    QuadEdge dual;
+    /**
+     * The initial vertex of this edge, the second vertex of
+     * the dual.
+     */
+    Vertex v;
+    /**
+     * The forward link of this edge.
+     */
+    QuadEdge f;
+    /**
+     * The reverse link of this edge.
+     */
+    QuadEdge r;
 
-  /**
-   * Constructs the edge and its dual.
-   */
-  QuadEdge() {
-    dual = new QuadEdgePartner(this);
-  }
-
-  /**
-   * Construct the edge setting its dual with the specfied reference.
-   * @param partner a valid element.
-   */
-  QuadEdge(final QuadEdge partner) {
-    dual = partner;
-  }
-
-  /**
-   * Construct the edge and its dual assigning the pair the specified index.
-   * @param index an arbitrary integer value.
-   */
-  public QuadEdge(final int index) {
-    dual = new QuadEdgePartner(this);
-    this.index = index;
-  }
-
-  /**
-   * Sets the vertices for this edge (and its dual).
-   * @param a the initial vertex, must be a valid reference.
-   * @param b the second vertex, may be a valid reference or a
-   * null for a ghost edge.
-   */
-  public void setVertices(final Vertex a, final Vertex b) {
-    this.v = a;
-    this.dual.v = b;
-  }
-
-  /**
-   * Gets the initial vertex for this edge.
-   * @return a valid reference.
-   */
-  @Override
-  public final Vertex getA() {
-    return v;
-  }
-
-  /**
-   * Sets the initial vertex for this edge.
-   * @param a a valid reference.
-   */
-  public final void setA(final Vertex a) {
-    this.v = a;
-  }
-
-  /**
-   * Gets the second vertex for this edge.
-   * @return a valid reference or a null for a ghost edge.
-   */
-  @Override
-  public final Vertex getB() {
-    return dual.v;
-  }
-
-  /**
-   * Sets the second (B) vertex for this edge (also the A reference of
-   * the dual edge).
-   * @param b a valid reference or a null for a ghost edge.
-   */
-  public final void setB(final Vertex b) {
-    dual.v = b;
-  }
-
-  /**
-   * Gets the forward reference of the edge.
-   * @return a valid reference.
-   */
-  @Override
-  public final QuadEdge getForward() {
-    return f;
-  }
-
-  /**
-   * Gets the reverse reference of the edge.
-   * @return a valid reference.
-   */
-  @Override
-  public final QuadEdge getReverse() {
-    return r;
-  }
-
-  /**
-   * Gets the forward reference of the dual.
-   * @return a valid reference
-   */
-  @Override
-  public final QuadEdge getForwardFromDual() {
-    return dual.f;
-  }
-
-  /**
-   * Gets the reverse link of the dual.
-   * @return a valid reference
-   */
-  @Override
-  public final QuadEdge getReverseFromDual() {
-    return dual.r;
-  }
-
-  /**
-   * Gets the dual of the reverse link.
-   * @return a valid reference
-   */
-  public final QuadEdge getDualFromReverse(){
-    return r.dual;
-  }
-
-  /**
-   * Sets the forward reference for this edge.
-   * @param e a valid reference
-   */
-  public final void setForward(final QuadEdge e) {
-    this.f = e;
-    e.r = this;
-    // forwardCheck(this, e);
-  }
-
-  /**
-   * Sets the reverse reference for this edge.
-   * @param e a valid reference
-   */
-  public final void setReverse(final QuadEdge e) {
-    this.r = e;
-    e.f = this;
-    // forwardCheck(e, this);
-  }
-
-  /**
-   * Sets the forward link to the dual of this edge.
-   * @param e a valid reference
-   */
-  public final void setDualForward(final QuadEdge e) {
-    dual.f = e;
-    e.r = dual;
-    // forwardCheck(dual, e);
-  }
-
-  /**
-   * Sets the reverse link of the dual to this edge.
-   * @param e a valid reference
-   */
-  public final void setDualReverse(final QuadEdge e) {
-    dual.r = e;
-    e.f = dual;
-    // forwardCheck(e, dual);
-  }
-
-  /**
-   * Gets the dual edge to this instance.
-   * @return a valid edge.
-   */
-  @Override
-  public final QuadEdge getDual() {
-    return dual;
-  }
-
-  /**
-   * Gets the index value for this edge.
-   * @return an integer value
-   */
-  @Override
-  public int getIndex() {
-    return index;
-  }
-
-  /**
-   * Sets the index value for this edge. In the IncrementalTin application,
-   * this index is used for managing the EdgePool.
-   * @param index an integer value
-   */
-  public void setIndex(final int index) {
-    this.index = index;
-  }
-
-
-  /**
-   * Gets the reference to the side-zero edge of the pair.
-   * @return a link to the side-zero edge of the pair.
-   */
-  @Override
-  public QuadEdge getBaseReference() {
-    return this;
-  }
-
-  /**
-   * Gets the index of the constraint associated with this edge.
-   * Constraint index values must be in the range 0 to Integer.MAX_VALUE,
-   * with negative numbers being reserved for internal use by the
-   * Tinfour library,
-   *
-   * @return if constrained, a positive integer; otherwise, a negative value.
-   */
-  @Override
-  public int getConstraintIndex() {
-    return dual.getConstraintIndex();
-  }
-
-
-  @Override
-  public void setConstraintIndex(int constraintIndex) {
-    dual.setConstraintIndex(constraintIndex);
-  }
-
-  /**
-   * Gets the index of the constrain associated with
-   *
-   * @return true if the edge is constrained; otherwise, false.
-   */
-  @Override
-  public boolean isConstrained() {
-    return dual.isConstrained();
-  }
-
-  @Override
-  public void setConstrained(int constraintIndex){
-    dual.setConstrained(constraintIndex);
-  }
-
-  /**
-   * Sets all vertices and link references to null (the link to a dual
-   * is not affected).
-   */
-  public void clear() {
-    // note that the index of the partner is set to -1,
-    // but the index of the base, which is used for management purposes
-    // is left alone.
-    this.v = null;
-    this.f = null;
-    this.r = null;
-    dual.v = null;
-    dual.f = null;
-    dual.r = null;
-    dual.index = 0;
-  }
-
-  /**
-   * Gets a name string for the edge by prepending the index value
-   * with a + or - string depending on its side (+ for side zero, - for side 1).
-   * @return a valid string.
-   */
-  String getName() {
-    char c;
-    if (getSide() == 0) {
-      c = '+';
-    } else {
-      c = '-';
+    /**
+     * Constructs the edge and its dual.
+     */
+    QuadEdge() {
+        dual = new QuadEdgePartner(this);
     }
-    return Integer.toString(getIndex()) + c;
-  }
 
-  @Override
-  public String toString() {
-    Vertex a = v;
-    Vertex b = dual.v;
-    if (a == null && b == null) {
-      return String.format("%9d/%d  -- Undefined", getIndex(), getSide());
+    /**
+     * Construct the edge setting its dual with the specfied reference.
+     *
+     * @param partner a valid element.
+     */
+    QuadEdge(final QuadEdge partner) {
+        dual = partner;
     }
-    String s = String.format("%9s  %9s <-- (%9s,%9s) --> %9s%s",
-      getName(),
-      (r == null ? "null" : r.getName()),
-      (a == null ? "gv" : a.getLabel()),
-      (b == null ? "gv" : b.getLabel()),
-      (f == null ? "null" : f.getName()),
-      (this.isConstrained()?"    constrained":"")
-    );
-    return s;
-  }
 
-
-  /**
-   * Gets the length of the edge.
-   * @return a positive floating point value
-   */
-  @Override
-  public double getLength() {
-    if (v == null || dual.v == null) {
-      return Double.NaN;
+    /**
+     * Construct the edge and its dual assigning the pair the specified index.
+     *
+     * @param index an arbitrary integer value.
+     */
+    public QuadEdge(final int index) {
+        dual = new QuadEdgePartner(this);
+        this.index = index;
     }
-    double dx = v.x - dual.v.x;
-    double dy = v.y - dual.v.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
 
-  /**
-   * Indicates which side of an edge a particular QuadEdge instance is
-   * attached to. The side value is a strictly arbitrary index used for
-   * algorithms that need to be able to assign a unique index to
-   * both sides of an edge.
-   *
-   * @return a value of 0 or 1.
-   */
-  @Override
-  public int getSide() {
-    return 0;
-  }
-
-  /**
-   * An implementation of the equals method which check for a matching
-   * reference.
-   * @param o a valid reference or a null
-   * @return true if the specified reference matches this.
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof QuadEdge) {
-      return this == o;
+    /**
+     * Sets the vertices for this edge (and its dual).
+     *
+     * @param a the initial vertex, must be a valid reference.
+     * @param b the second vertex, may be a valid reference or a
+     *          null for a ghost edge.
+     */
+    public void setVertices(final Vertex a, final Vertex b) {
+        this.v = a;
+        this.dual.v = b;
     }
-    return false;
-  }
 
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 11 * hash + this.index;
-    return hash;
-  }
+    /**
+     * Gets the initial vertex for this edge.
+     *
+     * @return a valid reference.
+     */
+    @Override
+    public final Vertex getA() {
+        return v;
+    }
 
-  @Override
-  public boolean isConstrainedAreaMember() {
-    return dual.isConstrainedAreaMember();
-  }
+    /**
+     * Sets the initial vertex for this edge.
+     *
+     * @param a a valid reference.
+     */
+    public final void setA(final Vertex a) {
+        this.v = a;
+    }
 
-  @Override
-  public boolean isConstrainedAreaEdge() {
-    return dual.isConstrainedAreaEdge();
-  }
+    /**
+     * Gets the second vertex for this edge.
+     *
+     * @return a valid reference or a null for a ghost edge.
+     */
+    @Override
+    public final Vertex getB() {
+        return dual.v;
+    }
 
-  @Override
-  public void setConstrainedAreaMemberFlag() {
-    dual.index |= CONSTRAINT_AREA_FLAG | CONSTRAINT_AREA_BASE_FLAG;
-  }
+    /**
+     * Sets the second (B) vertex for this edge (also the A reference of
+     * the dual edge).
+     *
+     * @param b a valid reference or a null for a ghost edge.
+     */
+    public final void setB(final Vertex b) {
+        dual.v = b;
+    }
+
+    /**
+     * Gets the forward reference of the edge.
+     *
+     * @return a valid reference.
+     */
+    @Override
+    public final QuadEdge getForward() {
+        return f;
+    }
+
+    /**
+     * Sets the forward reference for this edge.
+     *
+     * @param e a valid reference
+     */
+    public final void setForward(final QuadEdge e) {
+        this.f = e;
+        e.r = this;
+        // forwardCheck(this, e);
+    }
+
+    /**
+     * Gets the reverse reference of the edge.
+     *
+     * @return a valid reference.
+     */
+    @Override
+    public final QuadEdge getReverse() {
+        return r;
+    }
+
+    /**
+     * Sets the reverse reference for this edge.
+     *
+     * @param e a valid reference
+     */
+    public final void setReverse(final QuadEdge e) {
+        this.r = e;
+        e.f = this;
+        // forwardCheck(e, this);
+    }
+
+    /**
+     * Gets the forward reference of the dual.
+     *
+     * @return a valid reference
+     */
+    @Override
+    public final QuadEdge getForwardFromDual() {
+        return dual.f;
+    }
+
+    /**
+     * Gets the reverse link of the dual.
+     *
+     * @return a valid reference
+     */
+    @Override
+    public final QuadEdge getReverseFromDual() {
+        return dual.r;
+    }
+
+    /**
+     * Gets the dual of the reverse link.
+     *
+     * @return a valid reference
+     */
+    public final QuadEdge getDualFromReverse() {
+        return r.dual;
+    }
+
+    /**
+     * Sets the forward link to the dual of this edge.
+     *
+     * @param e a valid reference
+     */
+    public final void setDualForward(final QuadEdge e) {
+        dual.f = e;
+        e.r = dual;
+        // forwardCheck(dual, e);
+    }
+
+    /**
+     * Sets the reverse link of the dual to this edge.
+     *
+     * @param e a valid reference
+     */
+    public final void setDualReverse(final QuadEdge e) {
+        dual.r = e;
+        e.f = dual;
+        // forwardCheck(e, dual);
+    }
+
+    /**
+     * Gets the dual edge to this instance.
+     *
+     * @return a valid edge.
+     */
+    @Override
+    public final QuadEdge getDual() {
+        return dual;
+    }
+
+    /**
+     * Gets the index value for this edge.
+     *
+     * @return an integer value
+     */
+    @Override
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * Sets the index value for this edge. In the IncrementalTin application,
+     * this index is used for managing the EdgePool.
+     *
+     * @param index an integer value
+     */
+    public void setIndex(final int index) {
+        this.index = index;
+    }
 
 
-  public boolean isConstraintAreaOnThisSide(){
-      return (dual.index&CONSTRAINT_AREA_BASE_FLAG)!=0;
-  }
+    /**
+     * Gets the reference to the side-zero edge of the pair.
+     *
+     * @return a link to the side-zero edge of the pair.
+     */
+    @Override
+    public QuadEdge getBaseReference() {
+        return this;
+    }
 
-  @Override
-  public Iterable<IQuadEdge>pinwheel(){
-    return new QuadEdgePinwheel(this);
-  }
+    /**
+     * Gets the index of the constraint associated with this edge.
+     * Constraint index values must be in the range 0 to Integer.MAX_VALUE,
+     * with negative numbers being reserved for internal use by the
+     * Tinfour library,
+     *
+     * @return if constrained, a positive integer; otherwise, a negative value.
+     */
+    @Override
+    public int getConstraintIndex() {
+        return dual.getConstraintIndex();
+    }
+
+
+    @Override
+    public void setConstraintIndex(int constraintIndex) {
+        dual.setConstraintIndex(constraintIndex);
+    }
+
+    /**
+     * Gets the index of the constrain associated with
+     *
+     * @return true if the edge is constrained; otherwise, false.
+     */
+    @Override
+    public boolean isConstrained() {
+        return dual.isConstrained();
+    }
+
+    @Override
+    public void setConstrained(int constraintIndex) {
+        dual.setConstrained(constraintIndex);
+    }
+
+    /**
+     * Sets all vertices and link references to null (the link to a dual
+     * is not affected).
+     */
+    public void clear() {
+        // note that the index of the partner is set to -1,
+        // but the index of the base, which is used for management purposes
+        // is left alone.
+        this.v = null;
+        this.f = null;
+        this.r = null;
+        dual.v = null;
+        dual.f = null;
+        dual.r = null;
+        dual.index = 0;
+    }
+
+    /**
+     * Gets a name string for the edge by prepending the index value
+     * with a + or - string depending on its side (+ for side zero, - for side 1).
+     *
+     * @return a valid string.
+     */
+    String getName() {
+        char c;
+        if (getSide() == 0) {
+            c = '+';
+        } else {
+            c = '-';
+        }
+        return Integer.toString(getIndex()) + c;
+    }
+
+    @Override
+    public String toString() {
+        Vertex a = v;
+        Vertex b = dual.v;
+        if (a == null && b == null) {
+            return String.format("%9d/%d  -- Undefined", getIndex(), getSide());
+        }
+        String s = String.format("%9s  %9s <-- (%9s,%9s) --> %9s%s",
+                getName(),
+                (r == null ? "null" : r.getName()),
+                (a == null ? "gv" : a.getLabel()),
+                (b == null ? "gv" : b.getLabel()),
+                (f == null ? "null" : f.getName()),
+                (this.isConstrained() ? "    constrained" : "")
+        );
+        return s;
+    }
+
+
+    /**
+     * Gets the length of the edge.
+     *
+     * @return a positive floating point value
+     */
+    @Override
+    public double getLength() {
+        if (v == null || dual.v == null) {
+            return Double.NaN;
+        }
+        double dx = v.x - dual.v.x;
+        double dy = v.y - dual.v.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * Indicates which side of an edge a particular QuadEdge instance is
+     * attached to. The side value is a strictly arbitrary index used for
+     * algorithms that need to be able to assign a unique index to
+     * both sides of an edge.
+     *
+     * @return a value of 0 or 1.
+     */
+    @Override
+    public int getSide() {
+        return 0;
+    }
+
+    /**
+     * An implementation of the equals method which check for a matching
+     * reference.
+     *
+     * @param o a valid reference or a null
+     * @return true if the specified reference matches this.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof QuadEdge) {
+            return this == o;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 11 * hash + this.index;
+        return hash;
+    }
+
+    @Override
+    public boolean isConstrainedAreaMember() {
+        return dual.isConstrainedAreaMember();
+    }
+
+    @Override
+    public boolean isConstrainedAreaEdge() {
+        return dual.isConstrainedAreaEdge();
+    }
+
+    @Override
+    public void setConstrainedAreaMemberFlag() {
+        dual.index |= CONSTRAINT_AREA_FLAG | CONSTRAINT_AREA_BASE_FLAG;
+    }
+
+
+    public boolean isConstraintAreaOnThisSide() {
+        return (dual.index & CONSTRAINT_AREA_BASE_FLAG) != 0;
+    }
+
+    @Override
+    public Iterable<IQuadEdge> pinwheel() {
+        return new QuadEdgePinwheel(this);
+    }
 }

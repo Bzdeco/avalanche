@@ -41,16 +41,17 @@ public class LasRecordFilterByFirstReturn implements ILasRecordFilter {
      * Constructs a filter that accepts only records with the
      * return number set to 1.
      */
-    public LasRecordFilterByFirstReturn( ){
-      // empty constructor
+    public LasRecordFilterByFirstReturn() {
+        // empty constructor
     }
+
     @Override
     public boolean accept(LasPoint record) {
-       // on the theory that withheld records are relatively uncommon
+        // on the theory that withheld records are relatively uncommon
         // test on the return number first
-       if(record.returnNumber == 1){
-           return record.withheld^=true;
-       }
-       return false;
+        if (record.returnNumber == 1) {
+            return record.withheld ^= true;
+        }
+        return false;
     }
 }

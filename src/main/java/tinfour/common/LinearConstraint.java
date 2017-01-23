@@ -43,83 +43,84 @@ import java.util.List;
  */
 public class LinearConstraint implements IConstraint {
 
-  private final List<Vertex> list = new ArrayList<>();
-  private final Rectangle2D bounds = new Rectangle2D.Double();
-  private double x = Double.NaN;
-  private double y = Double.NaN;
-  private Object applicationData;
-  private int constraintIndex;
+    private final List<Vertex> list = new ArrayList<>();
+    private final Rectangle2D bounds = new Rectangle2D.Double();
+    private double x = Double.NaN;
+    private double y = Double.NaN;
+    private Object applicationData;
+    private int constraintIndex;
 
-  @Override
-  public List<Vertex> getVertices() {
-    return list;
-  }
-
-  @Override
-  public void add(Vertex v) {
-    if (v.getX() == x && v.getY() == y) {
-      return;  // ignore duplicate points
+    @Override
+    public List<Vertex> getVertices() {
+        return list;
     }
-    v.setConstraintMember(true);
-    x = v.getX();
-    y = v.getY();
-    list.add(v);
-    bounds.add(v.getX(), v.getY());
-  }
 
-  @Override
-  public Rectangle2D getBounds() {
-    return bounds;
-
-  }
-
-  @Override
-  public void complete() {
-    // at this time, do nothing
-  }
-
-  @Override
-  public void setApplicationData(Object applicationData) {
-    this.applicationData = applicationData;
-  }
-
-  @Override
-  public Object getApplicationData() {
-    return applicationData;
-  }
-
-  @Override
-  public boolean isPolygon() {
-    return false;
-  }
-
-  @Override
-  public void setDefinesDataArea(boolean definesDataArea) {
-    if(definesDataArea){
-    throw new IllegalArgumentException(
-      "A non-polygon constraint cannot define a data area.");
+    @Override
+    public void add(Vertex v) {
+        if (v.getX() == x && v.getY() == y) {
+            return;  // ignore duplicate points
+        }
+        v.setConstraintMember(true);
+        x = v.getX();
+        y = v.getY();
+        list.add(v);
+        bounds.add(v.getX(), v.getY());
     }
-  }
 
-  /**
-   * Indicates whether the constraint defines a data area.
-   * Because linear constraints cannot define an area, this method
-   * always returns false.
-   * @return always false for linear constraints.
-   */
-  @Override
-  public boolean definesDataArea() {
-     return false;
-  }
+    @Override
+    public Rectangle2D getBounds() {
+        return bounds;
 
-  @Override
-  public void setConstraintIndex(int index) {
-     constraintIndex = index;
-  }
+    }
 
-  @Override
-  public int getConstraintIndex() {
-    return constraintIndex;
-  }
+    @Override
+    public void complete() {
+        // at this time, do nothing
+    }
+
+    @Override
+    public Object getApplicationData() {
+        return applicationData;
+    }
+
+    @Override
+    public void setApplicationData(Object applicationData) {
+        this.applicationData = applicationData;
+    }
+
+    @Override
+    public boolean isPolygon() {
+        return false;
+    }
+
+    @Override
+    public void setDefinesDataArea(boolean definesDataArea) {
+        if (definesDataArea) {
+            throw new IllegalArgumentException(
+                    "A non-polygon constraint cannot define a data area.");
+        }
+    }
+
+    /**
+     * Indicates whether the constraint defines a data area.
+     * Because linear constraints cannot define an area, this method
+     * always returns false.
+     *
+     * @return always false for linear constraints.
+     */
+    @Override
+    public boolean definesDataArea() {
+        return false;
+    }
+
+    @Override
+    public int getConstraintIndex() {
+        return constraintIndex;
+    }
+
+    @Override
+    public void setConstraintIndex(int index) {
+        constraintIndex = index;
+    }
 
 }

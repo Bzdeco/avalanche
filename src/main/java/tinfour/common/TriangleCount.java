@@ -35,124 +35,122 @@ package tinfour.common;
  */
 public class TriangleCount {
 
-  private int count;
-  private double sumArea;
-  private double sumArea2;
-  private double minArea = Double.POSITIVE_INFINITY;
-  private double maxArea = Double.NEGATIVE_INFINITY;
+    private final GeometricOperations geoOp;
+    private int count;
+    private double sumArea;
+    private double sumArea2;
+    private double minArea = Double.POSITIVE_INFINITY;
+    private double maxArea = Double.NEGATIVE_INFINITY;
+    private double c;  // compensator for Kahan summation for area
+    private double c2; // compensator for Kahan summation for area squared
 
-  private double c;  // compensator for Kahan summation for area
-  private double c2; // compensator for Kahan summation for area squared
-  private final GeometricOperations geoOp;
-
-  /**
-   * Create an instance for tabulating a survey of
-   * the triangles in an Incremental TIN
-   */
-  public TriangleCount() {
-     geoOp = new GeometricOperations();
-  }
-
-  /**
-   * Compute area for the triangle specified by the vertex arguments and
-   * add it to the triangle count and area summations.
-   *
-   * @param vA the initial vertex, given in counterclockwise order
-   * @param vB the second vertex, given in counterclockwise order
-   * @param vC the third vertex, given in counterclockwise order
-   */
-  public void tabulateTriangle(Vertex vA, Vertex vB, Vertex vC) {
-    // compute the area and tabulate using the Kahan Summation Algorithm
-
-    count++;
-    double a, y, t;
-    a = geoOp.area(vA, vB, vC);
-
-    y = a - c;
-    t = sumArea + y;
-    c = (t - sumArea) - y;
-    sumArea = t;
-
-    y = a * a - c2;
-    t = sumArea2 + y;
-    c2 = (t - sumArea2) - y;
-    sumArea2 = t;
-
-    if (a < minArea) {
-      minArea = a;
+    /**
+     * Create an instance for tabulating a survey of
+     * the triangles in an Incremental TIN
+     */
+    public TriangleCount() {
+        geoOp = new GeometricOperations();
     }
-    if (a > maxArea) {
-      maxArea = a;
+
+    /**
+     * Compute area for the triangle specified by the vertex arguments and
+     * add it to the triangle count and area summations.
+     *
+     * @param vA the initial vertex, given in counterclockwise order
+     * @param vB the second vertex, given in counterclockwise order
+     * @param vC the third vertex, given in counterclockwise order
+     */
+    public void tabulateTriangle(Vertex vA, Vertex vB, Vertex vC) {
+        // compute the area and tabulate using the Kahan Summation Algorithm
+
+        count++;
+        double a, y, t;
+        a = geoOp.area(vA, vB, vC);
+
+        y = a - c;
+        t = sumArea + y;
+        c = (t - sumArea) - y;
+        sumArea = t;
+
+        y = a * a - c2;
+        t = sumArea2 + y;
+        c2 = (t - sumArea2) - y;
+        sumArea2 = t;
+
+        if (a < minArea) {
+            minArea = a;
+        }
+        if (a > maxArea) {
+            maxArea = a;
+        }
     }
-  }
 
-  /**
-   * Get the number of triangles in the TIN.
-   *
-   * @return a integer value of 1 or more (zero if TIN is undefined).
-   */
-  public int getCount() {
-    return count;
-  }
-
-  /**
-   * Gets the sum of the area of all triangles in the TIN.
-   *
-   * @return if the triangle count is greater than zero,
-   * a positive floating point value
-   *
-   */
-  public double getAreaSum() {
-    return sumArea;
-  }
-
-  /**
-   * Get the mean area of the triangles in the TIN.
-   *
-   * @return if the triangle count is greater than zero,
-   * a positive floating point value
-   */
-  public double getAreaMean() {
-    if (count == 0) {
-      return 0;
+    /**
+     * Get the number of triangles in the TIN.
+     *
+     * @return a integer value of 1 or more (zero if TIN is undefined).
+     */
+    public int getCount() {
+        return count;
     }
-    return sumArea / count;
-  }
 
-  /**
-   * Gets the standard deviation of the triangles in the TIN.
-   *
-   * @return if the triangle count is greater than one,
-   * a positive floating point value
-   */
-  public double getAreaStandardDeviation() {
-    if (count < 2) {
-      return 0;
+    /**
+     * Gets the sum of the area of all triangles in the TIN.
+     *
+     * @return if the triangle count is greater than zero,
+     * a positive floating point value
+     */
+    public double getAreaSum() {
+        return sumArea;
     }
-    double n = count; // use double to avoid int overflow
-    double s = n * sumArea2 - sumArea * sumArea;
-    double t = n * (n - 1);
-    return Math.sqrt(s / t);
-  }
 
-  /**
-   * Gets the minimum area of the triangles in the TIN.
-   *
-   * @return if the triangle count is greater than zero,
-   * a positive floating point value
-   */
-  public double getAreaMin() {
-    return minArea;
-  }
+    /**
+     * Get the mean area of the triangles in the TIN.
+     *
+     * @return if the triangle count is greater than zero,
+     * a positive floating point value
+     */
+    public double getAreaMean() {
+        if (count == 0) {
+            return 0;
+        }
+        return sumArea / count;
+    }
 
-  /**
-   * Gets the maximum area of the triangles in the TIN.
-   *
-   * @return if the triangle count is greater than zero,
-   * a positive floating point value
-   */
-  public double getAreaMax() {
-    return maxArea;
-  }
+    /**
+     * Gets the standard deviation of the triangles in the TIN.
+     *
+     * @return if the triangle count is greater than one,
+     * a positive floating point value
+     */
+    public double getAreaStandardDeviation() {
+        if (count < 2) {
+            return 0;
+        }
+        double n = count; // use double to avoid int overflow
+        double s = n * sumArea2 - sumArea * sumArea;
+        double t = n * (n - 1);
+        return Math.sqrt(s / t);
+    }
+
+    /**
+     * Gets the minimum area of the triangles in the TIN.
+     *
+     * @return if the triangle count is greater than zero,
+     * a positive floating point value
+     */
+    public double getAreaMin() {
+        return minArea;
+    }
+
+    /**
+     * Gets the maximum area of the triangles in the TIN.
+     *
+     * @return if the triangle count is greater than zero,
+     * a positive floating point value
+     */
+    public double getAreaMax() {
+        return maxArea;
+    }
 
 }

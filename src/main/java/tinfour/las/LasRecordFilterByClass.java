@@ -41,19 +41,21 @@ public class LasRecordFilterByClass implements ILasRecordFilter {
     /**
      * Construction a filter that accepts only records with the
      * specified classification.
+     *
      * @param classification a value in the range 0 to 255 (values in
-     * the range 0 to 16 are the most common).
+     *                       the range 0 to 16 are the most common).
      */
-    public LasRecordFilterByClass(int classification){
+    public LasRecordFilterByClass(int classification) {
         this.classification = classification;
     }
+
     @Override
     public boolean accept(LasPoint record) {
-       // on the theory that withheld records are relatively uncommon
+        // on the theory that withheld records are relatively uncommon
         // test on classification first
-       if(record.classification == classification){
-           return record.withheld^=true;
-       }
-       return false;
+        if (record.classification == classification) {
+            return record.withheld ^= true;
+        }
+        return false;
     }
 }

@@ -93,12 +93,12 @@ public class Controller {
         fileChooser.setTitle("Wybierz plik modelu terenu");
         File f = fileChooser.showOpenDialog(null);
 
-        if(f != null && f.exists()) {
+        if (f != null && f.exists()) {
             String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
 
             Task<float[][][]> makeTerrain = null;
-            if(extension.equals("las")) makeTerrain = loadFromLas(f);
-            else if(extension.equals("ser")) makeTerrain = loadFromSer(f);
+            if (extension.equals("las")) makeTerrain = loadFromLas(f);
+            else if (extension.equals("ser")) makeTerrain = loadFromSer(f);
 
             executor.execute(makeTerrain);
             terrain.dataProperty().bind(makeTerrain.valueProperty());
@@ -157,6 +157,7 @@ public class Controller {
             layersRoot.getChildren().add(layerItem);
         }
 
+        //noinspection unchecked
         layerSelector.setRoot(layersRoot);
     }
 
@@ -182,18 +183,18 @@ public class Controller {
                 .build());
 
         curvature = new MultiGridLayer("Krzywizna terenu", TerrainProps.PROFCURV, ColorRamp.create()
-                .step(-1    ,   0,   0, 255, 255)
-                .step(-0.01f,   0, 255, 255, 255)
-                .step(0     ,   0, 255,   0, 255)
-                .step(0.01f , 255, 255,   0, 255)
-                .step(1     , 255,   0,   0, 255)
+                .step(-1, 0, 0, 255, 255)
+                .step(-0.01f, 0, 255, 255, 255)
+                .step(0, 0, 255, 0, 255)
+                .step(0.01f, 255, 255, 0, 255)
+                .step(1, 255, 0, 0, 255)
                 .build());
 
         risk = new MultiGridLayer("Ryzyko lawinowe", RiskProps.RISK, ColorRamp.create()
-                .step(0,   0, 255,   0, 255)
-                .step(2, 255, 255,   0, 255)
-                .step(4, 255,   0,   0, 255)
-                .step(5, 127,   0,  63, 255)
+                .step(0, 0, 255, 0, 255)
+                .step(2, 255, 255, 0, 255)
+                .step(4, 255, 0, 0, 255)
+                .step(5, 127, 0, 63, 255)
                 .build());
 
         vp.registerLayer(risk);
@@ -208,19 +209,16 @@ public class Controller {
         WeatherConnector con = new WeatherConnector(tableView);
         LocalDate now = LocalDate.now(), wago = now.minus(1, ChronoUnit.WEEKS);
 
-        EventStreams.changesOf(fromDate.valueProperty()).subscribe(val -> {
-            con.buildData(val.getNewValue(), toDate.getValue());
-        });
+        EventStreams.changesOf(fromDate.valueProperty()).subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
 
-        EventStreams.changesOf(toDate.valueProperty()).subscribe(val -> {
-            con.buildData(fromDate.getValue(), val.getNewValue());
-        });
+        EventStreams.changesOf(toDate.valueProperty()).subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
 
         fromDate.setValue(wago);
         toDate.setValue(now);
 
+        //noinspection unchecked
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            WeatherDto w = new WeatherDto.Builder().build((ObservableList<String>) newValue);
+            @SuppressWarnings("unchecked") WeatherDto w = new WeatherDto.Builder().build((ObservableList<String>) newValue);
             calculateRisk.setWeather(w);
             calculateRisk.restart();
         });
@@ -262,7 +260,7 @@ public class Controller {
 
         File file = fileChooser.showSaveDialog(null);
 
-        if(file != null){
+        if (file != null) {
             executor.execute(new SaveSer(file, terrain.getData()));
         }
     }

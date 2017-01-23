@@ -4,9 +4,9 @@ import backend.rasterizer.GridTin;
 import javafx.concurrent.Task;
 import tinfour.common.IMonitorWithCancellation;
 import tinfour.common.Vertex;
+import tinfour.semivirtual.SemiVirtualIncrementalTin;
 import tinfour.testutils.GridSpecification;
 import tinfour.testutils.VertexLoader;
-import tinfour.semivirtual.SemiVirtualIncrementalTin;
 
 import java.io.File;
 import java.util.List;
@@ -30,7 +30,8 @@ public class LasTin extends Task<GridTin> {
         }
 
         @Override
-        public void reportDone() {}
+        public void reportDone() {
+        }
 
         @Override
         public void postMessage(String message) {
@@ -38,7 +39,9 @@ public class LasTin extends Task<GridTin> {
         }
 
         @Override
-        public boolean isCanceled() { return LasTin.this.isCancelled(); }
+        public boolean isCanceled() {
+            return LasTin.this.isCancelled();
+        }
     };
 
     public LasTin(File lasfile) {

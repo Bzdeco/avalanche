@@ -67,7 +67,8 @@ public class WeatherDto {
 
         private Short snowLevel = null;   //cm
 
-        public Builder(){}
+        public Builder() {
+        }
 
         public Builder time(String val) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -119,31 +119,30 @@ class SemiVirtualDevillersEar {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(48);
-        sb.append("ear v[]=");
-        sb.append((v0 == null ? "null," : v0.getIndex() + ","));
-        sb.append((v1 == null ? "null," : v1.getIndex() + ","));
-        sb.append((v2 == null ? "null," : v2.getIndex() + " "));
-        sb.append("     ");
-        sb.append("index=").append(Integer.toString(index));
-        sb.append(",  score=");
-        sb.append(Double.toString(score));
-        return sb.toString();
+        String sb = "ear v[]=" +
+                (v0 == null ? "null," : v0.getIndex() + ",") +
+                (v1 == null ? "null," : v1.getIndex() + ",") +
+                (v2 == null ? "null," : v2.getIndex() + " ") +
+                "     " +
+                "index=" + Integer.toString(index) +
+                ",  score=" +
+                Double.toString(score);
+        return sb;
     }
 
-  @SuppressWarnings("PMD.CompareObjectsWithEquals")
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof SemiVirtualDevillersEar) {
-      return (o == this);
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof SemiVirtualDevillersEar) {
+            return (o == this);
+        }
+        return false;
     }
-    return false;
-  }
 
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 89 * hash + this.index;
-    return hash;
-  }
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + this.index;
+        return hash;
+    }
 }

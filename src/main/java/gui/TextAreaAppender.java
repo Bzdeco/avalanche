@@ -40,8 +40,42 @@ public final class TextAreaAppender extends AbstractAppender {
 
 
     private TextAreaAppender(String name, Filter filter,
-                               Layout<? extends Serializable> layout) {
+                             Layout<? extends Serializable> layout) {
         super(name, filter, layout, true);
+    }
+
+    /**
+     * Factory method. Log4j will parse the configuration and call this factory
+     * method to construct the appender with
+     * the configured attributes.
+     *
+     * @param name   Name of appender
+     * @param layout Log layout of appender
+     * @param filter Filter for appender
+     * @return The TextAreaAppender
+     */
+    @PluginFactory
+    public static TextAreaAppender createAppender(
+            @PluginAttribute("name") String name,
+            @PluginElement("Layout") Layout<? extends Serializable> layout,
+            @PluginElement("Filter") final Filter filter) {
+        if (name == null) {
+            LOGGER.error("No name provided for TextAreaAppender");
+            return null;
+        }
+        if (layout == null) {
+            layout = PatternLayout.createDefaultLayout();
+        }
+        return new TextAreaAppender(name, filter, layout);
+    }
+
+    /**
+     * Set TextArea to append
+     *
+     * @param textArea TextArea to append
+     */
+    public static void setTextArea(TextArea textArea) {
+        TextAreaAppender.textArea = textArea;
     }
 
     /**
@@ -79,40 +113,5 @@ public final class TextAreaAppender extends AbstractAppender {
         } finally {
             readLock.unlock();
         }
-    }
-
-    /**
-     * Factory method. Log4j will parse the configuration and call this factory
-     * method to construct the appender with
-     * the configured attributes.
-     *
-     * @param name   Name of appender
-     * @param layout Log layout of appender
-     * @param filter Filter for appender
-     * @return The TextAreaAppender
-     */
-    @PluginFactory
-    public static TextAreaAppender createAppender(
-            @PluginAttribute("name") String name,
-            @PluginElement("Layout") Layout<? extends Serializable> layout,
-            @PluginElement("Filter") final Filter filter) {
-        if (name == null) {
-            LOGGER.error("No name provided for TextAreaAppender");
-            return null;
-        }
-        if (layout == null) {
-            layout = PatternLayout.createDefaultLayout();
-        }
-        return new TextAreaAppender(name, filter, layout);
-    }
-
-
-    /**
-     * Set TextArea to append
-     *
-     * @param textArea TextArea to append
-     */
-    public static void setTextArea(TextArea textArea) {
-        TextAreaAppender.textArea = textArea;
     }
 }

@@ -15,17 +15,17 @@
  */
 
 
-/**
- * -----------------------------------------------------------------------
- *
- * Revision History:
- * Date     Name         Description
- * ------   ---------    -------------------------------------------------
- * 11/2014  G. Lucas     Created
- *
- * Notes:
- *
- * -----------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------
+
+  Revision History:
+  Date     Name         Description
+  ------   ---------    -------------------------------------------------
+  11/2014  G. Lucas     Created
+
+  Notes:
+
+  -----------------------------------------------------------------------
  */
 
 package tinfour.gwr;
@@ -35,10 +35,10 @@ package tinfour.gwr;
  * Weighted Regression.
  */
 public enum BandwidthSelectionMethod {
-    /**
-     * Perform GWR using a specified bandwidth given in the same
-     * units as the horizontal coordinate system.
-     *//**
+    /*
+      Perform GWR using a specified bandwidth given in the same
+      units as the horizontal coordinate system.
+     */ /**
      * Perform GWR using a specified bandwidth given in the same
      * units as the horizontal coordinate system.
      */
@@ -69,6 +69,6 @@ public enum BandwidthSelectionMethod {
      * software development purposes. The computation used for OLS is
      * inefficient compared to conventional implementations.
      */
-    OrdinaryLeastSquares;
+    OrdinaryLeastSquares
 
 }

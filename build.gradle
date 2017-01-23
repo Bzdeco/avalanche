@@ -5,6 +5,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin"
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
 
 repositories {
@@ -35,4 +36,5 @@ run {
     jvmArgs = ['-ea', '-Xmx2048m']
 }
 
+//noinspection GroovyUnusedAssignment
 mainClassName = 'gui.Main'

@@ -35,155 +35,169 @@ package tinfour.common;
  */
 public interface IQuadEdge {
 
-  /**
-   * Gets the initial vertex for this edge.
-   * @return a valid reference.
-   */
-  Vertex getA();
-
-  /**
-   * Gets the second vertex for this edge.
-   * @return a valid reference or a null for a ghost edge.
-   */
-  Vertex getB();
-
-  /**
-   * Gets the reference to the side-zero edge of the pair.
-   * @return a link to the side-zero edge of the pair.
-   */
-  IQuadEdge getBaseReference();
-
-  /**
-   * Gets the dual edge to this instance.
-   * @return a valid edge.
-   */
-  IQuadEdge getDual();
-
-  /**
-   * Gets the forward reference of the dual.
-   * @return a valid reference
-   */
-  IQuadEdge getForwardFromDual();
-
-  /**
-   * Gets the reverse link of the dual.
-   * @return a valid reference
-   */
-  IQuadEdge getReverseFromDual();
-
-
-
-  /**
-   * Gets the index value for this edge.
-   * @return an integer value
-   */
-  int getIndex();
+    /**
+     * Gets the initial vertex for this edge.
+     *
+     * @return a valid reference.
+     */
+    Vertex getA();
 
     /**
-   * Indicates which side of an edge a particular IQuadEdge instance is
-   * attached to. The side value is a strictly arbitrary index used for
-   * algorithms that need to be able to assign a unique index to
-   * both sides of an edge.
-   *
-   * @return a value of 0 or 1.
-   */
-  public int getSide();
+     * Gets the second vertex for this edge.
+     *
+     * @return a valid reference or a null for a ghost edge.
+     */
+    Vertex getB();
 
-  /**
-   * Gets the length of the edge.
-   * @return a positive floating point value
-   */
-  double getLength();
+    /**
+     * Gets the reference to the side-zero edge of the pair.
+     *
+     * @return a link to the side-zero edge of the pair.
+     */
+    IQuadEdge getBaseReference();
 
-  /**
-   * Gets the forward reference of the edge.
-   * @return a valid reference.
-   */
-  IQuadEdge getForward();
+    /**
+     * Gets the dual edge to this instance.
+     *
+     * @return a valid edge.
+     */
+    IQuadEdge getDual();
 
-  /**
-   * Gets the reverse reference of the edge.
-   * @return a valid reference.
-   */
-  IQuadEdge getReverse();
+    /**
+     * Gets the forward reference of the dual.
+     *
+     * @return a valid reference
+     */
+    IQuadEdge getForwardFromDual();
 
-  /**
-   * Gets the dual of the reverse reference of the edge.
-   * @return a valid reference.
-   */
-  IQuadEdge getDualFromReverse();
-
-  /**
-   * Gets the index of the constraint associated with this edge.
-   *
-   * @return a positive value; may be zero if not specified.
-   */
-  public int getConstraintIndex();
+    /**
+     * Gets the reverse link of the dual.
+     *
+     * @return a valid reference
+     */
+    IQuadEdge getReverseFromDual();
 
 
-   /**
-   * Sets the constraint index for this edge.  This method does not
-   * necessarily set an edge to a constrained status.  In some implementations
-   * the constraint index may be used as a way of associating ordinary edges
-   * with a neighboring constraint.
-   * Constraint index values must be positive integers. The
-   * range of supported values will depend on the specific class that
-   * implements this interface. Please refer to the class documentation
-   * for specific values.
-   *
-   * @param constraintIndex a positive number indicating which constraint
-   * a particular edge is associated with.
-   */
-  public void setConstraintIndex(int constraintIndex);
+    /**
+     * Gets the index value for this edge.
+     *
+     * @return an integer value
+     */
+    int getIndex();
 
-  /**
-   * Indicates whether an edge is constrained.
-   *
-   * @return true if the edge is constrained; otherwise, false.
-   */
-  public boolean isConstrained();
+    /**
+     * Indicates which side of an edge a particular IQuadEdge instance is
+     * attached to. The side value is a strictly arbitrary index used for
+     * algorithms that need to be able to assign a unique index to
+     * both sides of an edge.
+     *
+     * @return a value of 0 or 1.
+     */
+    int getSide();
+
+    /**
+     * Gets the length of the edge.
+     *
+     * @return a positive floating point value
+     */
+    double getLength();
+
+    /**
+     * Gets the forward reference of the edge.
+     *
+     * @return a valid reference.
+     */
+    IQuadEdge getForward();
+
+    /**
+     * Gets the reverse reference of the edge.
+     *
+     * @return a valid reference.
+     */
+    IQuadEdge getReverse();
+
+    /**
+     * Gets the dual of the reverse reference of the edge.
+     *
+     * @return a valid reference.
+     */
+    IQuadEdge getDualFromReverse();
+
+    /**
+     * Gets the index of the constraint associated with this edge.
+     *
+     * @return a positive value; may be zero if not specified.
+     */
+    int getConstraintIndex();
 
 
-  /**
-   * Sets an edge as constrained and sets its constraint index. Note that
-   * once an edge is constrained, it cannot be set to a non-constrained
-   * status.  Constraint index values must be positive integers. The
-   * range of supported values will depend on the specific class that
-   * implements this interface. Please refer to the class documentation
-   * for specific values.
-   * @param  constraintIndex positive number indicating which constraint
-   * a particular edge is associated with.
-   */
-  public void setConstrained(int constraintIndex);
+    /**
+     * Sets the constraint index for this edge.  This method does not
+     * necessarily set an edge to a constrained status.  In some implementations
+     * the constraint index may be used as a way of associating ordinary edges
+     * with a neighboring constraint.
+     * Constraint index values must be positive integers. The
+     * range of supported values will depend on the specific class that
+     * implements this interface. Please refer to the class documentation
+     * for specific values.
+     *
+     * @param constraintIndex a positive number indicating which constraint
+     *                        a particular edge is associated with.
+     */
+    void setConstraintIndex(int constraintIndex);
 
-  /**
-   * Indicates whether the edge is a member of a constrained area.
-   * @return true if the constraint is a member of an area; otherwise false.
-   */
-  public boolean isConstrainedAreaMember();
-
-  /**
-   * Indicates whether an edge is constrained and a member of a
-   * constraint which defines the data area.
-   * @return true if the edge is the boundary of the data area;
-   * otherwise, false.
-   */
-  public boolean isConstrainedAreaEdge();
+    /**
+     * Indicates whether an edge is constrained.
+     *
+     * @return true if the edge is constrained; otherwise, false.
+     */
+    boolean isConstrained();
 
 
-  /**
-   * Sets the constrained area membership flag for the edge to true.
-   */
-  public void setConstrainedAreaMemberFlag( );
+    /**
+     * Sets an edge as constrained and sets its constraint index. Note that
+     * once an edge is constrained, it cannot be set to a non-constrained
+     * status.  Constraint index values must be positive integers. The
+     * range of supported values will depend on the specific class that
+     * implements this interface. Please refer to the class documentation
+     * for specific values.
+     *
+     * @param constraintIndex positive number indicating which constraint
+     *                        a particular edge is associated with.
+     */
+    void setConstrained(int constraintIndex);
 
-  /**
-   * Gets an instance of an iterable that performs a pinwheel operation.
-   * This instance may be used in a Java for statement
-   * <code>
-   *    for(IQuadEdge e: startingEdge.pinwheel()){
-   *    }
-   * </code>
-   * @return a valid Iterable.
-   */
-  public Iterable<IQuadEdge>pinwheel();
+    /**
+     * Indicates whether the edge is a member of a constrained area.
+     *
+     * @return true if the constraint is a member of an area; otherwise false.
+     */
+    boolean isConstrainedAreaMember();
+
+    /**
+     * Indicates whether an edge is constrained and a member of a
+     * constraint which defines the data area.
+     *
+     * @return true if the edge is the boundary of the data area;
+     * otherwise, false.
+     */
+    boolean isConstrainedAreaEdge();
+
+
+    /**
+     * Sets the constrained area membership flag for the edge to true.
+     */
+    void setConstrainedAreaMemberFlag();
+
+    /**
+     * Gets an instance of an iterable that performs a pinwheel operation.
+     * This instance may be used in a Java for statement
+     * <code>
+     * for(IQuadEdge e: startingEdge.pinwheel()){
+     * }
+     * </code>
+     *
+     * @return a valid Iterable.
+     */
+    Iterable<IQuadEdge> pinwheel();
 }

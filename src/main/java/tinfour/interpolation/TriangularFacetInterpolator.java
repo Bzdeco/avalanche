@@ -30,26 +30,20 @@
  */
 package tinfour.interpolation;
 
-import tinfour.common.IIncrementalTin;
-import tinfour.common.INeighborEdgeLocator;
-import tinfour.common.IQuadEdge;
-import tinfour.common.Thresholds;
-import tinfour.common.Vertex;
+import tinfour.common.*;
 
 /**
  * Provides interpolation based on treating the surface as a collection
  * of planar triangular facets.
  */
 public class TriangularFacetInterpolator implements IInterpolatorOverTin {
+    final IIncrementalTin tin;
+    final INeighborEdgeLocator locator;
     // tolerance for identical vertices.
     // the tolerance factor for treating closely spaced or identical vertices
     // as a single point.
     final private double vertexTolerance2; // square of vertexTolerance;
     final private double precisionThreshold;
-
-    final IIncrementalTin tin;
-    final INeighborEdgeLocator locator;
-
     private final VertexValuatorDefault defaultValuator = new VertexValuatorDefault();
 
     private double nx, ny, nz;
@@ -108,10 +102,10 @@ public class TriangularFacetInterpolator implements IInterpolatorOverTin {
      * and this method will produce a Double.NaN if the specified coordinates
      * are exterior to the TIN.
      *
-     * @param x the x coordinate for the interpolation point
-     * @param y the y coordinate for the interpolation point
+     * @param x        the x coordinate for the interpolation point
+     * @param y        the y coordinate for the interpolation point
      * @param valuator a valid valuator for interpreting the z value of each
-     * vertex or a null value to use the default.
+     *                 vertex or a null value to use the default.
      * @return if the interpolation is successful, a valid floating point
      * value; otherwise, a NaN.
      */
@@ -126,10 +120,10 @@ public class TriangularFacetInterpolator implements IInterpolatorOverTin {
             vq = defaultValuator;
         }
 
-        IQuadEdge e= locator.getNeigborEdge(x, y);
+        IQuadEdge e = locator.getNeigborEdge(x, y);
 
         if (e == null) {
-          // this should happen only when TIN is not bootstrapped
+            // this should happen only when TIN is not bootstrapped
             return Double.NaN;
         }
 
@@ -156,7 +150,7 @@ public class TriangularFacetInterpolator implements IInterpolatorOverTin {
             nz = 0;
             double px = -ay;  // the perpendicular
             double py = ax;
-            double h = (sx * px + sy * py)/Math.sqrt(ax*ax+ay*ay);
+            double h = (sx * px + sy * py) / Math.sqrt(ax * ax + ay * ay);
             if (Math.abs(h) < precisionThreshold) {
                 double t;
                 if (Math.abs(ax) > Math.abs(ay)) {
@@ -203,32 +197,33 @@ public class TriangularFacetInterpolator implements IInterpolatorOverTin {
     }
 
     @Override
-    public boolean isSurfaceNormalSupported(){
-      return true;
+    public boolean isSurfaceNormalSupported() {
+        return true;
     }
 
-  /**
-   * Gets the unit normal to the surface at the position of the most
-   * recent interpolation. The unit normal is computed based on the
-   * partial derivatives of the surface polynomial evaluated at the
-   * coordinates of the query point. Note that this method
-   * assumes that the vertical and horizontal coordinates of the
-   * input sample points are isotropic.
-   * @return if defined, a valid array of dimension 3 giving
-   * the x, y, and z components of the normal, respectively; otherwise,
-   * a zero-sized array.
-   */
+    /**
+     * Gets the unit normal to the surface at the position of the most
+     * recent interpolation. The unit normal is computed based on the
+     * partial derivatives of the surface polynomial evaluated at the
+     * coordinates of the query point. Note that this method
+     * assumes that the vertical and horizontal coordinates of the
+     * input sample points are isotropic.
+     *
+     * @return if defined, a valid array of dimension 3 giving
+     * the x, y, and z components of the normal, respectively; otherwise,
+     * a zero-sized array.
+     */
     @Override
-    public double [] getSurfaceNormal(){
-      double nS = Math.sqrt(nx*nx+ny*ny+nz*nz);
-      if(nS<1.0e-20){
-        return new double[0];
-      }
-      double []n = new double[3];
-      n[0] = nx/nS;
-      n[1] = ny/nS;
-      n[2] = nz/nS;
-      return n;
+    public double[] getSurfaceNormal() {
+        double nS = Math.sqrt(nx * nx + ny * ny + nz * nz);
+        if (nS < 1.0e-20) {
+            return new double[0];
+        }
+        double[] n = new double[3];
+        n[0] = nx / nS;
+        n[1] = ny / nS;
+        n[2] = nz / nS;
+        return n;
     }
 
 

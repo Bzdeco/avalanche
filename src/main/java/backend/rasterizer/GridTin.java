@@ -10,6 +10,11 @@ public class GridTin {
     private SemiVirtualIncrementalTin tin;
     private GridSpecification grid;
 
+    public GridTin(SemiVirtualIncrementalTin tin, GridSpecification grid) {
+        this.tin = tin;
+        this.grid = grid;
+    }
+
     public SemiVirtualIncrementalTin getTin() {
         return tin;
     }
@@ -23,11 +28,6 @@ public class GridTin {
     }
 
     public void setGrid(GridSpecification grid) {
-        this.grid = grid;
-    }
-
-    public GridTin(SemiVirtualIncrementalTin tin, GridSpecification grid) {
-        this.tin = tin;
         this.grid = grid;
     }
 }

@@ -24,14 +24,18 @@ import java.util.stream.Stream;
 public class Viewport extends Pane {
 
     private ObservableSet<EventStream<Void>> viewportChanges = FXCollections.observableSet();
+    private ArrayList<Tuple2<Layer, Canvas>> layers = new ArrayList<>();
+    private DoubleProperty width = new SimpleDoubleProperty(0);
+    private DoubleProperty height = new SimpleDoubleProperty(0);
+    private DoubleProperty zoom = new SimpleDoubleProperty(1);
+    private ObjectProperty<Point2D> pan = new SimpleObjectProperty<>(Point2D.ZERO);
 
     public Viewport() {
         viewportChanges.addAll(Stream.of(width, height, zoom, pan)
-                                     .map(EventStreams::invalidationsOf)
-                                     .collect(Collectors.toList()));
+                .map(EventStreams::invalidationsOf)
+                .collect(Collectors.toList()));
     }
 
-    private ArrayList<Tuple2<Layer, Canvas>> layers = new ArrayList<>();
     public ArrayList<Tuple2<Layer, Canvas>> getLayers() {
         return layers;
     }
@@ -47,7 +51,7 @@ public class Viewport extends Pane {
         viewportChanges.add(EventStreams.invalidationsOf(layer.isVisibleProperty()));
 
         // Fix for not invalidating size on parent component
-        if(layers.size() < 2) {
+        if (layers.size() < 2) {
             viewportChanges.add(EventStreams.invalidationsOf(layerCanvas.widthProperty()));
             viewportChanges.add(EventStreams.invalidationsOf(layerCanvas.heightProperty()));
         }
@@ -55,49 +59,52 @@ public class Viewport extends Pane {
 
     public Subscription enableRendering() {
         return EventStreams.merge(viewportChanges)
-                    .reduceSuccessions((a, b) -> a, Duration.ofMillis(10))
-                    .subscribe(__ -> render());
+                .reduceSuccessions((a, b) -> a, Duration.ofMillis(10))
+                .subscribe(__ -> render());
     }
 
     private void render() {
-        for(Tuple2<Layer, Canvas> lc : layers) {
+        for (Tuple2<Layer, Canvas> lc : layers) {
             GraphicsContext gc = lc._2.getGraphicsContext2D();
-            gc.clearRect(0,0, getWidth(), getHeight());
-            if(lc._1.isVisible() && lc._1.isReady()) lc._1.render(gc, this);
+            gc.clearRect(0, 0, getWidth(), getHeight());
+            if (lc._1.isVisible() && lc._1.isReady()) lc._1.render(gc, this);
         }
     }
 
-    private DoubleProperty width = new SimpleDoubleProperty(0);
-    private DoubleProperty height = new SimpleDoubleProperty(0);
-    private DoubleProperty zoom = new SimpleDoubleProperty(1);
+    public Point2D getPan() {
+        return pan.get();
+    }
 
-    private ObjectProperty<Point2D> pan = new SimpleObjectProperty<>(Point2D.ZERO);
+    public void setPan(Point2D pan) {
+        this.pan.set(pan);
+    }
 
-    public Point2D getPan() { return pan.get(); }
-    public ObjectProperty<Point2D> panProperty() { return pan; }
-    public void setPan(Point2D pan) { this.pan.set(pan); }
+    public ObjectProperty<Point2D> panProperty() {
+        return pan;
+    }
 
     public double getZoom() {
         return zoom.get();
-    }
-    public DoubleProperty zoomProperty() {
-        return zoom;
     }
 
     public void setZoom(double zoom) {
         this.zoom.set(zoom);
     }
 
+    public DoubleProperty zoomProperty() {
+        return zoom;
+    }
+
     @Override
     protected void layoutChildren() {
-        final int top = (int)snappedTopInset();
-        final int right = (int)snappedRightInset();
-        final int bottom = (int)snappedBottomInset();
-        final int left = (int)snappedLeftInset();
-        final int w = (int)getWidth() - left - right;
-        final int h = (int)getHeight() - top - bottom;
+        final int top = (int) snappedTopInset();
+        final int right = (int) snappedRightInset();
+        final int bottom = (int) snappedBottomInset();
+        final int left = (int) snappedLeftInset();
+        final int w = (int) getWidth() - left - right;
+        final int h = (int) getHeight() - top - bottom;
 
-        for(Tuple2<Layer, Canvas> lc : layers) {
+        for (Tuple2<Layer, Canvas> lc : layers) {
             lc._2.setLayoutX(left);
             lc._2.setLayoutY(top);
             lc._2.setWidth(w);

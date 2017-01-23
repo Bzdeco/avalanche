@@ -49,80 +49,80 @@ import java.util.List;
  */
 public class PolygonConstraint implements IConstraint {
 
-  private final List<Vertex> list = new ArrayList<>();
-  private final Rectangle2D bounds = new Rectangle2D.Double();
-  private double x = Double.NaN;
-  private double y = Double.NaN;
-  private Object applicationData;
-  private boolean dataAreaDefinition;
-  private int constraintIndex;
+    private final List<Vertex> list = new ArrayList<>();
+    private final Rectangle2D bounds = new Rectangle2D.Double();
+    private double x = Double.NaN;
+    private double y = Double.NaN;
+    private Object applicationData;
+    private boolean dataAreaDefinition;
+    private int constraintIndex;
 
-  @Override
-  public List<Vertex> getVertices() {
-    return list;
-  }
-
-  @Override
-  public void add(Vertex v) {
-    if (v.getX() == x && v.getY() == y) {
-      return;  // quiently ignore duplicate points
+    @Override
+    public List<Vertex> getVertices() {
+        return list;
     }
-    v.setConstraintMember(true);
-    x = v.getX();
-    y = v.getY();
-    list.add(v);
-    bounds.add(v.getX(), v.getY());
-  }
 
-  @Override
-  public Rectangle2D getBounds() {
-    return bounds;
-  }
-
-  @Override
-  public void complete() {
-    if (list.size() < 3) {
-      throw new IllegalStateException("Polygon contains fewer than 3 points");
+    @Override
+    public void add(Vertex v) {
+        if (v.getX() == x && v.getY() == y) {
+            return;  // quiently ignore duplicate points
+        }
+        v.setConstraintMember(true);
+        x = v.getX();
+        y = v.getY();
+        list.add(v);
+        bounds.add(v.getX(), v.getY());
     }
-    Vertex a = list.get(0);
-    Vertex b = list.get(list.size() - 1);
-    if (a.getX() != b.getX() || a.getY() != b.getY()) {
-      list.add(a);
+
+    @Override
+    public Rectangle2D getBounds() {
+        return bounds;
     }
-  }
 
-  @Override
-  public void setApplicationData(Object applicationData) {
-    this.applicationData = applicationData;
-  }
+    @Override
+    public void complete() {
+        if (list.size() < 3) {
+            throw new IllegalStateException("Polygon contains fewer than 3 points");
+        }
+        Vertex a = list.get(0);
+        Vertex b = list.get(list.size() - 1);
+        if (a.getX() != b.getX() || a.getY() != b.getY()) {
+            list.add(a);
+        }
+    }
 
-  @Override
-  public Object getApplicationData() {
-    return applicationData;
-  }
+    @Override
+    public Object getApplicationData() {
+        return applicationData;
+    }
 
-  @Override
-  public boolean isPolygon() {
-    return true;
-  }
+    @Override
+    public void setApplicationData(Object applicationData) {
+        this.applicationData = applicationData;
+    }
 
-  @Override
-  public void setDefinesDataArea(boolean definesDataArea) {
-     dataAreaDefinition = definesDataArea;
-  }
+    @Override
+    public boolean isPolygon() {
+        return true;
+    }
 
-  @Override
-  public boolean definesDataArea() {
-     return this.dataAreaDefinition;
-  }
+    @Override
+    public void setDefinesDataArea(boolean definesDataArea) {
+        dataAreaDefinition = definesDataArea;
+    }
 
-   @Override
-  public void setConstraintIndex(int index) {
-     constraintIndex = index;
-  }
+    @Override
+    public boolean definesDataArea() {
+        return this.dataAreaDefinition;
+    }
 
-  @Override
-  public int getConstraintIndex() {
-    return constraintIndex;
-  }
+    @Override
+    public int getConstraintIndex() {
+        return constraintIndex;
+    }
+
+    @Override
+    public void setConstraintIndex(int index) {
+        constraintIndex = index;
+    }
 }

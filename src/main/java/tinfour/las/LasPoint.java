@@ -45,37 +45,63 @@ package tinfour.las;
  * processed, it will be advantageous to not create persistent instances.
  */
 public class LasPoint {
-    /** The position within the file at which the record is stored */
+    /**
+     * The position within the file at which the record is stored
+     */
     public long filePosition;
-    /** The X coordinate from the record, always populated */
+    /**
+     * The X coordinate from the record, always populated
+     */
     public double x;
-    /** The Y coordinate from the record, always populated */
+    /**
+     * The Y coordinate from the record, always populated
+     */
     public double y;
-    /** The Z coordinate from the record, always populated */
+    /**
+     * The Z coordinate from the record, always populated
+     */
     public double z;
-    /** The intensity of the return at the detected point,
+    /**
+     * The intensity of the return at the detected point,
      * by convention normalized to the range 0 to 65535
      */
     public int intensity;
-    /** The return number for the point */
+    /**
+     * The return number for the point
+     */
     public int returnNumber;
-    /** The number of returns for the pulse for which the
+    /**
+     * The number of returns for the pulse for which the
      * point was detected.
      */
     public int numberOfReturns;
-    /** The one bit scan direction flag */
+    /**
+     * The one bit scan direction flag
+     */
     public int scanDirectionFlag;
-    /** Indicates whether the detection was at the edge of a flight line */
+    /**
+     * Indicates whether the detection was at the edge of a flight line
+     */
     public boolean edgeOfFlightLine;
-    /** The observation-category classification for the return */
+    /**
+     * The observation-category classification for the return
+     */
     public int classification;
-    /** Indicates that point was created by techniques other than LIDAR */
+    /**
+     * Indicates that point was created by techniques other than LIDAR
+     */
     public boolean synthetic;
-    /** Indicate point is a model key point */
+    /**
+     * Indicate point is a model key point
+     */
     public boolean keypoint;
-    /** Indicates that point should not be included in processing */
+    /**
+     * Indicates that point should not be included in processing
+     */
     public boolean withheld;
-    /** The GPS time (interpreted according to header GPS flag */
+    /**
+     * The GPS time (interpreted according to header GPS flag
+     */
     public double gpsTime;
 
 

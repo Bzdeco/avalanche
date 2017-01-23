@@ -20,7 +20,7 @@ public class Utils extends com.sun.javafx.util.Utils {
             final double yRow = yUL - iRow * cellSize;
             for (int iCol = 0; iCol < nCols; iCol++) {
                 final double xCol = iCol * cellSize + xLL;
-                row[iCol] = (float)inter.applyAsDouble(xCol, yRow);
+                row[iCol] = (float) inter.applyAsDouble(xCol, yRow);
             }
         }
 

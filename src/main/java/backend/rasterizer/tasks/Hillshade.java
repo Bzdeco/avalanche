@@ -41,9 +41,9 @@ public class Hillshade extends Task<float[][]> {
         double zSun = sinE;
 
         return Utils.gmap2f(terrain, n -> {
-            float cosTheta = (float)Math.max(0, n[TerrainProps.NORMALX] * xSun
-                                              + n[TerrainProps.NORMALY] * ySun
-                                              + n[TerrainProps.NORMALZ] * zSun);
+            float cosTheta = (float) Math.max(0, n[TerrainProps.NORMALX] * xSun
+                    + n[TerrainProps.NORMALY] * ySun
+                    + n[TerrainProps.NORMALZ] * zSun);
             return Utils.clamp(0, cosTheta * directLight + ambient, 1);
         });
     }

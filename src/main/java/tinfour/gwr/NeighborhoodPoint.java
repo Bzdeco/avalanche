@@ -15,15 +15,15 @@
  */
 
 
-/**
- * -----------------------------------------------------------------------
- *
- * Revision History:
- * Date     Name        Description
- * ------   ---------   -------------------------------------------------
- * 12/2014  G. Lucas    Created
- *
- *--------------------------------------------------------------------------
+/*
+  -----------------------------------------------------------------------
+
+  Revision History:
+  Date     Name        Description
+  ------   ---------   -------------------------------------------------
+  12/2014  G. Lucas    Created
+
+ --------------------------------------------------------------------------
  */
 
 package tinfour.gwr;
@@ -34,8 +34,7 @@ import tinfour.common.ISamplePoint;
  * Defines a data-container class for holding the results from neighboring point
  * analysis operations.
  */
-public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodPoint>
-{
+public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodPoint> {
 
     double distance;
     ISamplePoint point;
@@ -45,8 +44,7 @@ public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodP
      *
      * @return a valid floating-point value
      */
-    public double getDistance()
-    {
+    public double getDistance() {
         return distance;
     }
 
@@ -55,8 +53,7 @@ public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodP
      *
      * @return a valid reference
      */
-    public ISamplePoint getPoint()
-    {
+    public ISamplePoint getPoint() {
         return point;
     }
 
@@ -65,12 +62,11 @@ public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodP
      * its distance to a specified coordinate pair.
      *
      * @param point a valid reference
-     * @param x the X coordinate of the comparison point
-     * @param y the Y coordinate of the comparison point
+     * @param x     the X coordinate of the comparison point
+     * @param y     the Y coordinate of the comparison point
      * @return the computed distance from the point to the comparison point
      */
-    double computeAndSetValues(ISamplePoint point, double x, double y)
-    {
+    double computeAndSetValues(ISamplePoint point, double x, double y) {
         this.point = point;
         double dx = x - point.getX();
         double dy = y - point.getY();
@@ -81,24 +77,22 @@ public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodP
     /**
      * Set the point and distance elements for this instance.
      *
-     * @param point a valid reference
+     * @param point    a valid reference
      * @param distance a valid, positive floating-point value.
      */
-    void setPointAndDistance(ISamplePoint point, double distance)
-    {
+    void setPointAndDistance(ISamplePoint point, double distance) {
         this.point = point;
         this.distance = distance;
     }
 
     @Override
-    public int compareTo(NeighborhoodPoint o)
-    {
+    public int compareTo(NeighborhoodPoint o) {
         return Double.compare(distance, o.distance);
     }
 
     @Override
     public double getX() {
-       return point.getX();
+        return point.getX();
     }
 
     @Override
@@ -108,12 +102,12 @@ public class NeighborhoodPoint implements ISamplePoint, Comparable<NeighborhoodP
 
     @Override
     public double getZ() {
-         return point.getZ();
+        return point.getZ();
     }
 
     @Override
     public double getDistanceSq(double x, double y) {
-        return distance*distance;
+        return distance * distance;
     }
 
 }

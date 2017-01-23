@@ -47,52 +47,42 @@ public class GeoTiffData {
      */
     public static final int GeoDoubleParamsTag = 34736;
     /**
-     * The code tag for a TIFF directory containing ASCII string parameters for
-     * the GeoTIFF specification
-     */
-    private static final int GeoAsciiParamsTag = 34737;
-
-    /**
      * Key code for the GtModelTypeGeoKey specification
      */
     public static final int GtModelTypeGeoKey = 1024;
-
     /**
      * Key code for the GeoCitationGeoKey specification
      */
     public static final int GeoCitationGeoKey = 2049;
-
-        /**
+    /**
      * Key code for the PCSCitationGeoKey specification
      */
     public static final int PCSCitationGeoKey = 3073;
-
-
     /**
      * Key code for the ProjLinearUnitsGeoKey specification
      */
     public static final int ProjLinearUnitsGeoKey = 3076;
-
     /**
      * Key code for the VerticalLinearUnitsGeoKey specification
      */
-  public static final int VerticalUnitsGeoKey = 4099;
-
-  /**
-   * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
-   */
-  public static final int LinearUnitCodeMeter = 9001;
-
-  /**
-   * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
-   */
-  public static final int LinearUnitCodeFeet = 9002;
-
+    public static final int VerticalUnitsGeoKey = 4099;
     /**
-   * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
-   */
-  public static final int LinearUnitCodeFeetUS = 9003;
-
+     * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
+     */
+    public static final int LinearUnitCodeMeter = 9001;
+    /**
+     * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
+     */
+    public static final int LinearUnitCodeFeet = 9002;
+    /**
+     * Linear Unit Code for feet, from GeoTiff spec 6.3.1.3
+     */
+    public static final int LinearUnitCodeFeetUS = 9003;
+    /**
+     * The code tag for a TIFF directory containing ASCII string parameters for
+     * the GeoTIFF specification
+     */
+    private static final int GeoAsciiParamsTag = 34737;
     private final List<GeoTiffKey> keyList;
     private final HashMap<Integer, GeoTiffKey> keyMap;
     private final double[] doubleData;
@@ -117,6 +107,7 @@ public class GeoTiffData {
      * for the specified key code. This method does not indicate whether
      * the specified code is a valid value, only whether it is
      * available in the data set.
+     *
      * @param keyCode an integer key code
      * @return true if the collection includes an entry for the code,
      * otherwise false.
@@ -132,7 +123,7 @@ public class GeoTiffData {
      * @return a positive integer value in the range 0 to 65535 (the range of an
      * unsigned short integer)
      * @throws IOException in the event of a TIFF format exception
-     * or the key code is not found.
+     *                     or the key code is not found.
      */
     public int getInteger(int keyCode) throws IOException {
         GeoTiffKey key = keyMap.get(keyCode);
@@ -196,10 +187,11 @@ public class GeoTiffData {
 
     /**
      * Gets a list of the keys defined by this GeoTiffData collection
+     *
      * @return a safe copy of the key list from this collection.
      */
-    public List<GeoTiffKey>getKeyList(){
-        List<GeoTiffKey>list = new ArrayList<>(keyList.size());
+    public List<GeoTiffKey> getKeyList() {
+        List<GeoTiffKey> list = new ArrayList<>(keyList.size());
         list.addAll(keyList);
         return list;
     }

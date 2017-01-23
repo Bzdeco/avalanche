@@ -30,8 +30,9 @@
 
 package tinfour.semivirtual;
 
-import java.util.Iterator;
 import tinfour.common.IQuadEdge;
+
+import java.util.Iterator;
 
 /**
  * Provides an implementation of the pinwheel operation
@@ -39,39 +40,39 @@ import tinfour.common.IQuadEdge;
  */
 class SemiVirtualPinwheel implements Iterable<IQuadEdge>, Iterator<IQuadEdge> {
 
-  final IQuadEdge e0;
-  IQuadEdge n;
-  boolean hasNext;
+    final IQuadEdge e0;
+    IQuadEdge n;
+    boolean hasNext;
 
-  SemiVirtualPinwheel(IQuadEdge e0){
-    this.e0 = e0;
-    n = e0;
-    hasNext = true;
+    SemiVirtualPinwheel(IQuadEdge e0) {
+        this.e0 = e0;
+        n = e0;
+        hasNext = true;
 
-  }
+    }
 
-  @Override
-  public Iterator<IQuadEdge> iterator() {
-    return this;
-  }
+    @Override
+    public Iterator<IQuadEdge> iterator() {
+        return this;
+    }
 
-  @Override
-  public boolean hasNext() {
-     return hasNext;
-  }
+    @Override
+    public boolean hasNext() {
+        return hasNext;
+    }
 
-  @Override
-  public IQuadEdge next() {
-     IQuadEdge e = n;
-     n = e.getDualFromReverse();
-     hasNext = !n.equals(e0);
-     return e;
-  }
+    @Override
+    public IQuadEdge next() {
+        IQuadEdge e = n;
+        n = e.getDualFromReverse();
+        hasNext = !n.equals(e0);
+        return e;
+    }
 
-  @Override
-  public void remove(){
-    throw new UnsupportedOperationException(
-      "Remove is not supported for IQuadEdge iterators");
-  }
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException(
+                "Remove is not supported for IQuadEdge iterators");
+    }
 
 }

@@ -33,8 +33,7 @@ package tinfour.common;
  * Provides a minimal set of data elements for the result of a neighbor-edge
  * location operation.
  */
-public class NeighborEdgeVertex
-{
+public class NeighborEdgeVertex {
 
     final IQuadEdge edge;
     final double x;
@@ -45,16 +44,15 @@ public class NeighborEdgeVertex
     /**
      * Standard constructor.
      *
-     * @param edge the edge that starts with the vertex nearest (x,y)
-     * @param d the distance of the vertex to (x,y)
-     * @param x the X coordinate for the query point
-     * @param y the Y coordinate for the query point
+     * @param edge     the edge that starts with the vertex nearest (x,y)
+     * @param d        the distance of the vertex to (x,y)
+     * @param x        the X coordinate for the query point
+     * @param y        the Y coordinate for the query point
      * @param interior indicates that the query point is inside the TIN
-     * boundary,
+     *                 boundary,
      */
     public NeighborEdgeVertex(
-            IQuadEdge edge, double d, double x, double y, boolean interior)
-    {
+            IQuadEdge edge, double d, double x, double y, boolean interior) {
         this.edge = edge;
         this.d = d;
         this.x = x;
@@ -72,8 +70,7 @@ public class NeighborEdgeVertex
      *
      * @return a valid edge.
      */
-    public IQuadEdge getEdge()
-    {
+    public IQuadEdge getEdge() {
         return edge;
     }
 
@@ -83,8 +80,7 @@ public class NeighborEdgeVertex
      *
      * @return A valid vertex (never null).
      */
-    public Vertex getNearestVertex()
-    {
+    public Vertex getNearestVertex() {
         return edge.getA();
     }
 
@@ -93,8 +89,7 @@ public class NeighborEdgeVertex
      *
      * @return a positive floating point value, potentially zero.
      */
-    public double getDistance()
-    {
+    public double getDistance() {
         return d;
     }
 
@@ -103,8 +98,7 @@ public class NeighborEdgeVertex
      *
      * @return a valid coordinate
      */
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
@@ -113,8 +107,7 @@ public class NeighborEdgeVertex
      *
      * @return a valid coordinate
      */
-    public double getY()
-    {
+    public double getY() {
         return y;
     }
 
@@ -124,8 +117,7 @@ public class NeighborEdgeVertex
      *
      * @return true if the query point was inside the TIN; false otherwise
      */
-    public boolean isInterior()
-    {
+    public boolean isInterior() {
         return interior;
     }
 

@@ -40,39 +40,39 @@ import java.util.Iterator;
  */
 class QuadEdgePinwheel implements Iterable<IQuadEdge>, Iterator<IQuadEdge> {
 
-  final QuadEdge e0;
-  QuadEdge n;
-  boolean hasNext;
+    final QuadEdge e0;
+    QuadEdge n;
+    boolean hasNext;
 
-  QuadEdgePinwheel(QuadEdge e0){
-    this.e0 = e0;
-    n = e0;
-    hasNext = true;
+    QuadEdgePinwheel(QuadEdge e0) {
+        this.e0 = e0;
+        n = e0;
+        hasNext = true;
 
-  }
+    }
 
-  @Override
-  public Iterator<IQuadEdge> iterator() {
-    return this;
-  }
+    @Override
+    public Iterator<IQuadEdge> iterator() {
+        return this;
+    }
 
-  @Override
-  public boolean hasNext() {
-     return hasNext;
-  }
+    @Override
+    public boolean hasNext() {
+        return hasNext;
+    }
 
-  @Override
-  public IQuadEdge next() {
-     QuadEdge e = n;
-     n = e.getDualFromReverse();
-     hasNext = !n.equals(e0);
-     return e;
-  }
+    @Override
+    public IQuadEdge next() {
+        QuadEdge e = n;
+        n = e.getDualFromReverse();
+        hasNext = !n.equals(e0);
+        return e;
+    }
 
-  @Override
-  public void remove(){
-    throw new UnsupportedOperationException(
-      "Remove is not supported for IQuadEdge iterators");
-  }
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException(
+                "Remove is not supported for IQuadEdge iterators");
+    }
 
 }

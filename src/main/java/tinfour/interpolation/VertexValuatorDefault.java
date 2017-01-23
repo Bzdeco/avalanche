@@ -26,7 +26,7 @@
  *
  * -----------------------------------------------------------------------
  */
- 
+
 
 package tinfour.interpolation;
 
@@ -39,7 +39,7 @@ public class VertexValuatorDefault implements IVertexValuator {
 
     @Override
     public double value(Vertex v) {
-       return v.getZ();
+        return v.getZ();
     }
-    
+
 }

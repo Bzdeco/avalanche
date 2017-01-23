@@ -39,8 +39,9 @@ public interface ILasRecordFilter {
     /**
      * Tests a LAS file record to see if it meets an application-specified
      * criteria for acceptance into a vertex list.
+     *
      * @param record a valid record from an LAS file.
      * @return true if the record is accepted; otherwise, false.
      */
-    public boolean accept(LasPoint record);
+    boolean accept(LasPoint record);
 }

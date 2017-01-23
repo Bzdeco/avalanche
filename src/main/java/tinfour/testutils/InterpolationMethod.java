@@ -41,50 +41,57 @@ import tinfour.interpolation.TriangularFacetInterpolator;
  */
 public enum InterpolationMethod {
 
-  /** Sibson's Natural Neighbor interpolation method *//** Sibson's Natural Neighbor interpolation method */
-  NaturalNeighbor,
-  /** Planar triangular facet interpolation method */
-  TriangularFacet,
-  /** Geographically weighted regression interpolation method*/
-  GeographicallyWeightedRegression;
+  /* Sibson's Natural Neighbor interpolation method */ /**
+     * Sibson's Natural Neighbor interpolation method
+     */
+    NaturalNeighbor,
+    /**
+     * Planar triangular facet interpolation method
+     */
+    TriangularFacet,
+    /**
+     * Geographically weighted regression interpolation method
+     */
+    GeographicallyWeightedRegression;
 
-  /**
-   * Determine an interpolation method, applying a lenient rules
-   * to determine which one is indicated by the string.
-   * @param target a valid string
-   * @return if recognized, a valid enumeration value; otherwise, a null.
-   */
-  public static InterpolationMethod lenientValue(String target) {
-    if (target != null) {
-      String s = target.trim().toLowerCase();
-      if (s.startsWith("nat")) {
-        return NaturalNeighbor;
-      } else if (s.startsWith("tri")) {
-        return TriangularFacet;
-      } else if (s.contains("regress") || s.startsWith("gwr")) {
-        return GeographicallyWeightedRegression;
-      }
+    /**
+     * Determine an interpolation method, applying a lenient rules
+     * to determine which one is indicated by the string.
+     *
+     * @param target a valid string
+     * @return if recognized, a valid enumeration value; otherwise, a null.
+     */
+    public static InterpolationMethod lenientValue(String target) {
+        if (target != null) {
+            String s = target.trim().toLowerCase();
+            if (s.startsWith("nat")) {
+                return NaturalNeighbor;
+            } else if (s.startsWith("tri")) {
+                return TriangularFacet;
+            } else if (s.contains("regress") || s.startsWith("gwr")) {
+                return GeographicallyWeightedRegression;
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
 
-
-  /**
-   * Constructs an interpolator based on the enumeration value.
-   * @param tin a valid instance of an IIncrementalTin implementation.
-   * @return a valid interpolator.
-   */
-  public IInterpolatorOverTin getInterpolator(IIncrementalTin tin){
-      switch(this){
-        case TriangularFacet:
-          return new TriangularFacetInterpolator(tin);
-        case GeographicallyWeightedRegression:
-          return new GwrTinInterpolator(tin);
-        case NaturalNeighbor:
-        default:
-          return new NaturalNeighborInterpolator(tin);
-      }
-  }
+    /**
+     * Constructs an interpolator based on the enumeration value.
+     *
+     * @param tin a valid instance of an IIncrementalTin implementation.
+     * @return a valid interpolator.
+     */
+    public IInterpolatorOverTin getInterpolator(IIncrementalTin tin) {
+        switch (this) {
+            case TriangularFacet:
+                return new TriangularFacetInterpolator(tin);
+            case GeographicallyWeightedRegression:
+                return new GwrTinInterpolator(tin);
+            case NaturalNeighbor:
+            default:
+                return new NaturalNeighborInterpolator(tin);
+        }
+    }
 
 }

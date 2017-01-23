@@ -30,6 +30,7 @@ public class DataSerializer<Type> {
             FileInputStream serializedDataInS = new FileInputStream(serializedData);
             ObjectInputStream serializedDataInO = new ObjectInputStream(serializedDataInS);
 
+            //noinspection unchecked
             object = (Type) serializedDataInO.readObject();
 
             serializedDataInS.close();

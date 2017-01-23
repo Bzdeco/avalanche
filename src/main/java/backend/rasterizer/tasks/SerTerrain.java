@@ -7,6 +7,7 @@ import java.io.File;
 
 public class SerTerrain extends Task<float[][][]> {
     private DataSerializer<float[][][]> ser;
+
     public SerTerrain(File serfile) {
         ser = new DataSerializer<>(serfile);
     }

@@ -3,12 +3,10 @@ package backend.service;
 import backend.Utils.Dirs;
 import backend.Utils.Util;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,8 +55,10 @@ public class WeatherConnector {
                     "from weather " +
                     "where time between ? and ?";
             stmt = c.prepareStatement(query);
-            stmt.setDate((int) 1, Date.valueOf(from));
-            stmt.setDate((int) 2, Date.valueOf(to));
+            //noinspection JpaQueryApiInspection
+            stmt.setDate(1, Date.valueOf(from));
+            //noinspection JpaQueryApiInspection
+            stmt.setDate(2, Date.valueOf(to));
 
             ResultSet rs = stmt.executeQuery();
 
@@ -69,8 +69,9 @@ public class WeatherConnector {
                     //We are using non property style for making dynamic table
                     final int j = i;
                     TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
+                    //noinspection unchecked
                     col.setCellValueFactory(param -> {
-                        Object prop = ((TableColumn.CellDataFeatures<ObservableList, String>)param).getValue().get(j);
+                        @SuppressWarnings("unchecked") Object prop = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
                         if (j == 6) {
                             Short windDirEnum = Util.toShort(prop.toString());
                             return new SimpleStringProperty(prop != null && windDirEnum != null ?
@@ -79,6 +80,7 @@ public class WeatherConnector {
                         return new SimpleStringProperty(prop != null ? prop.toString() : "null");
                     });
 
+                    //noinspection unchecked
                     tableView.getColumns().addAll(col);
                     logger.debug("Column [{}] ", i);
                 }
@@ -99,6 +101,7 @@ public class WeatherConnector {
             }
 
             //FINALLY ADDED TO TableView
+            //noinspection unchecked
             tableView.setItems(data);
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,16 +7,12 @@ import java.util.function.Function;
 public class ColorRamp {
     private TreeMap<Float, Integer> ramp = new TreeMap<>();
 
-    public static ColorRamp create() { return new ColorRamp(); }
-
-    public ColorRamp step(float step, int r, int g, int b, int a) {
-        final int argb = a << 24 | r << 16 | g << 8 | b;
-        ramp.put(step, argb);
-        return this;
+    public static ColorRamp create() {
+        return new ColorRamp();
     }
 
     private static int ilerp(int low, int high, float t) {
-        float l = (float)low, h = (float)high;
+        float l = (float) low, h = (float) high;
         return Math.round(l + (h - l) * t);
     }
 
@@ -28,15 +24,21 @@ public class ColorRamp {
         return a << 24 | r << 16 | g << 8 | b;
     }
 
+    public ColorRamp step(float step, int r, int g, int b, int a) {
+        final int argb = a << 24 | r << 16 | g << 8 | b;
+        ramp.put(step, argb);
+        return this;
+    }
+
     public Function<Float, Integer> build() {
         return val -> {
             Map.Entry<Float, Integer> lower = ramp.headMap(val, true).lastEntry();
             Map.Entry<Float, Integer> upper = ramp.tailMap(val, true).firstEntry();
 
-            if(lower == null) lower = ramp.firstEntry();
-            if(upper == null) upper = ramp.lastEntry();
+            if (lower == null) lower = ramp.firstEntry();
+            if (upper == null) upper = ramp.lastEntry();
 
-            float lower_key  = lower.getKey();
+            float lower_key = lower.getKey();
             float diff = upper.getKey() - lower_key;
             float t = (diff == 0) ? 0 : (val - lower_key) / diff;
 

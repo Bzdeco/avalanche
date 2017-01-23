@@ -37,13 +37,13 @@ import tinfour.common.Vertex;
  * (see LAS Specification 1.4, American Society for Photogrammetry
  * and Remote Sensing (ASPRS)).
  */
-public class VertexWithClassification extends Vertex  {
-    
+public class VertexWithClassification extends Vertex {
+
     final private int classification;  // a byte would be enough
-    
+
     /**
-     * Constructs a vertex with the lidar classification value 
-     * extracted from the source file. The ASPRS spec allows for 
+     * Constructs a vertex with the lidar classification value
+     * extracted from the source file. The ASPRS spec allows for
      * classification codes from 0 to 255. It formally defines values
      * 0 to 18 (with up to 63 reserved for future use) and leaves the
      * rest as user definable.  Here are the main ones:
@@ -59,37 +59,38 @@ public class VertexWithClassification extends Vertex  {
      * <li>Reserved</li>
      * <li>Water</li>
      * </ol>
-     * @param x the X horizontal coordinate for the lidar sample point
-     * @param y the Y horizontal coordinate for the lidar sample point
-     * @param z the vertical coordinate for the lidar sample point
-     * @param index the record number for the lidar sample point
+     *
+     * @param x              the X horizontal coordinate for the lidar sample point
+     * @param y              the Y horizontal coordinate for the lidar sample point
+     * @param z              the vertical coordinate for the lidar sample point
+     * @param index          the record number for the lidar sample point
      * @param classification the classification value assigned to the
-     * lidar sample point.
+     *                       lidar sample point.
      */
     public VertexWithClassification(
-        double x, 
-        double y, 
-        double z, 
-        int index, 
-        int classification)
-    {
-        super(x,y,z, index);
+            double x,
+            double y,
+            double z,
+            int index,
+            int classification) {
+        super(x, y, z, index);
         this.classification = classification;
     }
-    
+
     /**
      * Gets the classification code indicating the kind of feature
      * from which the sample was captured.
+     *
      * @return an integer value in the range zero to 255, usually
      * in the range 0 to 9.
      */
-    public int getClassification(){
+    public int getClassification() {
         return classification;
     }
-    
+
     @Override
-    public String toString(){
-        return super.toString()+", c="+classification;
+    public String toString() {
+        return super.toString() + ", c=" + classification;
     }
 
 }

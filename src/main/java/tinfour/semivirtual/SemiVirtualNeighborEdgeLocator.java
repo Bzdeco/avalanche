@@ -41,77 +41,77 @@ import tinfour.common.Vertex;
  */
 class SemiVirtualNeighborEdgeLocator implements INeighborEdgeLocator {
 
-  SemiVirtualEdge neighborEdge;
-  final SemiVirtualStochasticLawsonsWalk walker;
-  final SemiVirtualIncrementalTin tin;
+    final SemiVirtualStochasticLawsonsWalk walker;
+    final SemiVirtualIncrementalTin tin;
+    SemiVirtualEdge neighborEdge;
 
-  /**
-   * Constructs an instance coupled to the specified TIN.
-   * @param tin a valid instance
-   */
-  SemiVirtualNeighborEdgeLocator(SemiVirtualIncrementalTin tin) {
+    /**
+     * Constructs an instance coupled to the specified TIN.
+     *
+     * @param tin a valid instance
+     */
+    SemiVirtualNeighborEdgeLocator(SemiVirtualIncrementalTin tin) {
 
-    this.tin = tin;
-    double nominalPointSpacing = tin.getNominalPointSpacing();
-    walker = new SemiVirtualStochasticLawsonsWalk(nominalPointSpacing);
+        this.tin = tin;
+        double nominalPointSpacing = tin.getNominalPointSpacing();
+        walker = new SemiVirtualStochasticLawsonsWalk(nominalPointSpacing);
 
-  }
-
-  @Override
-  public IQuadEdge getNeigborEdge(double x, double y) {
-    if(!tin.isBootstrapped()){
-      return null;
-    }
-    if (neighborEdge == null) {
-      neighborEdge = tin.getStartingEdge();
-    }
-    SemiVirtualEdge e = walker.findAnEdgeFromEnclosingTriangle(neighborEdge, x, y);
-    neighborEdge = e;
-    return e;
-  }
-
-
-  @Override
-  public NeighborEdgeVertex getEdgeWithNearestVertex(double x, double y) {
-    if (neighborEdge == null) {
-      neighborEdge = tin.getStartingEdge();
-    }
-    final SemiVirtualEdge e = walker.findAnEdgeFromEnclosingTriangle(neighborEdge, x, y);
-    neighborEdge = e;
-    Vertex a = e.getA();
-    Vertex b = e.getB();
-    Vertex c = e.getTriangleApex();
-    double dA = a.getDistanceSq(x, y);
-    double dB = b.getDistanceSq(x, y);
-    if (c == null) {
-      if (dA < dB) {
-        return new NeighborEdgeVertex(e.copy(), Math.sqrt(dA), x, y, false);
-      } else {
-        return new NeighborEdgeVertex(e.getForward(), Math.sqrt(dB), x, y, false);
-      }
     }
 
-    double dC = c.getDistanceSq(x, y);
-    if (dA < dB) {
-      if (dA < dC) {
-        return new NeighborEdgeVertex(e.copy(), Math.sqrt(dA), x, y, true);
-      } else {
-        return new NeighborEdgeVertex(e.getReverse(), Math.sqrt(dC), x, y, true);
-      }
-    } else {
-      if (dB < dC) {
-        return new NeighborEdgeVertex(e.getForward(), Math.sqrt(dB), x, y, true);
-      } else {
-        return new NeighborEdgeVertex(e.getReverse(), Math.sqrt(dC), x, y, true);
-      }
+    @Override
+    public IQuadEdge getNeigborEdge(double x, double y) {
+        if (!tin.isBootstrapped()) {
+            return null;
+        }
+        if (neighborEdge == null) {
+            neighborEdge = tin.getStartingEdge();
+        }
+        SemiVirtualEdge e = walker.findAnEdgeFromEnclosingTriangle(neighborEdge, x, y);
+        neighborEdge = e;
+        return e;
     }
-  }
 
 
+    @Override
+    public NeighborEdgeVertex getEdgeWithNearestVertex(double x, double y) {
+        if (neighborEdge == null) {
+            neighborEdge = tin.getStartingEdge();
+        }
+        final SemiVirtualEdge e = walker.findAnEdgeFromEnclosingTriangle(neighborEdge, x, y);
+        neighborEdge = e;
+        Vertex a = e.getA();
+        Vertex b = e.getB();
+        Vertex c = e.getTriangleApex();
+        double dA = a.getDistanceSq(x, y);
+        double dB = b.getDistanceSq(x, y);
+        if (c == null) {
+            if (dA < dB) {
+                return new NeighborEdgeVertex(e.copy(), Math.sqrt(dA), x, y, false);
+            } else {
+                return new NeighborEdgeVertex(e.getForward(), Math.sqrt(dB), x, y, false);
+            }
+        }
 
-  @Override
-  public void resetForChangeToTin() {
-    neighborEdge = null;
-  }
+        double dC = c.getDistanceSq(x, y);
+        if (dA < dB) {
+            if (dA < dC) {
+                return new NeighborEdgeVertex(e.copy(), Math.sqrt(dA), x, y, true);
+            } else {
+                return new NeighborEdgeVertex(e.getReverse(), Math.sqrt(dC), x, y, true);
+            }
+        } else {
+            if (dB < dC) {
+                return new NeighborEdgeVertex(e.getForward(), Math.sqrt(dB), x, y, true);
+            } else {
+                return new NeighborEdgeVertex(e.getReverse(), Math.sqrt(dC), x, y, true);
+            }
+        }
+    }
+
+
+    @Override
+    public void resetForChangeToTin() {
+        neighborEdge = null;
+    }
 
 }

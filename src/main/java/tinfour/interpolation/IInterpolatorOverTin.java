@@ -38,7 +38,7 @@ import tinfour.common.IProcessUsingTin;
  */
 public interface IInterpolatorOverTin extends IProcessUsingTin {
 
-     /**
+    /**
      * Perform interpolation using the specified valuator.
      * <h1>Important Synchronization Issue</h1>
      * To improve performance, classes that implement this interface
@@ -55,44 +55,48 @@ public interface IInterpolatorOverTin extends IProcessUsingTin {
      * If the TIN is modified, the internal state data for this class must
      * be reset using a call to resetForChangeToTin() defined in the
      * IProcessUsingTin interface.
-     * @param x the x coordinate for the interpolation point
-     * @param y the y coordinate for the interpolation point
+     *
+     * @param x        the x coordinate for the interpolation point
+     * @param y        the y coordinate for the interpolation point
      * @param valuator a valid valuator for interpreting the z value of each
-     * vertex or a null value to use the default.
+     *                 vertex or a null value to use the default.
      * @return if the interpolation is successful, a valid floating point
      * value; otherwise, a NaN.
      */
-    public double interpolate(double x, double y, IVertexValuator valuator) ;
+    double interpolate(double x, double y, IVertexValuator valuator);
 
 
     /**
      * Indicates whether the interpolation class supports the computation
      * of surface normals through the getUnitNormal() method.
+     *
      * @return true if the class implements the ability to compute
      * surface normals; otherwise, false.
      */
-    public boolean isSurfaceNormalSupported();
+    boolean isSurfaceNormalSupported();
 
 
-  /**
-   * Computes the surface normal at the most recent interpolation point,
-   * returning an array of three values giving the unit surface
-   * normal as x, y, and z coordinates. If the recent interpolation was
-   * unsuccessful (returned a Java Double.NaN), the results of this method
-   * call are undefined. If the computation of surface normals is not
-   * supported, the class may throw an UnsupportedOperationException.
-   * @return if defined and successful, a valid array of dimension 3 giving
-   * the x, y, and z components of the unit normal, respectively; otherwise,
-   * a zero-sized array.
-   */
-  public double[] getSurfaceNormal();
+    /**
+     * Computes the surface normal at the most recent interpolation point,
+     * returning an array of three values giving the unit surface
+     * normal as x, y, and z coordinates. If the recent interpolation was
+     * unsuccessful (returned a Java Double.NaN), the results of this method
+     * call are undefined. If the computation of surface normals is not
+     * supported, the class may throw an UnsupportedOperationException.
+     *
+     * @return if defined and successful, a valid array of dimension 3 giving
+     * the x, y, and z components of the unit normal, respectively; otherwise,
+     * a zero-sized array.
+     */
+    double[] getSurfaceNormal();
 
     /**
      * Gets a string describing the interpolation method
      * that can be used for labeling graphs and printouts.
      * Because this string may be used as a column header in a table,
      * its length should be kept short.
+     *
      * @return A valid string
      */
-    public String getMethod();
+    String getMethod();
 }

@@ -90,7 +90,7 @@ public class AvalancheRisk extends Service<float[][][]> {
                             risk += 0.2;//teren wypukły
                             if (t[TerrainProps.PROFCURV] > 1E-2)
                                 risk += 0.2;//bardziej wypukły
-                        } else{
+                        } else {
                             risk = 0;//teren w przybliżeniu płaski
                             r[RiskProps.RISK] = risk;
                             continue;
@@ -104,7 +104,7 @@ public class AvalancheRisk extends Service<float[][][]> {
                             risk += 0.2;//grzędy
                             if (t[TerrainProps.PLANCURV] > 1E-2)
                                 risk += 0.2;
-                        } else{
+                        } else {
                             risk = 0;
                             r[RiskProps.RISK] = risk;
                             continue;
@@ -112,7 +112,7 @@ public class AvalancheRisk extends Service<float[][][]> {
 
 
                         if (hillshade > 2 * ambient) {
-                            if(weather.getCloudSum() == null || weather.getCloudSum() < 6)
+                            if (weather.getCloudSum() == null || weather.getCloudSum() < 6)
                                 risk += 0.1;
                         }
                         if (weather.getWindAvg() != null && weather.getWindAvg() > 30)

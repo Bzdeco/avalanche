@@ -6,14 +6,13 @@ import javafx.concurrent.Task;
 import tinfour.gwr.BandwidthSelectionMethod;
 import tinfour.gwr.SurfaceModel;
 import tinfour.interpolation.GwrTinInterpolator;
-import tinfour.interpolation.IInterpolatorOverTin;
-import tinfour.testutils.GridSpecification;
 import tinfour.semivirtual.SemiVirtualIncrementalTin;
-import tinfour.testutils.InterpolationMethod;
+import tinfour.testutils.GridSpecification;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class TinTerrain extends Task<float[][][]> {
 
@@ -58,7 +57,7 @@ public class TinTerrain extends Task<float[][][]> {
 
                     float[] r = result[iRow][iCol];
 
-                    r[TerrainProps.ALTITUDE] = (float)z;
+                    r[TerrainProps.ALTITUDE] = (float) z;
                     r[TerrainProps.NORMALX] = (float) n[0];
                     r[TerrainProps.NORMALY] = (float) n[1];
                     r[TerrainProps.NORMALZ] = (float) n[2];
@@ -83,18 +82,18 @@ public class TinTerrain extends Task<float[][][]> {
 
         List<Future<Void>> tasks = new LinkedList<>();
 
-        for(int subtask_id = 0; subtask_id < subtaskCount; ++subtask_id) {
+        for (int subtask_id = 0; subtask_id < subtaskCount; ++subtask_id) {
             final int i = subtask_id;
 
             tasks.add(executor.submit(() -> {
                 int start = i * rowsPerSubtask, end = start + rowsPerSubtask;
-                if(i == subtaskCount - 1) end = nRows;
+                if (i == subtaskCount - 1) end = nRows;
                 calculateParameters(gt, start, end, result);
                 return null;
             }));
         }
 
-        for(Future<Void> task : tasks) {
+        for (Future<Void> task : tasks) {
             task.get();
         }
 

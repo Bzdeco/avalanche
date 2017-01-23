@@ -38,98 +38,97 @@ import tinfour.common.Vertex;
  */
 class DevillersEar {
 
-  int index;
-  DevillersEar prior;
-  DevillersEar next;
-  QuadEdge c;
-  QuadEdge p;
-  QuadEdge n;
-  Vertex v0, v1, v2;
-  boolean degenerate;
+    int index;
+    DevillersEar prior;
+    DevillersEar next;
+    QuadEdge c;
+    QuadEdge p;
+    QuadEdge n;
+    Vertex v0, v1, v2;
+    boolean degenerate;
 
-  double score;
+    double score;
 
-  DevillersEar(int index, DevillersEar priorEar, QuadEdge current, QuadEdge prior) {
-    this.index = index;
-    this.prior = priorEar;
-    if (priorEar != null) {
-      priorEar.next = this;
-    }
-    c = current;
-    n = c.getForward();
-    p = prior;
-    v0 = c.getA();
-    v1 = c.getB();
-    v2 = n.getB();
-  }
-
-  void setReferences(DevillersEar priorEar, QuadEdge current, QuadEdge prior) {
-    this.prior = priorEar;
-    if (priorEar != null) {
-      priorEar.next = this;
-    }
-    c = current;
-    n = c.getForward();
-    p = prior;
-    v0 = c.getA();
-    v1 = c.getB();
-    v2 = n.getB();
-  }
-
-  void computeScore(GeometricOperations geoOp, Vertex vRemove) {
-    degenerate = false;
-    if (v0 == null || v1 == null || v2 == null) {
-      // one of the vertices is the ghost
-      score = Double.POSITIVE_INFINITY;
-      return;
+    DevillersEar(int index, DevillersEar priorEar, QuadEdge current, QuadEdge prior) {
+        this.index = index;
+        this.prior = priorEar;
+        if (priorEar != null) {
+            priorEar.next = this;
+        }
+        c = current;
+        n = c.getForward();
+        p = prior;
+        v0 = c.getA();
+        v1 = c.getB();
+        v2 = n.getB();
     }
 
-    double ax = v0.x;
-    double ay = v0.y;
-    double bx = v1.x;
-    double by = v1.y;
-    double cx = v2.x;
-    double cy = v2.y;
-    double orientation = geoOp.orientation(ax, ay, bx, by, cx, cy);
-    if (orientation <= 0) {
-      degenerate = true;
-      // 3 points are oriented clockwise, indicating a
-      // concavity. we can short-circuit the calculation
-      score = Double.POSITIVE_INFINITY;
-      return;
+    void setReferences(DevillersEar priorEar, QuadEdge current, QuadEdge prior) {
+        this.prior = priorEar;
+        if (priorEar != null) {
+            priorEar.next = this;
+        }
+        c = current;
+        n = c.getForward();
+        p = prior;
+        v0 = c.getA();
+        v1 = c.getB();
+        v2 = n.getB();
     }
 
-    double dx = vRemove.x;
-    double dy = vRemove.y;
-    double inCircle = geoOp.inCircle(ax, ay, bx, by, cx, cy, dx, dy);
+    void computeScore(GeometricOperations geoOp, Vertex vRemove) {
+        degenerate = false;
+        if (v0 == null || v1 == null || v2 == null) {
+            // one of the vertices is the ghost
+            score = Double.POSITIVE_INFINITY;
+            return;
+        }
 
-    score = inCircle / orientation;
-  }
+        double ax = v0.x;
+        double ay = v0.y;
+        double bx = v1.x;
+        double by = v1.y;
+        double cx = v2.x;
+        double cy = v2.y;
+        double orientation = geoOp.orientation(ax, ay, bx, by, cx, cy);
+        if (orientation <= 0) {
+            degenerate = true;
+            // 3 points are oriented clockwise, indicating a
+            // concavity. we can short-circuit the calculation
+            score = Double.POSITIVE_INFINITY;
+            return;
+        }
 
-  void dispose() {
-    index = -1;
-    v0 = null;
-    v1 = null;
-    v2 = null;
-    c = null;
-    p = null;
-    n = null;
-    prior = null;
-    next = null;
-  }
+        double dx = vRemove.x;
+        double dy = vRemove.y;
+        double inCircle = geoOp.inCircle(ax, ay, bx, by, cx, cy, dx, dy);
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder(48);
-    sb.append("ear v[]=");
-    sb.append((v0 == null ? "null," : v0.getIndex() + ","));
-    sb.append((v1 == null ? "null," : v1.getIndex() + ","));
-    sb.append((v2 == null ? "null," : v2.getIndex() + " "));
-    sb.append("     ");
-    sb.append("index=").append(Integer.toString(index));
-    sb.append(",  score=");
-    sb.append(Double.toString(score));
-    return sb.toString();
-  }
+        score = inCircle / orientation;
+    }
+
+    void dispose() {
+        index = -1;
+        v0 = null;
+        v1 = null;
+        v2 = null;
+        c = null;
+        p = null;
+        n = null;
+        prior = null;
+        next = null;
+    }
+
+    @Override
+    public String toString() {
+        String sb = "ear v[]=" +
+                (v0 == null ? "null," : v0.getIndex() + ",") +
+                (v1 == null ? "null," : v1.getIndex() + ",") +
+                (v2 == null ? "null," : v2.getIndex() + " ") +
+                "     " +
+                "index=" + Integer.toString(index) +
+                ",  score=" +
+                Double.toString(score);
+        return sb;
+    }
 
 }
