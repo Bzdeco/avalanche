@@ -22,6 +22,8 @@
       <module name="Projekt_lawinowy_main" target="1.8" />
       <module name="Projekt_lawinowy_package" target="1.8" />
       <module name="Projekt_lawinowy_test" target="1.8" />
+      <module name="weather_main" target="1.8" />
+      <module name="weather_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
