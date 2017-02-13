@@ -1,29 +1,44 @@
 package gui;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 public abstract class Layer {
+    protected final ReadOnlyBooleanWrapper isReady = new ReadOnlyBooleanWrapper();
     private final BooleanProperty visible = new SimpleBooleanProperty(false);
+    private final StringProperty name = new SimpleStringProperty();
 
-    private final String name;
-    private final Color color;
+    public Layer(String name) {
+        this.name.set(name);
+    }
 
-    protected Color getColor() { return color; }
-    protected String getName() { return name; }
+    protected String getName() {
+        return name.get();
+    }
 
-    public Layer(String name, Color color) {
-        this.name  = name;
-        this.color = color;
+    protected StringProperty nameProperty() {
+        return name;
     }
 
     public final boolean isVisible() {
         return visible.get();
     }
-    public final void setVisible(boolean visible) { this.visible.set(visible); }
-    public final BooleanProperty isVisibleProperty() { return visible; }
 
-    public abstract void render(GraphicsContext gc, double width, double height);
+    public final void setVisible(boolean visible) {
+        this.visible.set(visible);
+    }
+
+    public final BooleanProperty isVisibleProperty() {
+        return visible;
+    }
+
+    public final ReadOnlyBooleanProperty isReadyProperty() {
+        return isReady.getReadOnlyProperty();
+    }
+
+    public final Boolean isReady() {
+        return isReady.get();
+    }
+
+    public abstract void render(GraphicsContext gc, Viewport vp);
 }

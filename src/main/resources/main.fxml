@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import gui.Viewport?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import gui.LayerCanvas?>
-<BorderPane fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/8">
     <left>
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
                 <TitledPane fx:id="viewPane" animated="false" text="Widok">
-                    <VBox spacing="4.0">
-                        <VBox fx:id="layerSelector" spacing="4.0">
-                        </VBox>
-                        <Separator/>
-                        <VBox spacing="4.0">
-                            <Slider fx:id="zoomSlider" showTickLabels="true" showTickMarks="true" min="0.1"
-                                    majorTickUnit="0.5" minorTickCount="5" max="1.5" value="0.5"/>
-                        </VBox>
-                    </VBox>
-
+                    <TreeView fx:id="layerSelector" editable="true"/>
                 </TitledPane>
                 <TitledPane animated="false" text="Parametry symulacji">
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
@@ -30,17 +23,37 @@
         </Accordion>
     </left>
     <center>
-        <LayerCanvas fx:id="canvas"/>
+        <Viewport fx:id="vp"/>
     </center>
     <bottom>
-        <TitledPane expanded="false" animated="false" text="Log" BorderPane.alignment="CENTER">
-            <TextArea fx:id="logTextArea" editable="false" prefHeight="200.0"/>
+        <TitledPane expanded="false" animated="false" text="Pogoda" BorderPane.alignment="CENTER">
+            <VBox prefHeight="250.0">
+                <padding>
+                    <Insets/>
+                </padding>
+                <ToolBar>
+                    <Separator orientation="VERTICAL"/>
+                    <Label text="Początek"/>
+                    <DatePicker fx:id="fromDate"/>
+                    <Label text="Koniec"/>
+                    <DatePicker fx:id="toDate"/>
+                </ToolBar>
+                <ScrollPane>
+                    <TableView fx:id="tableView">
+                    </TableView>
+                </ScrollPane>
+            </VBox>
         </TitledPane>
     </bottom>
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <Button mnemonicParsing="false" text="Button"/>
+            <!--suppress JavaFxUnresolvedFxIdReference -->
+            <Button fx:id="saveBtn" mnemonicParsing="false" text="Zapisz teren" onMouseClicked="#saveTerrain"/>
+            <Separator orientation="VERTICAL"/>
+            <Button fx:id="centerView" mnemonicParsing="false" text="Wycentruj"/>
+            <ProgressBar fx:id="progress"/>
             <Pane HBox.hgrow="ALWAYS"/>
+            <!--suppress JavaFxUnresolvedFxIdReference -->
             <Hyperlink fx:id="aboutUsLink" text="O Projekcie"/>
         </ToolBar>
     </top>
