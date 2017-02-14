@@ -25,5 +25,6 @@
     <orderEntry type="library" name="Gradle: org.projectlombok:lombok:1.16.10" level="project" />
     <orderEntry type="library" name="Gradle: org.postgresql:postgresql:9.4.1212.jre7" level="project" />
     <orderEntry type="library" name="Gradle: net.e175.klaus:solarpositioning:0.0.9" level="project" />
+    <orderEntry type="library" name="Gradle: org.jsoup:jsoup:1.10.1" level="project" />
   </component>
 </module>

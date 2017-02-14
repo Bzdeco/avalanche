@@ -40,7 +40,7 @@ public class ResourceHandler {
         }
 
         dbDriver = "org.postgresql.Driver";
-        dbUrl = "jdbc:postgresql://digitalnoodles.co.uk:5432/lawiny_test";
+        dbUrl = "jdbc:postgresql://127.0.0.1:5432/lawiny_test";
         dbUser = "lawiny";
         dbPass = "l1234";
     }

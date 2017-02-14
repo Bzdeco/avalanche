@@ -33,7 +33,7 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
     compile 'org.jsoup:jsoup:1.10.1'
 	runtime('org.postgresql:postgresql')
-	compileOnly('org.projectlombok:lombok')
+	compile 'org.projectlombok:lombok'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

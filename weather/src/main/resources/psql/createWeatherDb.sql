@@ -15,7 +15,7 @@ ALTER DATABASE lawiny_test OWNER TO lawiny;
 begin;
 
 DROP TYPE IF EXISTS DIR CASCADE;
--- CREATE TYPE DIR AS ENUM ('NW','N','NE','E','SE','S','SW','W');
+CREATE TYPE DIR AS ENUM ('NW','N','NE','E','SE','S','SW','W');
 
 DROP TABLE IF EXISTS weather;
 CREATE TABLE weather
