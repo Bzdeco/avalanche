@@ -22,7 +22,13 @@ public class WeatherConnector {
     private PreparedStatement stmt = null;
     private TableView tableView;
 
-    public WeatherConnector(TableView table) {
+    private WeatherConnector(){}
+
+    public static WeatherConnector getInstance(){
+        return LazyHandler.instance;
+    }
+
+    public void setTableView(TableView table) {
         this.tableView = table;
     }
 
@@ -108,5 +114,9 @@ public class WeatherConnector {
             logger.error("Error on Building Data");
         }
 
+    }
+
+    private static class LazyHandler{
+        private static WeatherConnector instance = new WeatherConnector();
     }
 }

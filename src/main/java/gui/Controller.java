@@ -206,7 +206,8 @@ public class Controller {
     }
 
     private void initWeather() {
-        WeatherConnector con = new WeatherConnector(tableView);
+        WeatherConnector con = WeatherConnector.getInstance();
+        con.setTableView(tableView);
         LocalDate now = LocalDate.now(), wago = now.minus(1, ChronoUnit.WEEKS);
 
         EventStreams.changesOf(fromDate.valueProperty()).subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
