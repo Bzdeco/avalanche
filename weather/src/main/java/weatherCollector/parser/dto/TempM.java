@@ -27,4 +27,47 @@ public class TempM implements Measurement {
         tempM.setDesc(el.child(2).text());
         return tempM;
     }
+
+    @Override
+    public String getURL()
+    {
+        return URL;
+    }
+
+    @Override
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    @Override
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date time)
+    {
+        this.time = time;
+    }
+
+    public Float getTemp()
+    {
+        return temp;
+    }
+
+    public void setTemp(Float temp)
+    {
+        this.temp = temp;
+    }
+
+    public String getDesc()
+    {
+        return desc;
+    }
+
+    public void setDesc(String desc)
+    {
+        this.desc = desc;
+    }
 }

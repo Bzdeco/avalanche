@@ -51,4 +51,9 @@ public class Weather {
         this.cloudLow = c.getLow();
         this.snowLevel = s.getLevel();
     }
+
+    public Date getTime()
+    {
+        return time;
+    }
 }

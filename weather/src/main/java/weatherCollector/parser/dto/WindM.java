@@ -54,4 +54,67 @@ public class WindM implements Measurement {
             throw new IllegalArgumentException("No constant with text " + text + " found.");
         }
     }
+
+    @Override
+    public String getURL()
+    {
+        return URL;
+    }
+
+    @Override
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    @Override
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date time)
+    {
+        this.time = time;
+    }
+
+    public Short getAvgSpeed()
+    {
+        return avgSpeed;
+    }
+
+    public void setAvgSpeed(Short avgSpeed)
+    {
+        this.avgSpeed = avgSpeed;
+    }
+
+    public Short getMaxSpeed()
+    {
+        return maxSpeed;
+    }
+
+    public void setMaxSpeed(Short maxSpeed)
+    {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public Short getDirDegree()
+    {
+        return dirDegree;
+    }
+
+    public void setDirDegree(Short dirDegree)
+    {
+        this.dirDegree = dirDegree;
+    }
+
+    public DIRS getDir()
+    {
+        return dir;
+    }
+
+    public void setDir(DIRS dir)
+    {
+        this.dir = dir;
+    }
 }

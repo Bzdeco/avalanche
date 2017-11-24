@@ -39,4 +39,57 @@ public class PrecipitationM implements Measurement {
         p.setType(type.equals("-") ? null : type);
         return p;
     }
+
+    @Override
+    public String getURL()
+    {
+        return URL;
+    }
+
+    @Override
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    @Override
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date time)
+    {
+        this.time = time;
+    }
+
+    public Float getAmount()
+    {
+        return amount;
+    }
+
+    public void setAmount(Float amount)
+    {
+        this.amount = amount;
+    }
+
+    public Short getInterval()
+    {
+        return interval;
+    }
+
+    public void setInterval(Short interval)
+    {
+        this.interval = interval;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
 }

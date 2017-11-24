@@ -32,4 +32,37 @@ public class SnowM implements Measurement {
 
         return snow;
     }
+
+    @Override
+    public String getURL()
+    {
+        return URL;
+    }
+
+    @Override
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    @Override
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date time)
+    {
+        this.time = time;
+    }
+
+    public Short getLevel()
+    {
+        return level;
+    }
+
+    public void setLevel(Short level)
+    {
+        this.level = level;
+    }
 }

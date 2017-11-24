@@ -44,4 +44,56 @@ public class CloudsM implements Measurement {
         return c;
     }
 
+    @Override
+    public String getURL()
+    {
+        return URL;
+    }
+
+    @Override
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    @Override
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date time)
+    {
+        this.time = time;
+    }
+
+    public Short getLevel()
+    {
+        return level;
+    }
+
+    public void setLevel(Short level)
+    {
+        this.level = level;
+    }
+
+    public Short getSum()
+    {
+        return sum;
+    }
+
+    public void setSum(Short sum)
+    {
+        this.sum = sum;
+    }
+
+    public Short getLow()
+    {
+        return low;
+    }
+
+    public void setLow(Short low)
+    {
+        this.low = low;
+    }
 }

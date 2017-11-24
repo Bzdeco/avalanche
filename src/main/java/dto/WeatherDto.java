@@ -46,6 +46,76 @@ public class WeatherDto {
         this.snowLevel = builder.snowLevel;
     }
 
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public Float getTemp()
+    {
+        return temp;
+    }
+
+    public String getTempDesc()
+    {
+        return tempDesc;
+    }
+
+    public Short getWindAvg()
+    {
+        return windAvg;
+    }
+
+    public Short getWindMax()
+    {
+        return windMax;
+    }
+
+    public Short getWindDirDeg()
+    {
+        return windDirDeg;
+    }
+
+    public Dirs getWindDir()
+    {
+        return windDir;
+    }
+
+    public Float getPrecipAmount()
+    {
+        return precipAmount;
+    }
+
+    public Short getPrecipInterval()
+    {
+        return precipInterval;
+    }
+
+    public String getPrecipType()
+    {
+        return precipType;
+    }
+
+    public Short getCloudLevel()
+    {
+        return cloudLevel;
+    }
+
+    public Short getCloudSum()
+    {
+        return cloudSum;
+    }
+
+    public Short getCloudLow()
+    {
+        return cloudLow;
+    }
+
+    public Short getSnowLevel()
+    {
+        return snowLevel;
+    }
+
     public static class Builder {
         private Date time;
         private Float temp;

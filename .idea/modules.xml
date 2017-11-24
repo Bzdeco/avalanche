@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Projekt_lawinowy.iml" filepath="$PROJECT_DIR$/Projekt_lawinowy.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" group="Projekt_lawinowy" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_package.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_package.iml" group="Projekt_lawinowy" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" group="Projekt_lawinowy" />
-      <module fileurl="file://$PROJECT_DIR$/lawiny.iml" filepath="$PROJECT_DIR$/lawiny.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather.iml" filepath="$PROJECT_DIR$/.idea/modules/weather.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather_main.iml" filepath="$PROJECT_DIR$/.idea/modules/weather_main.iml" group="weather" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather_test.iml" filepath="$PROJECT_DIR$/.idea/modules/weather_test.iml" group="weather" />
     </modules>
   </component>
 </project>
