@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
-public class PrecipitationM implements Measurement {
+public class PrecipitationMeasurement implements Measurement {
     private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=niederschlag";
     private final String filter = "tr:contains(m2), tr:contains(brak komunikatu)";
 
@@ -21,7 +21,7 @@ public class PrecipitationM implements Measurement {
 
     @Override
     public Measurement fromElement(Element el) throws ParseException {
-        PrecipitationM p = new PrecipitationM();
+        PrecipitationMeasurement p = new PrecipitationMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
         p.setTime(SIMPLE_DATE_FORMAT.parse(time));
 

@@ -20,7 +20,7 @@ public class Weather {
     private Short windAvg;     //km/h
     private Short windMax;
     private Short windDirDeg;
-    private WindM.DIRS windDir;
+    private WindMeasurement.DIRS windDir;
 
     private Float precipAmount;   //l/m2
     private Short precipInterval; //hours
@@ -32,7 +32,7 @@ public class Weather {
 
     private Short snowLevel;   //cm
 
-    public Weather(TempM t, WindM w, PrecipitationM p, CloudsM c, SnowM s) throws IllegalStateException {
+    public Weather(TempMeasurement t, WindMeasurement w, PrecipitationMeasurement p, CloudMeasurement c, SnowMeasurement s) throws IllegalStateException {
         if (t.getTime().compareTo(w.getTime()) != 0 || t.getTime().compareTo(p.getTime()) != 0)
             throw new IllegalStateException("Time differs between measurements.");
 

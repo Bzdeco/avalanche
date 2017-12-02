@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 @Data
-public class TempM implements Measurement {
+public class TempMeasurement implements Measurement {
     private final String URL = "WMO=12650&LEVEL=140";
     private final String filter = "tr:contains(°C)";
     private Date time;
@@ -16,16 +16,16 @@ public class TempM implements Measurement {
     private String desc;
 
     @Override
-    public TempM fromElement(Element el) throws ParseException {
-        TempM tempM = new TempM();
+    public TempMeasurement fromElement(Element el) throws ParseException {
+        TempMeasurement tempMeasurement = new TempMeasurement();
         String temperature = el.child(1).text().replace("°C", "");
-        tempM.setTemp(Util.toFloat(temperature));
+        tempMeasurement.setTemp(Util.toFloat(temperature));
 
         String time = el.child(0).text().replace("\u00a0", " ");
-        tempM.setTime(SIMPLE_DATE_FORMAT.parse(time));
+        tempMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
 
-        tempM.setDesc(el.child(2).text());
-        return tempM;
+        tempMeasurement.setDesc(el.child(2).text());
+        return tempMeasurement;
     }
 
     @Override

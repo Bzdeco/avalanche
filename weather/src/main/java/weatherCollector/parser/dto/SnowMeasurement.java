@@ -10,17 +10,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
-public class SnowM implements Measurement {
-    private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&CONT=plpl&R=0&LEVEL=140&LAND=__&ART=snow";
-    private final String filter = "tr:matches((\\d\\d.){2}\\d{4})";
+public class SnowMeasurement implements Measurement {
 
     private Date time;
     private Short level;   //cm
 
-
     @Override
     public Measurement fromElement(Element el) throws ParseException {
-        SnowM snow = new SnowM();
+        SnowMeasurement snow = new SnowMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
         snow.setTime(SIMPLE_DATE_FORMAT.parse(time));
 
@@ -36,13 +33,13 @@ public class SnowM implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "CEL=C&SI=kph&WMO=12650&TIME=std&CONT=plpl&R=0&LEVEL=140&LAND=__&ART=snow";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return "tr:matches((\\d\\d.){2}\\d{4})";
     }
 
     @Override

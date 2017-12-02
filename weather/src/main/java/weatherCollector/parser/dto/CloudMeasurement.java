@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
-public class CloudsM implements Measurement {
+public class CloudMeasurement implements Measurement {
     private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=wolken";
     private final String filter = "tr:matches((\\d\\d.){2}\\d{4})";
 
@@ -21,7 +21,7 @@ public class CloudsM implements Measurement {
 
     @Override
     public Measurement fromElement(Element el) throws ParseException {
-        CloudsM c = new CloudsM();
+        CloudMeasurement c = new CloudMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
         c.setTime(SIMPLE_DATE_FORMAT.parse(time));
         String s2,s3;
