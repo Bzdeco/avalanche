@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 @Data
 public class CloudMeasurement implements Measurement {
-    private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=wolken";
-    private final String filter = "tr:matches((\\d\\d.){2}\\d{4})";
 
     private Date time;
     private Short level;   //m
@@ -46,13 +44,13 @@ public class CloudMeasurement implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=wolken";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return  "tr:matches((\\d\\d.){2}\\d{4})";
     }
 
     @Override

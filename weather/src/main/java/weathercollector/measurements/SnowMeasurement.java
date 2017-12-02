@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;

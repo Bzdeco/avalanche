@@ -1,17 +1,22 @@
-package weatherCollector.entities;
+package weathercollector.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import weatherCollector.parser.dto.*;
+import weathercollector.measurements.WeatherMeasurement;
+import weathercollector.measurements.WindMeasurement;
+import weathercollector.parser.dto.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Date;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Entity
 @NoArgsConstructor
 @Data
-public class Weather {
+public class Weather
+{
     @Id
     private Date time;
     private Float temp;
@@ -32,12 +37,9 @@ public class Weather {
 
     private Short snowLevel;   //cm
 
-    public Weather(final WeatherMeasurement weatherMeasurement) {
-
-        //validated in weather ctor
-        //if (t.getTime().compareTo(w.getTime()) != 0 || t.getTime().compareTo(p.getTime()) != 0)
-        //    throw new IllegalStateException("Time differs between measurements.");
-
+    public Weather(final WeatherMeasurement weatherMeasurement)
+    {
+        checkNotNull(weatherMeasurement);
         this.time = weatherMeasurement.getTemperatureMeasurement().getTime();
         this.temp = weatherMeasurement.getTemperatureMeasurement().getTemp();
         this.tempDesc = weatherMeasurement.getTemperatureMeasurement().getDesc();

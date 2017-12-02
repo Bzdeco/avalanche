@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import java.util.stream.Stream;
 
@@ -53,20 +53,11 @@ public class WeatherMeasurement
                 .allMatch(measurement -> measurement.getTime() == cloudMeasurement.getTime());
     }
 
-    private static void validate(final CloudMeasurement cloudMeasurement,
-                                 final PrecipitationMeasurement precipitationMeasurement,
-                                 final SnowMeasurement snowMeasurement,
-                                 final TemperatureMeasurement temperatureMeasurement,
-                                 final WindMeasurement windMeasurement)
-    {
-
-    }
-
     private WeatherMeasurement(final CloudMeasurement cloudMeasurement,
-                              final PrecipitationMeasurement precipitationMeasurement,
-                              final SnowMeasurement snowMeasurement,
-                              final TemperatureMeasurement temperatureMeasurement,
-                              final WindMeasurement windMeasurement)
+                               final PrecipitationMeasurement precipitationMeasurement,
+                               final SnowMeasurement snowMeasurement,
+                               final TemperatureMeasurement temperatureMeasurement,
+                               final WindMeasurement windMeasurement)
     {
         this.cloudMeasurement = cloudMeasurement;
         this.precipitationMeasurement = precipitationMeasurement;

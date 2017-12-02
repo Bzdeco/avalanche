@@ -1,4 +1,4 @@
-package weatherCollector.services;
+package weathercollector.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,13 +7,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import weatherCollector.parser.dto.CloudMeasurement;
-import weatherCollector.parser.dto.Measurement;
-import weatherCollector.parser.dto.PrecipitationMeasurement;
-import weatherCollector.parser.dto.SnowMeasurement;
-import weatherCollector.parser.dto.TemperatureMeasurement;
-import weatherCollector.parser.dto.WeatherMeasurement;
-import weatherCollector.parser.dto.WindMeasurement;
+import weathercollector.measurements.CloudMeasurement;
+import weathercollector.measurements.Measurement;
+import weathercollector.measurements.PrecipitationMeasurement;
+import weathercollector.measurements.SnowMeasurement;
+import weathercollector.measurements.TemperatureMeasurement;
+import weathercollector.measurements.WeatherMeasurement;
+import weathercollector.measurements.WindMeasurement;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

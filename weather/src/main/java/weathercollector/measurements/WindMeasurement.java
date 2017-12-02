@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
@@ -7,9 +7,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 @Data
-public class WindMeasurement implements Measurement {
-    private final String URL = "ART=wind&SI=kph&WMO=12650&LEVEL=140";
-    private final String filter = "tr:contains(°)";
+public class WindMeasurement implements Measurement
+{
     private Date time;
     private Short avgSpeed;     //km/h
     private Short maxSpeed;
@@ -17,7 +16,8 @@ public class WindMeasurement implements Measurement {
     private DIRS dir;
 
     @Override
-    public WindMeasurement fromElement(Element el) throws ParseException {
+    public WindMeasurement fromElement(Element el) throws ParseException
+    {
         WindMeasurement windMeasurement = new WindMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
         windMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
@@ -29,7 +29,8 @@ public class WindMeasurement implements Measurement {
         return windMeasurement;
     }
 
-    public enum DIRS {
+    public enum DIRS
+    {
         NW("płn. zach."),
         N("płn."),
         NE("płn. wsch."),
@@ -41,11 +42,13 @@ public class WindMeasurement implements Measurement {
 
         private String text;
 
-        DIRS(String text) {
+        DIRS(String text)
+        {
             this.text = text;
         }
 
-        public static DIRS fromString(String text) {
+        public static DIRS fromString(String text)
+        {
             if (text != null)
                 for (DIRS d : DIRS.values())
                     if (text.equalsIgnoreCase(d.text))
@@ -57,13 +60,13 @@ public class WindMeasurement implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "ART=wind&SI=kph&WMO=12650&LEVEL=140";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return "tr:contains(°)";
     }
 
     @Override

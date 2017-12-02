@@ -1,4 +1,4 @@
-package weatherCollector;
+package weathercollector;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

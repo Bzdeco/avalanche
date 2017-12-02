@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 @Data
 public class PrecipitationMeasurement implements Measurement {
-    private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=niederschlag";
-    private final String filter = "tr:contains(m2), tr:contains(brak komunikatu)";
 
     private Date time;
     private Float amount;   //l/m2
@@ -42,13 +40,13 @@ public class PrecipitationMeasurement implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=niederschlag";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return "tr:contains(m2), tr:contains(brak komunikatu)";
     }
 
     @Override

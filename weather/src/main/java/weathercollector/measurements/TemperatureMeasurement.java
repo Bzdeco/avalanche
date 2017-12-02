@@ -1,4 +1,4 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
@@ -8,8 +8,6 @@ import java.util.Date;
 
 @Data
 public class TemperatureMeasurement implements Measurement {
-    private final String URL = "WMO=12650&LEVEL=140";
-    private final String filter = "tr:contains(°C)";
     private Date time;
     private Float temp;
     private String desc;
@@ -30,13 +28,13 @@ public class TemperatureMeasurement implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "WMO=12650&LEVEL=140";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return "tr:contains(°C)";
     }
 
     @Override
