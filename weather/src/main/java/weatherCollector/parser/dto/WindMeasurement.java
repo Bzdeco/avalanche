@@ -2,7 +2,6 @@ package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -23,9 +22,9 @@ public class WindMeasurement implements Measurement {
         String time = el.child(0).text().replace("\u00a0", " ");
         windMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
 
-        windMeasurement.setAvgSpeed(Util.toShort(el.child(1).text()));
-        windMeasurement.setMaxSpeed(Util.toShort(el.child(3).text()));
-        windMeasurement.setDirDegree(Util.toShort(el.child(4).text().replace("°", "")));
+        windMeasurement.setAvgSpeed(Short.parseShort(el.child(1).text()));
+        windMeasurement.setMaxSpeed(Short.parseShort(el.child(3).text()));
+        windMeasurement.setDirDegree(Short.parseShort(el.child(4).text().replace("°", "")));
         windMeasurement.setDir(DIRS.fromString(el.child(5).text().trim()));
         return windMeasurement;
     }

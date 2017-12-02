@@ -2,7 +2,6 @@ package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -30,16 +29,16 @@ public class CloudMeasurement implements Measurement {
         Matcher m = pattern.matcher(s);
         boolean found = m.find();
 
-        c.setLevel(found ? Util.toShort(m.group().replace("m", "").trim()) : null);
+        c.setLevel(found ? Short.parseShort(m.group().replace("m", "").trim()) : null);
 
         Pattern pattern2 = Pattern.compile("\\d/\\d");
 
         m.reset();
         m.usePattern(pattern2);
         if(m.find())
-            c.setSum(Util.toShort(m.group().substring(0, 1)));
+            c.setSum(Short.parseShort(m.group().substring(0, 1)));
         if(m.find())
-            c.setLow(Util.toShort(m.group().substring(0, 1)));
+            c.setLow(Short.parseShort(m.group().substring(0, 1)));
 
         return c;
     }

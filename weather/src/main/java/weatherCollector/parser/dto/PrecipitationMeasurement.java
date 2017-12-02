@@ -2,7 +2,6 @@ package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -29,11 +28,11 @@ public class PrecipitationMeasurement implements Measurement {
         String s[] = el.child(1).text().split("l/m2");
         Matcher m = pattern.matcher(s[0]);
         boolean found = m.find();
-        p.setAmount(found ? Util.toFloat(m.group()) : null);
+        p.setAmount(found ? Float.parseFloat(m.group()) : null);
         if (found) {
             m = pattern.matcher(s[1]);
         }
-        p.setInterval(m.find() ? Util.toShort(m.group()) : null);
+        p.setInterval(m.find() ? Short.parseShort(m.group()) : null);
 
         String type = el.child(2).text();
         p.setType(type.equals("-") ? null : type);

@@ -2,7 +2,6 @@ package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -25,7 +24,7 @@ public class SnowMeasurement implements Measurement {
         Pattern pattern = Pattern.compile("(\\d)+");
         Matcher m = pattern.matcher(s);
         boolean found = m.find();
-        snow.setLevel(found ? Util.toShort(m.group()) : null);
+        snow.setLevel(found ? Short.parseShort(m.group()) : null);
 
         return snow;
     }

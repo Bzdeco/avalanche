@@ -2,13 +2,12 @@ package weatherCollector.parser.dto;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
 
 @Data
-public class TempMeasurement implements Measurement {
+public class TemperatureMeasurement implements Measurement {
     private final String URL = "WMO=12650&LEVEL=140";
     private final String filter = "tr:contains(°C)";
     private Date time;
@@ -16,16 +15,16 @@ public class TempMeasurement implements Measurement {
     private String desc;
 
     @Override
-    public TempMeasurement fromElement(Element el) throws ParseException {
-        TempMeasurement tempMeasurement = new TempMeasurement();
+    public TemperatureMeasurement fromElement(Element el) throws ParseException {
+        TemperatureMeasurement temperatureMeasurement = new TemperatureMeasurement();
         String temperature = el.child(1).text().replace("°C", "");
-        tempMeasurement.setTemp(Util.toFloat(temperature));
+        temperatureMeasurement.setTemp(Float.parseFloat(temperature));
 
         String time = el.child(0).text().replace("\u00a0", " ");
-        tempMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
+        temperatureMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
 
-        tempMeasurement.setDesc(el.child(2).text());
-        return tempMeasurement;
+        temperatureMeasurement.setDesc(el.child(2).text());
+        return temperatureMeasurement;
     }
 
     @Override

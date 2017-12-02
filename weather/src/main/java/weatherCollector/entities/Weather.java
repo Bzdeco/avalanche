@@ -32,24 +32,26 @@ public class Weather {
 
     private Short snowLevel;   //cm
 
-    public Weather(TempMeasurement t, WindMeasurement w, PrecipitationMeasurement p, CloudMeasurement c, SnowMeasurement s) throws IllegalStateException {
-        if (t.getTime().compareTo(w.getTime()) != 0 || t.getTime().compareTo(p.getTime()) != 0)
-            throw new IllegalStateException("Time differs between measurements.");
+    public Weather(final WeatherMeasurement weatherMeasurement) {
 
-        this.time = t.getTime();
-        this.temp = t.getTemp();
-        this.tempDesc = t.getDesc();
-        this.windAvg = w.getAvgSpeed();
-        this.windMax = w.getMaxSpeed();
-        this.windDirDeg = w.getDirDegree();
-        this.windDir = w.getDir();
-        this.precipAmount = p.getAmount();
-        this.precipInterval = p.getInterval();
-        this.precipType = p.getType();
-        this.cloudLevel = c.getLevel();
-        this.cloudSum = c.getSum();
-        this.cloudLow = c.getLow();
-        this.snowLevel = s.getLevel();
+        //validated in weather ctor
+        //if (t.getTime().compareTo(w.getTime()) != 0 || t.getTime().compareTo(p.getTime()) != 0)
+        //    throw new IllegalStateException("Time differs between measurements.");
+
+        this.time = weatherMeasurement.getTemperatureMeasurement().getTime();
+        this.temp = weatherMeasurement.getTemperatureMeasurement().getTemp();
+        this.tempDesc = weatherMeasurement.getTemperatureMeasurement().getDesc();
+        this.windAvg = weatherMeasurement.getWindMeasurement().getAvgSpeed();
+        this.windMax = weatherMeasurement.getWindMeasurement().getMaxSpeed();
+        this.windDirDeg = weatherMeasurement.getWindMeasurement().getDirDegree();
+        this.windDir = weatherMeasurement.getWindMeasurement().getDir();
+        this.precipAmount = weatherMeasurement.getPrecipitationMeasurement().getAmount();
+        this.precipInterval = weatherMeasurement.getPrecipitationMeasurement().getInterval();
+        this.precipType = weatherMeasurement.getPrecipitationMeasurement().getType();
+        this.cloudLevel = weatherMeasurement.getCloudMeasurement().getLevel();
+        this.cloudSum = weatherMeasurement.getCloudMeasurement().getSum();
+        this.cloudLow = weatherMeasurement.getCloudMeasurement().getLow();
+        this.snowLevel = weatherMeasurement.getSnowMeasurement().getLevel();
     }
 
     public Date getTime()
