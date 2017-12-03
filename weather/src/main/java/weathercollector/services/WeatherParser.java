@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
 public class WeatherParser
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String BASE_URL = "http://www.weatheronline.pl/weather/maps/city?";
+    private static final String BASE_URL = "https://www.weatheronline.pl/weather/maps/city?";
 
     public List<WeatherMeasurement> getMeasurements()
     {

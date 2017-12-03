@@ -23,12 +23,18 @@ public class WeatherCollectorService
                 .stream()
                 .map(Weather::new)
                 .filter(this::isNotInRepository)
-                .map(weather -> weatherRepo.save(weather))
+                .map(this::saveInRepository)
                 .collect(Collectors.toList());
     }
 
     private boolean isNotInRepository(final Weather weather)
     {
         return weatherRepo.findOne(weather.getTime()) == null;
+    }
+
+    private Weather saveInRepository(final Weather weather)
+    {
+        weatherRepo.save(weather);
+        return weather;
     }
 }

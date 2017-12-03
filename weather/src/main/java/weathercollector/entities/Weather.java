@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import weathercollector.measurements.WeatherMeasurement;
 import weathercollector.measurements.WindMeasurement;
-import weathercollector.parser.dto.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
