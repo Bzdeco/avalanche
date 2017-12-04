@@ -30,7 +30,7 @@ public class WeatherMeasurement
                 precipitationMeasurement,
                 snowMeasurement,
                 temperatureMeasurement,
-                windMeasurement));
+                windMeasurement), "Measurements should have the same time. Redownload measurements.");
 
         return new WeatherMeasurement(cloudMeasurement,
                 precipitationMeasurement,
