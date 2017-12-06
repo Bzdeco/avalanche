@@ -2,7 +2,7 @@ package backend.serializers;
 
 import java.io.*;
 
-public class DataSerializer<Type> implements Serializer<Type> {
+public class DataSerializer<T> implements Serializer<T> {
     private File serializedData;
 
     public DataSerializer(File serializedData) {
@@ -10,12 +10,7 @@ public class DataSerializer<Type> implements Serializer<Type> {
     }
 
     @Override
-    public String getFileName() {
-        return this.serializedData.getName();
-    }
-
-    @Override
-    public void serialize(Type object) {
+    public void serialize(T object) {
         try {
             FileOutputStream serializedDataOutS = new FileOutputStream(serializedData);
             ObjectOutputStream serializedDataOutO = new ObjectOutputStream(serializedDataOutS);
@@ -30,15 +25,15 @@ public class DataSerializer<Type> implements Serializer<Type> {
     }
 
     @Override
-    public Type deserialize() {
-        Type object;
+    public T deserialize() {
+        T object;
 
         try {
             FileInputStream serializedDataInS = new FileInputStream(serializedData);
             ObjectInputStream serializedDataInO = new ObjectInputStream(serializedDataInS);
 
             //noinspection unchecked
-            object = (Type) serializedDataInO.readObject();
+            object = (T) serializedDataInO.readObject();
 
             serializedDataInS.close();
             serializedDataInO.close();

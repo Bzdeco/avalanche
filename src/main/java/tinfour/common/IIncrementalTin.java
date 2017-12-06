@@ -177,7 +177,7 @@ public interface IIncrementalTin {
      * In the bootstrap phase, three points are chosen at random from the vertex
      * list to create the initial triangle for insertion. In the event that the
      * three points are not a suitable choice (as when they are collinear or
-     * nearly collinear), the process will be repeated until a valid initial
+     * nearly collinear), the createProcessingTask will be repeated until a valid initial
      * triangle is selected. Thus, there is a small performance advantage in
      * supplying the vertices using a list that can be accessed efficiently in a
      * random order (see the discussion of the Java API for the List and
@@ -205,7 +205,7 @@ public interface IIncrementalTin {
 
     /**
      * Print statistics and diagnostic information collected during the
-     * TIN construction process. This information will be removed and
+     * TIN construction createProcessingTask. This information will be removed and
      * reset by a call to the clear() method.
      *
      * @param ps A valid instance of a PrintStream to receive the output.
@@ -320,11 +320,11 @@ public interface IIncrementalTin {
      * violate the Delaunay criterion and result in a non-conforming
      * mesh. The addConstraint method can optionally restore conformity
      * by inserting synthetic points into the the constraint edges.
-     * The cost of this process is additional processing time and
+     * The cost of this createProcessingTask is additional processing time and
      * an increase in the number of points in the TIN.
      * <p>When points are synthesized, it is necessary to interpolate
      * a value for the z-coordinate. At this time, the specific interpolation
-     * process is undefined. The current Tinfour implementations
+     * createProcessingTask is undefined. The current Tinfour implementations
      * use linear interpolation between constraint points. While no
      * viable alternative approach is currently under consideration, the
      * choice of interpolation method is subject to change in the future.
@@ -347,7 +347,7 @@ public interface IIncrementalTin {
     /**
      * Gets the number of synthetic vertices added to the TIN.
      * Vertices can be synthesized as part of the Delaunay restoration
-     * process when adding constraints. Future implementations of additional
+     * createProcessingTask when adding constraints. Future implementations of additional
      * functions (such as Delaunay refinement) may also add synthetic points.
      *
      * @return a positive integer, potentially zero.

@@ -24,10 +24,6 @@ public abstract class Layer {
         return visible.get();
     }
 
-    public final void setVisible(boolean visible) {
-        this.visible.set(visible);
-    }
-
     public final BooleanProperty isVisibleProperty() {
         return visible;
     }
