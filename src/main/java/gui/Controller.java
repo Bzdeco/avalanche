@@ -1,8 +1,13 @@
 package gui;
 
+import backend.LasFileProcessor;
+import backend.LeData;
+import backend.SerFileProcessor;
 import backend.rasterizer.RiskProps;
 import backend.rasterizer.TerrainProps;
-import backend.rasterizer.tasks.*;
+import backend.rasterizer.tasks.AvalancheRisk;
+import backend.rasterizer.tasks.LasTin;
+import backend.rasterizer.tasks.SaveSer;
 import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
 import dto.WeatherDto;
@@ -15,7 +20,15 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.FileChooser;
@@ -26,17 +39,20 @@ import org.reactfx.StateMachine;
 import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class Controller {
-    private static final Logger logger = LogManager.getLogger();
+public class Controller
+{
+    private static final Logger LOGGER = LogManager.getLogger();
     @FXML
     public Button centerView;
     private ExecutorService executor = Executors.newFixedThreadPool(6);
@@ -71,9 +87,19 @@ public class Controller {
     private AvalancheRisk calculateRisk;
 
     @FXML
-    public void initialize() {
+    public void initialize()
+    {
         registerLayers();
-        loadFile();
+
+        try {
+            final File file = trySelectingFile();
+            loadDataFromFile(file);
+            //doStuffWithLoadedFile(leData);
+        } catch (OperationNotSupportedException ex) {
+            //TODO handle this better in the UI!
+            Platform.exit();
+        }
+
         initWeather();
 
         initZoomAndPan();
@@ -82,51 +108,95 @@ public class Controller {
         vp.enableRendering();
     }
 
-    private void loadFile() {
-        FileChooser fileChooser = new FileChooser();
-
+    private File trySelectingFile() throws OperationNotSupportedException
+    {
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(Arrays.asList(
                 new FileChooser.ExtensionFilter("Model lidarowy", "*.las"),
                 new FileChooser.ExtensionFilter("Model zserializowany", "*.ser")
         ));
-
         fileChooser.setTitle("Wybierz plik modelu terenu");
-        File f = fileChooser.showOpenDialog(null);
+        final File file = fileChooser.showOpenDialog(null);
+        validateFileSelection(file);
+        return file;
+    }
 
-        if (f != null && f.exists()) {
-            String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
-
-            Task<float[][][]> makeTerrain = null;
-            if (extension.equals("las")) makeTerrain = loadFromLas(f);
-            else if (extension.equals("ser")) makeTerrain = loadFromSer(f);
-
-            executor.execute(makeTerrain);
-            terrain.dataProperty().bind(makeTerrain.valueProperty());
-            grade.dataProperty().bind(makeTerrain.valueProperty());
-            curvature.dataProperty().bind(makeTerrain.valueProperty());
-
-            calculateRisk = new AvalancheRisk(makeTerrain);
-            calculateRisk.setExecutor(executor);
-            risk.dataProperty().bind(calculateRisk.valueProperty());
-            hillshade.dataProperty().bind(calculateRisk.valueProperty());
-
-        } else {
-            Platform.exit();
+    private void validateFileSelection(final File file) throws OperationNotSupportedException
+    {
+        if (file == null || !file.exists()) {
+            LOGGER.error("User cancelled file selection");
+            throw new OperationNotSupportedException("You have to select a file to proceed");
         }
     }
 
-    Task<float[][][]> loadFromLas(File lasfile) {
-        LasTin makeTin = new LasTin(lasfile);
+    private void loadDataFromFile(final File file)
+    {
+        final SupportedFileFormat format = extractFormat(file);
+        switch (format) {
+            case LAS:
+                executeLoadingData(createTaskLoadingFromLasFile(file));
+            default:
+                executeLoadingData(createTaskLoadingFromSerFile(file));
+        }
+    }
+
+    private SupportedFileFormat extractFormat(final File file)
+    {
+        final String format = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+        switch (format) {
+            case "ser":
+                return SupportedFileFormat.SER;
+            default:
+                return SupportedFileFormat.LAS;
+        }
+    }
+
+    private Task<LeData> createTaskLoadingFromLasFile(final File lasFile)
+    {
+
+        LasTin makeTin = new LasTin(lasFile);
         progress.progressProperty().bind(makeTin.progressProperty());
         executor.execute(makeTin);
-        return new TinTerrain(executor, 4, makeTin);
+        while(!makeTin.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        LasFileProcessor lasFileProcessor = null;
+        try {
+            lasFileProcessor = new LasFileProcessor(lasFile, makeTin.get(), executor, 4);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return lasFileProcessor.createProcessingTask();
+        //return new TinTerrain(executor, 4, makeTin);
     }
 
-    Task<float[][][]> loadFromSer(File serfile) {
-        return new SerTerrain(serfile);
+    private Task<LeData> createTaskLoadingFromSerFile(final File serFile)
+    {
+        final SerFileProcessor serFileProcessor = new SerFileProcessor(serFile);
+        return serFileProcessor.createProcessingTask();
+        //return new SerTerrain(serFile);
     }
 
-    private void createLayerControls() {
+    private void executeLoadingData(final Task<LeData> data)
+    {
+        //TODO get ledata, make a task, bind here
+        executor.execute(data);
+        terrain.dataProperty().bind(data.valueProperty());
+        grade.dataProperty().bind(data.valueProperty());
+        curvature.dataProperty().bind(data.valueProperty());
+
+        calculateRisk = new AvalancheRisk(data);
+        calculateRisk.setExecutor(executor);
+        risk.dataProperty().bind(calculateRisk.valueProperty());
+        hillshade.dataProperty().bind(calculateRisk.valueProperty());
+    }
+
+    private void createLayerControls()
+    {
         TreeItem<String> layersRoot = new TreeItem<>("Warstwy");
         layersRoot.setExpanded(true);
 
@@ -161,7 +231,8 @@ public class Controller {
         layerSelector.setRoot(layersRoot);
     }
 
-    private void registerLayers() {
+    private void registerLayers()
+    {
         terrain = new MultiGridLayer("Teren", TerrainProps.ALTITUDE, ColorRamp.create()
                 .step(4000, 255, 255, 255, 255)
                 .step(2800, 110, 110, 110, 255)
@@ -205,7 +276,8 @@ public class Controller {
         vp.registerLayer(new BackgroundLayer("Tło"));
     }
 
-    private void initWeather() {
+    private void initWeather()
+    {
         WeatherConnector con = WeatherConnector.getInstance();
         con.setTableView(tableView);
         LocalDate now = LocalDate.now(), wago = now.minus(1, ChronoUnit.WEEKS);
@@ -225,7 +297,8 @@ public class Controller {
         });
     }
 
-    private void initZoomAndPan() {
+    private void initZoomAndPan()
+    {
         EventStreams.eventsOf(vp, ScrollEvent.SCROLL)
                 .map(sE -> sE.getDeltaY() / 1000)
                 .accumulate(vp.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
@@ -249,13 +322,15 @@ public class Controller {
                 .toEventStream().feedTo(vp.panProperty());
     }
 
-    public void deinitialize() throws InterruptedException {
+    public void deinitialize() throws InterruptedException
+    {
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.SECONDS);
         executor.shutdownNow();
     }
 
-    public void saveTerrain(MouseEvent mouseEvent) {
+    public void saveTerrain(MouseEvent mouseEvent)
+    {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model zserializowany", "*.ser"));
 

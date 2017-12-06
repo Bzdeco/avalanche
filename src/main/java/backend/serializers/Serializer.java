@@ -1,12 +1,7 @@
 package backend.serializers;
 
-/**
- * Created by maciejs on 14.01.17.
- */
-public interface Serializer<Type> {
-    void serialize(Type object);
+public interface Serializer<T> {
+    void serialize(T object);
 
-    Type deserialize();
-
-    String getFileName();
+    T deserialize();
 }

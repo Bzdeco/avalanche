@@ -130,11 +130,11 @@ import java.util.List;
  * list as an input rather than the one that accepts single vertices. Having a
  * list of vertices gives this class more flexibility in constructing the TIN.
  * <p>
- * The process of inserting a vertex within a TIN requires fewer operations than
+ * The createProcessingTask of inserting a vertex within a TIN requires fewer operations than
  * extending the convex hull of that TIN. If a list of vertices is supplied to
- * the initial add routine, the bootstrap process attempts pick the largest
+ * the initial add routine, the bootstrap createProcessingTask attempts pick the largest
  * starting triangle that it can without excessive processing. Doing so improves
- * performance and stability of the build process.
+ * performance and stability of the build createProcessingTask.
  * <h3>Storing the same vertex more than once</h3>
  * The add() methods detect when the same vertex object is inserted more than
  * once and ignore redundant inputs. For distinct vertex objects at the same or
@@ -489,7 +489,7 @@ public class IncrementalTin implements IIncrementalTin {
             vertexList.add(v);
             boolean status = bootstrap(vertexList);
             if (status) {
-                // the bootstrap process uses 3 vertices from
+                // the bootstrap createProcessingTask uses 3 vertices from
                 // the vertex list but does not remove them from
                 // the list.   The processVertexInsertion method has the ability
                 // to ignore multiple insert actions for the same vertex.
@@ -516,9 +516,9 @@ public class IncrementalTin implements IIncrementalTin {
      * In the bootstrap phase, three points are chosen at random from the vertex
      * list to create the initial triangle for insertion. The initialization
      * will make a small number of selection attempts and select the triangle
-     * with the largest number. In the event that this process does not find
+     * with the largest number. In the event that this createProcessingTask does not find
      * three points that are not a suitable choice (as when they are collinear
-     * or nearly collinear), the process will be repeated until a valid initial
+     * or nearly collinear), the createProcessingTask will be repeated until a valid initial
      * triangle is selected.
      * <p>
      * Thus, there is a small performance advantage in supplying the vertices
@@ -587,7 +587,7 @@ public class IncrementalTin implements IIncrementalTin {
                 return false;
             }
             // if the bootstrap succeeded, just fall through
-            // and process the remainder of the list.
+            // and createProcessingTask the remainder of the list.
         }
 
         this.preAllocateEdges(aList.size());
@@ -1031,7 +1031,7 @@ public class IncrementalTin implements IIncrementalTin {
         Vertex a = edge.getA();
         if (a == v) {
             // this vertex was already inserted.  usually this is
-            // because the vertex was used in the bootstrap process
+            // because the vertex was used in the bootstrap createProcessingTask
             // but it could happen if the list gave the same vertex more
             // than once.
             return;
@@ -1194,7 +1194,7 @@ public class IncrementalTin implements IIncrementalTin {
 
     /**
      * Print statistics and diagnostic information collected during the TIN
-     * construction process. This information will be removed and reset by a
+     * construction createProcessingTask. This information will be removed and reset by a
      * call to the clear() method.
      *
      * @param ps A valid instance of a PrintStream to receive the output.
@@ -1378,7 +1378,7 @@ public class IncrementalTin implements IIncrementalTin {
      * removal sometimes produces this result. Ensure that the search is set
      * with an interior-side edge.
      *
-     * @param e the search edge identified by the removal process.
+     * @param e the search edge identified by the removal createProcessingTask.
      */
     private void setSearchEdgeAfterRemoval(final QuadEdge e) {
         QuadEdge b = e.getBaseReference();
@@ -1511,7 +1511,7 @@ public class IncrementalTin implements IIncrementalTin {
 
         if (nEar == 3) {
             // the removal of the vertex resulted in a single triangle
-            // which is already Delaunay.  The cavitation process should
+            // which is already Delaunay.  The cavitation createProcessingTask should
             // have reset the links.  So the removal operation is done.
             setSearchEdgeAfterRemoval(firstEar.c);
             return true;
@@ -1531,7 +1531,7 @@ public class IncrementalTin implements IIncrementalTin {
         // I do not believe that Devillers' original paper
         // adequately covered the case where the removal vertex is
         // on the permimeter. If the deletion point was
-        // on the perimeter, it is possible that the process reduced the ears
+        // on the perimeter, it is possible that the createProcessingTask reduced the ears
         // to the exterior edges of the network.
         //   When that happens we will be left with ears that generate
         // two kinds of triangles: degenerates and ghosts.  We do not

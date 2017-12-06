@@ -33,7 +33,7 @@ package tinfour.las;
 /**
  * A simple data-holder class for transferring data from
  * LAS file records.  This class is intended for efficient
- * use in applications that may process millions of records.
+ * use in applications that may createProcessingTask millions of records.
  * Therefore, it is designed so that instances
  * can be used and reused over and over again as temporary
  * containers for data.  Thus elements are exposed as public

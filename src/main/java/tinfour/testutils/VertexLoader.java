@@ -126,7 +126,7 @@ public class VertexLoader {
 
     /**
      * Reads the vertices from the specified LAS file reader instance. The
-     * reader is not closed when the process is complete. Options specified via
+     * reader is not closed when the createProcessingTask is complete. Options specified via
      * setter methods such as setMaximumNumberOfVertices() are and
      * setPreSortEnabled() are applied.
      *
