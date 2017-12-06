@@ -1,5 +1,6 @@
 package backend.rasterizer.tasks;
 
+import backend.LeData;
 import backend.rasterizer.RiskProps;
 import backend.rasterizer.TerrainProps;
 import backend.rasterizer.Utils;
@@ -14,12 +15,13 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class AvalancheRisk extends Service<float[][][]> {
+public class AvalancheRisk extends Service<LeData> {
     private WeatherDto weather;
-    private Future<float[][][]> fterrain;
+    private Future<LeData> fterrain;
 
-    public AvalancheRisk(Future<float[][][]> terrain) {
-        fterrain = terrain;
+    public AvalancheRisk(final Future<LeData> fterrain)
+    {
+        this.fterrain = fterrain;
     }
 
     public WeatherDto getWeather() {
@@ -30,11 +32,11 @@ public class AvalancheRisk extends Service<float[][][]> {
         this.weather = weather;
     }
 
-    @Override
-    protected Task<float[][][]> createTask() {
-        return new Task<float[][][]>() {
+    @Override //TODO change this madness!!
+    protected Task<LeData> createTask() {
+        return new Task<LeData>() {
             @Override
-            public float[][][] call() throws ExecutionException, InterruptedException {
+            public LeData call() throws ExecutionException, InterruptedException {
                 // Hillshade calculation according to current weather
                 float ambient = 0.25f;
 
@@ -60,7 +62,7 @@ public class AvalancheRisk extends Service<float[][][]> {
                 double zSun = sinE;
 
                 // Risk calculation
-                float[][][] terrain = fterrain.get();
+                float[][][] terrain = fterrain.get().getData();
 
                 int nRows = terrain.length;
                 int nCols = terrain[0].length;
@@ -130,7 +132,7 @@ public class AvalancheRisk extends Service<float[][][]> {
                     }
                 }
 
-                return results;
+                return new LeData(results);
             }
         };
     }
