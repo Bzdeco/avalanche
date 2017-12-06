@@ -1,12 +1,10 @@
 package gui;
 
-import backend.LasFileProcessor;
 import backend.LeData;
 import backend.SerFileProcessor;
 import backend.rasterizer.RiskProps;
 import backend.rasterizer.TerrainProps;
 import backend.rasterizer.tasks.AvalancheRisk;
-import backend.rasterizer.tasks.LasTin;
 import backend.rasterizer.tasks.SaveSer;
 import backend.service.WeatherConnector;
 import com.sun.javafx.util.Utils;
@@ -43,9 +41,7 @@ import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -55,10 +51,8 @@ public class Controller
     private static final Logger LOGGER = LogManager.getLogger();
     @FXML
     public Button centerView;
-    private ExecutorService executor = Executors.newFixedThreadPool(6);
     @FXML
     private ProgressBar progress;
-
     @FXML
     private TreeView layerSelector;
 
@@ -77,14 +71,14 @@ public class Controller
     @FXML
     private TableView tableView;
 
+    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+
+    private AvalancheRisk calculateRisk;
     private MultiGridLayer terrain;
     private MultiGridLayer curvature;
     private MultiGridLayer grade;
-
     private MultiGridLayer hillshade;
     private MultiGridLayer risk;
-
-    private AvalancheRisk calculateRisk;
 
     @FXML
     public void initialize()
@@ -94,7 +88,6 @@ public class Controller
         try {
             final File file = trySelectingFile();
             loadDataFromFile(file);
-            //doStuffWithLoadedFile(leData);
         } catch (OperationNotSupportedException ex) {
             //TODO handle this better in the UI!
             Platform.exit();
@@ -111,10 +104,9 @@ public class Controller
     private File trySelectingFile() throws OperationNotSupportedException
     {
         final FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(Arrays.asList(
-                new FileChooser.ExtensionFilter("Model lidarowy", "*.las"),
+        fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Model zserializowany", "*.ser")
-        ));
+        );
         fileChooser.setTitle("Wybierz plik modelu terenu");
         final File file = fileChooser.showOpenDialog(null);
         validateFileSelection(file);
@@ -131,66 +123,24 @@ public class Controller
 
     private void loadDataFromFile(final File file)
     {
-        final SupportedFileFormat format = extractFormat(file);
-        switch (format) {
-            case LAS:
-                executeLoadingData(createTaskLoadingFromLasFile(file));
-            default:
-                executeLoadingData(createTaskLoadingFromSerFile(file));
-        }
-    }
-
-    private SupportedFileFormat extractFormat(final File file)
-    {
-        final String format = file.getName().substring(file.getName().lastIndexOf(".") + 1);
-        switch (format) {
-            case "ser":
-                return SupportedFileFormat.SER;
-            default:
-                return SupportedFileFormat.LAS;
-        }
-    }
-
-    private Task<LeData> createTaskLoadingFromLasFile(final File lasFile)
-    {
-
-        LasTin makeTin = new LasTin(lasFile);
-        progress.progressProperty().bind(makeTin.progressProperty());
-        executor.execute(makeTin);
-        while(!makeTin.isDone()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        LasFileProcessor lasFileProcessor = null;
-        try {
-            lasFileProcessor = new LasFileProcessor(lasFile, makeTin.get(), executor, 4);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return lasFileProcessor.createProcessingTask();
-        //return new TinTerrain(executor, 4, makeTin);
+        executeLoadingData(createTaskLoadingFromSerFile(file));
     }
 
     private Task<LeData> createTaskLoadingFromSerFile(final File serFile)
     {
         final SerFileProcessor serFileProcessor = new SerFileProcessor(serFile);
         return serFileProcessor.createProcessingTask();
-        //return new SerTerrain(serFile);
     }
 
     private void executeLoadingData(final Task<LeData> data)
     {
-        //TODO get ledata, make a task, bind here
-        executor.execute(data);
+        executorService.execute(data);
         terrain.dataProperty().bind(data.valueProperty());
         grade.dataProperty().bind(data.valueProperty());
         curvature.dataProperty().bind(data.valueProperty());
 
         calculateRisk = new AvalancheRisk(data);
-        calculateRisk.setExecutor(executor);
+        calculateRisk.setExecutor(executorService);
         risk.dataProperty().bind(calculateRisk.valueProperty());
         hillshade.dataProperty().bind(calculateRisk.valueProperty());
     }
@@ -324,9 +274,9 @@ public class Controller
 
     public void deinitialize() throws InterruptedException
     {
-        executor.shutdown();
-        executor.awaitTermination(10, TimeUnit.SECONDS);
-        executor.shutdownNow();
+        executorService.shutdown();
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
+        executorService.shutdownNow();
     }
 
     public void saveTerrain(MouseEvent mouseEvent)
@@ -337,7 +287,7 @@ public class Controller
         File file = fileChooser.showSaveDialog(null);
 
         if (file != null) {
-            executor.execute(new SaveSer(file, terrain.getData()));
+            executorService.execute(new SaveSer(file, terrain.getData()));
         }
     }
 }

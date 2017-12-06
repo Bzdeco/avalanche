@@ -3,9 +3,6 @@ package backend.rasterizer;
 import tinfour.semivirtual.SemiVirtualIncrementalTin;
 import tinfour.testutils.GridSpecification;
 
-/**
- * Created by korri on 14/01/17.
- */
 public class GridTin {
     private SemiVirtualIncrementalTin tin;
     private GridSpecification grid;

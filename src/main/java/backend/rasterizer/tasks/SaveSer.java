@@ -1,15 +1,16 @@
 package backend.rasterizer.tasks;
 
+import backend.LeData;
 import backend.serializers.DataSerializer;
 import javafx.concurrent.Task;
 
 import java.io.File;
 
 public class SaveSer extends Task<Void> {
-    private DataSerializer<float[][][]> ser;
-    private float[][][] terrain;
+    private DataSerializer<LeData> ser;
+    private LeData terrain;
 
-    public SaveSer(File serfile, float[][][] terrain) {
+    public SaveSer(File serfile, LeData terrain) {
         ser = new DataSerializer<>(serfile);
         this.terrain = terrain;
     }

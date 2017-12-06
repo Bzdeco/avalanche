@@ -1,5 +1,6 @@
 package gui.layers;
 
+import backend.LeData;
 import gui.Layer;
 import gui.Viewport;
 import javafx.beans.property.ObjectProperty;
@@ -11,7 +12,7 @@ import org.reactfx.EventStreams;
 import java.util.function.Function;
 
 public class MultiGridLayer extends Layer {
-    private ObjectProperty<float[][][]> data = new SimpleObjectProperty<>();
+    private ObjectProperty<LeData> data = new SimpleObjectProperty<>();
     private int idx;
     private Function<Float, Integer> colorMapper;
 
@@ -22,21 +23,23 @@ public class MultiGridLayer extends Layer {
         EventStreams.changesOf(dataProperty()).map(c -> c.getNewValue() != null).feedTo(isReady);
     }
 
-    public float[][][] getData() {
+    public LeData getData()
+    {
         return data.get();
     }
 
-    public void setData(float[][][] data) {
+    public void setData(final LeData data)
+    {
         this.data.set(data);
     }
 
-    public ObjectProperty<float[][][]> dataProperty() {
+    public ObjectProperty<LeData> dataProperty() {
         return data;
     }
 
     @Override
     public void render(GraphicsContext gc, Viewport vp) {
-        float[][][] arr = getData();
+        float[][][] arr = getData().getData();
 
         double cellSize = Math.max(1, Math.floor(16 * vp.getZoom()));
 
