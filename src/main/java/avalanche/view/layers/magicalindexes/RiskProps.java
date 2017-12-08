@@ -1,4 +1,4 @@
-package backend.rasterizer;
+package avalanche.view.layers.magicalindexes;
 
 public class RiskProps {
     public static final int RISK = 0;

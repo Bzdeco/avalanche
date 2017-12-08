@@ -1,7 +1,7 @@
 package backend.rasterizer.tasks;
 
-import backend.LeData;
-import backend.serializers.DataSerializer;
+import avalanche.model.LeData;
+import avalanche.model.serializers.DataSerializer;
 import javafx.concurrent.Task;
 
 import java.io.File;

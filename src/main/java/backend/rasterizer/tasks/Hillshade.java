@@ -1,6 +1,6 @@
 package backend.rasterizer.tasks;
 
-import backend.rasterizer.TerrainProps;
+import avalanche.view.layers.magicalindexes.TerrainProps;
 import backend.rasterizer.Utils;
 import javafx.concurrent.Task;
 

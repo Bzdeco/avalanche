@@ -382,7 +382,7 @@ public class IncrementalTin implements IIncrementalTin {
      */
     private int nInCircleExtendedPrecisionConflicts;
     /**
-     * Counts the number of edges that are removed and replaced during build
+     * Counts the number of edges that are removed and replaced during convert
      */
     private int nEdgesReplacedDuringBuild;
     /**
@@ -1045,7 +1045,7 @@ public class IncrementalTin implements IIncrementalTin {
             group = new VertexMergerGroup(edge.getA());
             group.setResolutionRule(vertexMergeRule);
             coincidenceList.add(group);
-            // build a list of edges that contain the target vertex.
+            // convert a list of edges that contain the target vertex.
             // for each of these, replace the previously existing
             // vertex (a) with the new group.
             QuadEdge start = edge;

@@ -1,17 +1,20 @@
-package gui;
+package avalanche.controller;
 
-import backend.LeData;
-import backend.SerFileProcessor;
-import backend.rasterizer.RiskProps;
-import backend.rasterizer.TerrainProps;
+import avalanche.model.LeData;
+import avalanche.model.fileprocessors.SerFileProcessor;
+import avalanche.view.Viewport;
+import avalanche.view.layers.AvalancheRiskLayer;
+import avalanche.view.layers.CurvatureLayer;
+import avalanche.view.layers.GradeLayer;
+import avalanche.view.layers.HillShadeLayer;
+import avalanche.view.layers.LayerView;
+import avalanche.view.layers.TerrainAltitudeLayer;
+import avalanche.view.layers.renderers.GridLayerRenderer;
 import backend.rasterizer.tasks.AvalancheRisk;
-import backend.rasterizer.tasks.SaveSer;
 import backend.service.WeatherConnector;
+import com.google.common.collect.ImmutableList;
 import com.sun.javafx.util.Utils;
 import dto.WeatherDto;
-import gui.layers.BackgroundLayer;
-import gui.layers.ColorRamp;
-import gui.layers.MultiGridLayer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -49,15 +52,28 @@ import java.util.concurrent.TimeUnit;
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String CURVATURE_NAME = "Krzywizna terenu";
+    private static final String GRADE_NAME = "Nachylenie terenu";
+    private static final String HILL_SHADE_NAME = "Zacienienie";
+    private static final String TERRAIN_ALTITUDE_NAME = "Teren";
+    private static final String AVALANCHE_RISK_NAME = "Ryzyko lawinowe";
+    private static final CurvatureLayer CURVATURE_LAYER = new CurvatureLayer(CURVATURE_NAME);
+    private static final GradeLayer GRADE_LAYER = new GradeLayer(GRADE_NAME);
+    private static final HillShadeLayer HILL_SHADE_LAYER = new HillShadeLayer(HILL_SHADE_NAME);
+    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer(TERRAIN_ALTITUDE_NAME);
+    private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer(AVALANCHE_RISK_NAME);
+
     @FXML
     public Button centerView;
+
     @FXML
     private ProgressBar progress;
+
     @FXML
     private TreeView layerSelector;
 
     @FXML
-    private Viewport vp;
+    private Viewport viewport;
 
     @FXML
     private DatePicker fromDate;
@@ -72,18 +88,27 @@ public class Controller
     private TableView tableView;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private LayerController layerController;
 
     private AvalancheRisk calculateRisk;
-    private MultiGridLayer terrain;
-    private MultiGridLayer curvature;
-    private MultiGridLayer grade;
-    private MultiGridLayer hillshade;
-    private MultiGridLayer risk;
+    private GridLayerRenderer terrain;
+    private GridLayerRenderer curvature;
+    private GridLayerRenderer grade;
+    private GridLayerRenderer hillshade;
+    private GridLayerRenderer risk;
 
     @FXML
     public void initialize()
     {
-        registerLayers();
+        layerController = LayerController.initializeWithLayers(
+                ImmutableList.of(
+                        CURVATURE_LAYER,
+                        GRADE_LAYER,
+                        HILL_SHADE_LAYER,
+                        TERRAIN_ALTITUDE_LAYER,
+                        AVALANCHE_RISK_LAYER),
+                viewport
+        );
 
         try {
             final File file = trySelectingFile();
@@ -94,11 +119,9 @@ public class Controller
         }
 
         initWeather();
-
         initZoomAndPan();
         createLayerControls();
-
-        vp.enableRendering();
+        layerController.renderLayers();
     }
 
     private File trySelectingFile() throws OperationNotSupportedException
@@ -135,14 +158,15 @@ public class Controller
     private void executeLoadingData(final Task<LeData> data)
     {
         executorService.execute(data);
-        terrain.dataProperty().bind(data.valueProperty());
-        grade.dataProperty().bind(data.valueProperty());
-        curvature.dataProperty().bind(data.valueProperty());
+        //TODO can this ui binding be moved?
+        TERRAIN_ALTITUDE_LAYER.dataProperty().bind(data.valueProperty());
+        GRADE_LAYER.dataProperty().bind(data.valueProperty());
+        CURVATURE_LAYER.dataProperty().bind(data.valueProperty());
 
         calculateRisk = new AvalancheRisk(data);
         calculateRisk.setExecutor(executorService);
-        risk.dataProperty().bind(calculateRisk.valueProperty());
-        hillshade.dataProperty().bind(calculateRisk.valueProperty());
+        AVALANCHE_RISK_LAYER.dataProperty().bind(calculateRisk.valueProperty());
+        HILL_SHADE_LAYER.dataProperty().bind(calculateRisk.valueProperty());
     }
 
     private void createLayerControls()
@@ -150,8 +174,8 @@ public class Controller
         TreeItem<String> layersRoot = new TreeItem<>("Warstwy");
         layersRoot.setExpanded(true);
 
-        for (Tuple2<Layer, Canvas> layer : vp.getLayers()) {
-            Layer l = layer._1;
+        for (Tuple2<LayerView, Canvas> layer : layerController.getLayers()) {
+            LayerView l = layer._1;
 
             CheckBox layerToggle = new CheckBox();
             layerToggle.selectedProperty().bindBidirectional(l.isVisibleProperty());
@@ -159,7 +183,7 @@ public class Controller
             layerLoadIndicator.setPrefWidth(16);
             layerLoadIndicator.setPrefHeight(16);
 
-            EventStreams.valuesOf(l.isReadyProperty())
+            EventStreams.valuesOf(l.readyProperty()) // was setting to true in constructor |ReadOnlyBooleanWrapper
                     .map(r -> r ? null : layerLoadIndicator)
                     .feedTo(layerToggle.graphicProperty());
 
@@ -179,51 +203,6 @@ public class Controller
 
         //noinspection unchecked
         layerSelector.setRoot(layersRoot);
-    }
-
-    private void registerLayers()
-    {
-        terrain = new MultiGridLayer("Teren", TerrainProps.ALTITUDE, ColorRamp.create()
-                .step(4000, 255, 255, 255, 255)
-                .step(2800, 110, 110, 110, 255)
-                .step(1700, 158, 0, 0, 255)
-                .step(1200, 161, 67, 0, 255)
-                .step(500, 232, 215, 125, 255)
-                .step(50, 16, 122, 47, 255)
-                .step(0, 0, 97, 71, 255)
-                .build());
-
-        hillshade = new MultiGridLayer("Zacienienie", RiskProps.HILLSHADE, ColorRamp.create()
-                .step(1, 255, 255, 255, 255)
-                .step(0, 0, 0, 0, 0)
-                .build());
-
-        grade = new MultiGridLayer("Nachylenie terenu", TerrainProps.GRADE, ColorRamp.create()
-                .step(-(float) Math.PI, 0, 0, 255, 255)
-                .step((float) Math.PI, 255, 0, 0, 255)
-                .build());
-
-        curvature = new MultiGridLayer("Krzywizna terenu", TerrainProps.PROFCURV, ColorRamp.create()
-                .step(-1, 0, 0, 255, 255)
-                .step(-0.01f, 0, 255, 255, 255)
-                .step(0, 0, 255, 0, 255)
-                .step(0.01f, 255, 255, 0, 255)
-                .step(1, 255, 0, 0, 255)
-                .build());
-
-        risk = new MultiGridLayer("Ryzyko lawinowe", RiskProps.RISK, ColorRamp.create()
-                .step(0, 0, 255, 0, 255)
-                .step(2, 255, 255, 0, 255)
-                .step(4, 255, 0, 0, 255)
-                .step(5, 127, 0, 63, 255)
-                .build());
-
-        vp.registerLayer(risk);
-        vp.registerLayer(curvature);
-        vp.registerLayer(grade);
-        vp.registerLayer(hillshade);
-        vp.registerLayer(terrain);
-        vp.registerLayer(new BackgroundLayer("Tło"));
     }
 
     private void initWeather()
@@ -249,19 +228,19 @@ public class Controller
 
     private void initZoomAndPan()
     {
-        EventStreams.eventsOf(vp, ScrollEvent.SCROLL)
+        EventStreams.eventsOf(viewport, ScrollEvent.SCROLL)
                 .map(sE -> sE.getDeltaY() / 1000)
-                .accumulate(vp.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
-                .feedTo(vp.zoomProperty());
+                .accumulate(viewport.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
+                .feedTo(viewport.zoomProperty());
 
-        StateMachine.init(Tuples.t(vp.getPan(), Point2D.ZERO))
-                .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_PRESSED))
+        StateMachine.init(Tuples.t(viewport.getPan(), Point2D.ZERO))
+                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_PRESSED))
                 .transition((p, m) -> Tuples.t(p._1, new Point2D(m.getX(), m.getY())))
-                .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_DRAGGED))
+                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_DRAGGED))
                 .emit((p, m) -> Optional.of(p._1.add(p._2.subtract(m.getX(), m.getY()))))
-                .on(EventStreams.eventsOf(vp, MouseEvent.MOUSE_RELEASED))
+                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_RELEASED))
                 .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
-                .on(EventStreams.changesOf(vp.zoomProperty()))
+                .on(EventStreams.changesOf(viewport.zoomProperty()))
                 .transmit((p, c) -> {
                     final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
                     final Point2D newPan = p._1.multiply(nz / oz);
@@ -269,7 +248,7 @@ public class Controller
                 })
                 .on(EventStreams.eventsOf(centerView, MouseEvent.MOUSE_CLICKED)) // Reset view
                 .transmit((p, c) -> Tuples.t(Tuples.t(Point2D.ZERO, Point2D.ZERO), Optional.of(Point2D.ZERO)))
-                .toEventStream().feedTo(vp.panProperty());
+                .toEventStream().feedTo(viewport.panProperty());
     }
 
     public void deinitialize() throws InterruptedException
@@ -279,15 +258,16 @@ public class Controller
         executorService.shutdownNow();
     }
 
-    public void saveTerrain(MouseEvent mouseEvent)
-    {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model zserializowany", "*.ser"));
-
-        File file = fileChooser.showSaveDialog(null);
-
-        if (file != null) {
-            executorService.execute(new SaveSer(file, terrain.getData()));
-        }
-    }
+//TODO get back to saving stuff
+//    public void saveTerrain(MouseEvent mouseEvent)
+//    {
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model zserializowany", "*.ser"));
+//
+//        File file = fileChooser.showSaveDialog(null);
+//
+//        if (file != null) {
+//            executorService.execute(new SaveSer(file, terrain.getData()));
+//        }
+//    }
 }

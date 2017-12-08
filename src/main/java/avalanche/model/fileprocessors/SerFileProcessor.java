@@ -1,6 +1,7 @@
-package backend;
+package avalanche.model.fileprocessors;
 
-import backend.serializers.DataSerializer;
+import avalanche.model.LeData;
+import avalanche.model.serializers.DataSerializer;
 import javafx.concurrent.Task;
 
 import java.io.File;

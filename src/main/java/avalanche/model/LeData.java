@@ -1,4 +1,4 @@
-package backend;
+package avalanche.model;
 
 public class LeData
 {

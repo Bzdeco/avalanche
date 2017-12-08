@@ -1,8 +1,7 @@
-package gui.layers;
+package avalanche.view.layers;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 
 public class ColorRamp {
     private TreeMap<Float, Integer> ramp = new TreeMap<>();
@@ -30,19 +29,17 @@ public class ColorRamp {
         return this;
     }
 
-    public Function<Float, Integer> build() {
-        return val -> {
-            Map.Entry<Float, Integer> lower = ramp.headMap(val, true).lastEntry();
-            Map.Entry<Float, Integer> upper = ramp.tailMap(val, true).firstEntry();
+    public int convert(float value) {
+            Map.Entry<Float, Integer> lower = ramp.headMap(value, true).lastEntry();
+            Map.Entry<Float, Integer> upper = ramp.tailMap(value, true).firstEntry();
 
             if (lower == null) lower = ramp.firstEntry();
             if (upper == null) upper = ramp.lastEntry();
 
             float lower_key = lower.getKey();
             float diff = upper.getKey() - lower_key;
-            float t = (diff == 0) ? 0 : (val - lower_key) / diff;
+            float t = (diff == 0) ? 0 : (value - lower_key) / diff;
 
             return ColorRamp.lerp(lower.getValue(), upper.getValue(), t);
-        };
     }
 }
