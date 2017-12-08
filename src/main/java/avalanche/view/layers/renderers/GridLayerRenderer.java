@@ -1,45 +1,16 @@
-package gui.layers;
+package avalanche.view.layers.renderers;
 
-import backend.LeData;
-import gui.Layer;
-import gui.Viewport;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import avalanche.view.Viewport;
+import avalanche.view.layers.LayerView;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
-import org.reactfx.EventStreams;
 
-import java.util.function.Function;
-
-public class MultiGridLayer extends Layer {
-    private ObjectProperty<LeData> data = new SimpleObjectProperty<>();
-    private int idx;
-    private Function<Float, Integer> colorMapper;
-
-    public MultiGridLayer(String name, int idx, Function<Float, Integer> colorMapper) {
-        super(name);
-        this.colorMapper = colorMapper;
-        this.idx = idx;
-        EventStreams.changesOf(dataProperty()).map(c -> c.getNewValue() != null).feedTo(isReady);
-    }
-
-    public LeData getData()
-    {
-        return data.get();
-    }
-
-    public void setData(final LeData data)
-    {
-        this.data.set(data);
-    }
-
-    public ObjectProperty<LeData> dataProperty() {
-        return data;
-    }
-
+public class GridLayerRenderer implements LayerRenderer
+{
     @Override
-    public void render(GraphicsContext gc, Viewport vp) {
-        float[][][] arr = getData().getData();
+    public void render(final GraphicsContext gc, final Viewport vp, final LayerView layerView)
+    {
+        float[][][] arr = layerView.getData().getData(); //TODO welp, this sucks :D
 
         double cellSize = Math.max(1, Math.floor(16 * vp.getZoom()));
 
@@ -64,7 +35,7 @@ public class MultiGridLayer extends Layer {
                         final int idxX = x + offX, sX = x * cs;
                         if (idxX >= 0 && idxX < arrWidth) {
                             for (int dx = 0; dx < cs; ++dx) {
-                                pw.setArgb(sX + dx, sY + dy, colorMapper.apply(row[idxX][idx]));
+                                pw.setArgb(sX + dx, sY + dy, layerView.convertToColor(row[idxX][layerView.getMagicalIndex()]));
                             }
                         }
                     }

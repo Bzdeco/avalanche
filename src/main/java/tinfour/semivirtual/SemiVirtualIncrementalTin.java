@@ -951,7 +951,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
             group = new VertexMergerGroup(edge.getA());
             group.setResolutionRule(vertexMergeRule);
             coincidenceList.add(group);
-            // build a list of edges that contain the target vertex.
+            // convert a list of edges that contain the target vertex.
             // for each of these, replace the previously existing
             // vertex (a) with the new group.
             SemiVirtualEdge start = edge;

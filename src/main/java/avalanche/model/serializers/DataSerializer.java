@@ -1,4 +1,4 @@
-package backend.serializers;
+package avalanche.model.serializers;
 
 import java.io.*;
 

@@ -1,8 +1,8 @@
 package backend.rasterizer.tasks;
 
-import backend.LeData;
-import backend.rasterizer.RiskProps;
-import backend.rasterizer.TerrainProps;
+import avalanche.model.LeData;
+import avalanche.view.layers.magicalindexes.RiskProps;
+import avalanche.view.layers.magicalindexes.TerrainProps;
 import backend.rasterizer.Utils;
 import dto.WeatherDto;
 import javafx.concurrent.Service;

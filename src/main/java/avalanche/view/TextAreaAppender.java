@@ -1,4 +1,4 @@
-package gui;
+package avalanche.view;
 
 /*
 Code from:
