@@ -1,59 +1,45 @@
 package avalanche.view.layers;
 
-import avalanche.model.LeData;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import org.reactfx.EventStreams;
+import javafx.scene.canvas.Canvas;
 
-public abstract class LayerView implements Layer
+public class LayerView
 {
-    private ObjectProperty<LeData> data = new SimpleObjectProperty<>();
-    private final ReadOnlyBooleanWrapper ready = new ReadOnlyBooleanWrapper();
-    private final BooleanProperty visible = new SimpleBooleanProperty(false);
-    private final StringProperty name = new SimpleStringProperty();
+    private final LayerUI layerUI;
+    private final Canvas layerCanvas;
 
-    public LayerView(String name) {
-        this.name.set(name);
-        EventStreams.changesOf(dataProperty())
-                .map(c -> c.getNewValue() != null)
-                .feedTo(ready);
+    public LayerView(final LayerUI layerUI, final Canvas layerCanvas)
+    {
+        this.layerUI = layerUI;
+        this.layerCanvas = layerCanvas;
     }
 
-    public LeData getData() {
-        return data.get();
+    public LayerUI getLayerUI()
+    {
+        return layerUI;
     }
 
-    public void setData(LeData data) {
-        this.data.set(data);
+    public Canvas getLayerCanvas()
+    {
+        return layerCanvas;
     }
 
-    public ObjectProperty<LeData> dataProperty() {
-        return data;
+    @Override
+    public boolean equals(final Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final LayerView layerView = (LayerView) o;
+
+        if (layerUI != null ? !layerUI.equals(layerView.layerUI) : layerView.layerUI != null) return false;
+        return layerCanvas != null ? layerCanvas.equals(layerView.layerCanvas) : layerView.layerCanvas == null;
     }
 
-    protected String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
-
-    public final boolean isVisible() {
-        return visible.get();
-    }
-
-    public final BooleanProperty isVisibleProperty() {
-        return visible;
-    }
-
-    public final ReadOnlyBooleanProperty readyProperty() {
-        return ready.getReadOnlyProperty();
+    @Override
+    public int hashCode()
+    {
+        int result = layerUI != null ? layerUI.hashCode() : 0;
+        result = 31 * result + (layerCanvas != null ? layerCanvas.hashCode() : 0);
+        return result;
     }
 }

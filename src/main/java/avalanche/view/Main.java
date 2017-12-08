@@ -11,27 +11,26 @@ import org.apache.logging.log4j.Logger;
 
 public class Main extends Application {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final String STAGE_TITLE = "Projekt lawinowy";
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
-        Parent root = loader.load();
-        Controller ctrl = loader.getController();
-
+    public void start(final Stage primaryStage) throws Exception {
+        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
+        final Parent root = loader.load();
+        final Controller ctrl = loader.getController();
         primaryStage.setOnCloseRequest(ev -> {
             try {
-                ctrl.deinitialize();
+                ctrl.shutdown();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("Shutdown interrupted", e);
             }
         });
-
-        primaryStage.setTitle("Projekt lawinowy");
+        primaryStage.setTitle(STAGE_TITLE);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

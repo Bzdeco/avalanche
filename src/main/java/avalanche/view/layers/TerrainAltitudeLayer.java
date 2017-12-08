@@ -2,7 +2,7 @@ package avalanche.view.layers;
 
 import avalanche.view.layers.magicalindexes.TerrainProps;
 
-public class TerrainAltitudeLayer extends LayerView
+public class TerrainAltitudeLayer extends LayerUI
 {
     public TerrainAltitudeLayer(final String name)
     {

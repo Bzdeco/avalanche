@@ -2,7 +2,7 @@ package avalanche.view.layers;
 
 import avalanche.view.layers.magicalindexes.TerrainProps;
 
-public class GradeLayer extends LayerView
+public class GradeLayer extends LayerUI
 {
     public GradeLayer(final String name)
     {
