@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import avalanche.view.Viewport?>
+<?import avalanche.view.layers.LayerViewport?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -23,7 +23,7 @@
         </Accordion>
     </left>
     <center>
-        <Viewport fx:id="viewport"/>
+        <LayerViewport fx:id="layerViewport"/>
     </center>
     <bottom>
         <TitledPane expanded="false" animated="false" text="Pogoda" BorderPane.alignment="CENTER">

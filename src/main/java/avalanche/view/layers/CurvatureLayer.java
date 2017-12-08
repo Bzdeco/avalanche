@@ -2,7 +2,7 @@ package avalanche.view.layers;
 
 import avalanche.view.layers.magicalindexes.TerrainProps;
 
-public class CurvatureLayer extends LayerView
+public class CurvatureLayer extends LayerUI
 {
     public CurvatureLayer(final String name)
     {
@@ -26,5 +26,4 @@ public class CurvatureLayer extends LayerView
                 .step(1, 255, 0, 0, 255)
                 .convert(value);
     }
-
 }

@@ -2,14 +2,12 @@ package avalanche.controller;
 
 import avalanche.model.LeData;
 import avalanche.model.fileprocessors.SerFileProcessor;
-import avalanche.view.Viewport;
 import avalanche.view.layers.AvalancheRiskLayer;
 import avalanche.view.layers.CurvatureLayer;
 import avalanche.view.layers.GradeLayer;
 import avalanche.view.layers.HillShadeLayer;
-import avalanche.view.layers.LayerView;
+import avalanche.view.layers.LayerViewport;
 import avalanche.view.layers.TerrainAltitudeLayer;
-import avalanche.view.layers.renderers.GridLayerRenderer;
 import backend.rasterizer.tasks.AvalancheRisk;
 import backend.service.WeatherConnector;
 import com.google.common.collect.ImmutableList;
@@ -20,15 +18,10 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -37,7 +30,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
-import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 
 import javax.naming.OperationNotSupportedException;
@@ -52,16 +44,12 @@ import java.util.concurrent.TimeUnit;
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String CURVATURE_NAME = "Krzywizna terenu";
-    private static final String GRADE_NAME = "Nachylenie terenu";
-    private static final String HILL_SHADE_NAME = "Zacienienie";
-    private static final String TERRAIN_ALTITUDE_NAME = "Teren";
-    private static final String AVALANCHE_RISK_NAME = "Ryzyko lawinowe";
-    private static final CurvatureLayer CURVATURE_LAYER = new CurvatureLayer(CURVATURE_NAME);
-    private static final GradeLayer GRADE_LAYER = new GradeLayer(GRADE_NAME);
-    private static final HillShadeLayer HILL_SHADE_LAYER = new HillShadeLayer(HILL_SHADE_NAME);
-    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer(TERRAIN_ALTITUDE_NAME);
-    private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer(AVALANCHE_RISK_NAME);
+    private static final CurvatureLayer CURVATURE_LAYER = new CurvatureLayer("Krzywizna terenu");
+    private static final GradeLayer GRADE_LAYER = new GradeLayer("Nachylenie terenu");
+    private static final HillShadeLayer HILL_SHADE_LAYER = new HillShadeLayer("Zacienienie");
+    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer("Teren");
+    private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer("Ryzyko lawinowe");
+    private static final String LAYER_VIEW_NAME = "Warstwy";
 
     @FXML
     public Button centerView;
@@ -73,7 +61,7 @@ public class Controller
     private TreeView layerSelector;
 
     @FXML
-    private Viewport viewport;
+    private LayerViewport layerViewport;
 
     @FXML
     private DatePicker fromDate;
@@ -88,27 +76,18 @@ public class Controller
     private TableView tableView;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(6);
-    private LayerController layerController;
-
     private AvalancheRisk calculateRisk;
-    private GridLayerRenderer terrain;
-    private GridLayerRenderer curvature;
-    private GridLayerRenderer grade;
-    private GridLayerRenderer hillshade;
-    private GridLayerRenderer risk;
 
     @FXML
     public void initialize()
     {
-        layerController = LayerController.initializeWithLayers(
-                ImmutableList.of(
-                        CURVATURE_LAYER,
-                        GRADE_LAYER,
-                        HILL_SHADE_LAYER,
-                        TERRAIN_ALTITUDE_LAYER,
-                        AVALANCHE_RISK_LAYER),
-                viewport
-        );
+        layerViewport.registerLayers(ImmutableList.of(
+                CURVATURE_LAYER,
+                GRADE_LAYER,
+                HILL_SHADE_LAYER,
+                TERRAIN_ALTITUDE_LAYER,
+                AVALANCHE_RISK_LAYER
+        ));
 
         try {
             final File file = trySelectingFile();
@@ -118,10 +97,11 @@ public class Controller
             Platform.exit();
         }
 
-        initWeather();
-        initZoomAndPan();
-        createLayerControls();
-        layerController.renderLayers();
+        initializeWeather();
+        initializeZoomAndPan();
+
+        layerViewport.createLayerControls(LAYER_VIEW_NAME, layerSelector);
+        layerViewport.renderLayers();
     }
 
     private File trySelectingFile() throws OperationNotSupportedException
@@ -155,92 +135,66 @@ public class Controller
         return serFileProcessor.createProcessingTask();
     }
 
-    private void executeLoadingData(final Task<LeData> data)
+    private void executeLoadingData(final Task<LeData> dataTask)
     {
-        executorService.execute(data);
-        //TODO can this ui binding be moved?
-        TERRAIN_ALTITUDE_LAYER.dataProperty().bind(data.valueProperty());
-        GRADE_LAYER.dataProperty().bind(data.valueProperty());
-        CURVATURE_LAYER.dataProperty().bind(data.valueProperty());
+        executorService.execute(dataTask);
+        calculateRisk = new AvalancheRisk(dataTask); // TODO check if this can be converted to local
+//        calculateRisk.setExecutor(executorService); TODO check if this is needed when app works
 
-        calculateRisk = new AvalancheRisk(data);
-        calculateRisk.setExecutor(executorService);
+        bindUi(dataTask);
+    }
+
+    private void bindUi(final Task<LeData> dataTask)
+    {
+        TERRAIN_ALTITUDE_LAYER.dataProperty().bind(dataTask.valueProperty());
+        GRADE_LAYER.dataProperty().bind(dataTask.valueProperty());
+        CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
         AVALANCHE_RISK_LAYER.dataProperty().bind(calculateRisk.valueProperty());
         HILL_SHADE_LAYER.dataProperty().bind(calculateRisk.valueProperty());
     }
 
-    private void createLayerControls()
+
+    private void initializeWeather()
     {
-        TreeItem<String> layersRoot = new TreeItem<>("Warstwy");
-        layersRoot.setExpanded(true);
 
-        for (Tuple2<LayerView, Canvas> layer : layerController.getLayers()) {
-            LayerView l = layer._1;
-
-            CheckBox layerToggle = new CheckBox();
-            layerToggle.selectedProperty().bindBidirectional(l.isVisibleProperty());
-            ProgressIndicator layerLoadIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
-            layerLoadIndicator.setPrefWidth(16);
-            layerLoadIndicator.setPrefHeight(16);
-
-            EventStreams.valuesOf(l.readyProperty()) // was setting to true in constructor |ReadOnlyBooleanWrapper
-                    .map(r -> r ? null : layerLoadIndicator)
-                    .feedTo(layerToggle.graphicProperty());
-
-            TreeItem<String> layerItem = new TreeItem<>();
-            layerItem.valueProperty().bindBidirectional(l.nameProperty());
-            layerItem.setGraphic(layerToggle);
-
-            TreeItem<String> alphaSlider = new TreeItem<>("Alpha");
-            Slider slider = new Slider(0.1, 1.0, 0.50);
-            alphaSlider.setGraphic(slider);
-
-            slider.valueProperty().bindBidirectional(layer._2.opacityProperty());
-
-            layerItem.getChildren().add(alphaSlider);
-            layersRoot.getChildren().add(layerItem);
-        }
-
-        //noinspection unchecked
-        layerSelector.setRoot(layersRoot);
-    }
-
-    private void initWeather()
-    {
-        WeatherConnector con = WeatherConnector.getInstance();
-        con.setTableView(tableView);
-        LocalDate now = LocalDate.now(), wago = now.minus(1, ChronoUnit.WEEKS);
-
-        EventStreams.changesOf(fromDate.valueProperty()).subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
-
-        EventStreams.changesOf(toDate.valueProperty()).subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
-
+        LocalDate now = LocalDate.now();
+        LocalDate wago = now.minus(1, ChronoUnit.WEEKS);
         fromDate.setValue(wago);
         toDate.setValue(now);
 
-        //noinspection unchecked
-        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            @SuppressWarnings("unchecked") WeatherDto w = new WeatherDto.Builder().build((ObservableList<String>) newValue);
-            calculateRisk.setWeather(w);
-            calculateRisk.restart();
-        });
+        WeatherConnector con = WeatherConnector.getInstance();
+
+        EventStreams.changesOf(fromDate.valueProperty())
+                .subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
+        EventStreams.changesOf(toDate.valueProperty())
+                .subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
+
+        tableView.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    WeatherDto weatherDto = new WeatherDto.Builder()
+                    .build((ObservableList<String>) newValue);
+                    calculateRisk.setWeather(weatherDto);
+                    calculateRisk.restart();
+                });
+        con.setTableView(tableView);
     }
 
-    private void initZoomAndPan()
+    private void initializeZoomAndPan()
     {
-        EventStreams.eventsOf(viewport, ScrollEvent.SCROLL)
+        EventStreams.eventsOf(layerViewport, ScrollEvent.SCROLL)
                 .map(sE -> sE.getDeltaY() / 1000)
-                .accumulate(viewport.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
-                .feedTo(viewport.zoomProperty());
+                .accumulate(layerViewport.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
+                .feedTo(layerViewport.zoomProperty());
 
-        StateMachine.init(Tuples.t(viewport.getPan(), Point2D.ZERO))
-                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_PRESSED))
+        StateMachine.init(Tuples.t(layerViewport.getPan(), Point2D.ZERO))
+                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_PRESSED))
                 .transition((p, m) -> Tuples.t(p._1, new Point2D(m.getX(), m.getY())))
-                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_DRAGGED))
+                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_DRAGGED))
                 .emit((p, m) -> Optional.of(p._1.add(p._2.subtract(m.getX(), m.getY()))))
-                .on(EventStreams.eventsOf(viewport, MouseEvent.MOUSE_RELEASED))
+                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_RELEASED))
                 .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
-                .on(EventStreams.changesOf(viewport.zoomProperty()))
+                .on(EventStreams.changesOf(layerViewport.zoomProperty()))
                 .transmit((p, c) -> {
                     final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
                     final Point2D newPan = p._1.multiply(nz / oz);
@@ -248,10 +202,10 @@ public class Controller
                 })
                 .on(EventStreams.eventsOf(centerView, MouseEvent.MOUSE_CLICKED)) // Reset view
                 .transmit((p, c) -> Tuples.t(Tuples.t(Point2D.ZERO, Point2D.ZERO), Optional.of(Point2D.ZERO)))
-                .toEventStream().feedTo(viewport.panProperty());
+                .toEventStream().feedTo(layerViewport.panProperty());
     }
 
-    public void deinitialize() throws InterruptedException
+    public void shutdown() throws InterruptedException
     {
         executorService.shutdown();
         executorService.awaitTermination(10, TimeUnit.SECONDS);

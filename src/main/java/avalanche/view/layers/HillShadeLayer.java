@@ -2,7 +2,7 @@ package avalanche.view.layers;
 
 import avalanche.view.layers.magicalindexes.RiskProps;
 
-public class HillShadeLayer extends LayerView
+public class HillShadeLayer extends LayerUI
 {
     public HillShadeLayer(final String name)
     {

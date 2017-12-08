@@ -2,7 +2,7 @@ package avalanche.view.layers;
 
 import avalanche.view.layers.magicalindexes.RiskProps;
 
-public class AvalancheRiskLayer extends LayerView
+public class AvalancheRiskLayer extends LayerUI
 {
     public AvalancheRiskLayer(final String name)
     {
