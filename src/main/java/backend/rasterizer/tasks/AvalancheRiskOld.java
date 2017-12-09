@@ -4,7 +4,7 @@ import avalanche.model.LeData;
 import avalanche.view.layers.magicalindexes.RiskProps;
 import avalanche.view.layers.magicalindexes.TerrainProps;
 import backend.rasterizer.Utils;
-import dto.WeatherDto;
+import avalanche.model.database.WeatherDto;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
@@ -15,11 +15,11 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class AvalancheRisk extends Service<LeData> {
+public class AvalancheRiskOld extends Service<LeData> {
     private WeatherDto weather;
     private Future<LeData> fterrain;
 
-    public AvalancheRisk(final Future<LeData> fterrain)
+    public AvalancheRiskOld(final Future<LeData> fterrain)
     {
         this.fterrain = fterrain;
     }

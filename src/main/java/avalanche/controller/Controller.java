@@ -1,6 +1,8 @@
 package avalanche.controller;
 
 import avalanche.model.LeData;
+import avalanche.model.database.WeatherConnector;
+import avalanche.model.database.WeatherDto;
 import avalanche.model.fileprocessors.SerFileProcessor;
 import avalanche.view.layers.AvalancheRiskLayer;
 import avalanche.view.layers.CurvatureLayer;
@@ -8,11 +10,8 @@ import avalanche.view.layers.GradeLayer;
 import avalanche.view.layers.HillShadeLayer;
 import avalanche.view.layers.LayerViewport;
 import avalanche.view.layers.TerrainAltitudeLayer;
-import backend.rasterizer.tasks.AvalancheRisk;
-import backend.service.WeatherConnector;
 import com.google.common.collect.ImmutableList;
 import com.sun.javafx.util.Utils;
-import dto.WeatherDto;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -51,6 +50,8 @@ public class Controller
     private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer("Ryzyko lawinowe");
     private static final String LAYER_VIEW_NAME = "Warstwy";
 
+    private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
+
     @FXML
     public Button centerView;
 
@@ -76,7 +77,6 @@ public class Controller
     private TableView tableView;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(6);
-    private AvalancheRisk calculateRisk;
 
     @FXML
     public void initialize()
@@ -89,19 +89,26 @@ public class Controller
                 AVALANCHE_RISK_LAYER
         ));
 
-        try {
-            final File file = trySelectingFile();
-            loadDataFromFile(file);
-        } catch (OperationNotSupportedException ex) {
-            //TODO handle this better in the UI!
-            Platform.exit();
-        }
+        final Task<LeData> leDataTask = tryLoadingData();
+        initializeWeather(leDataTask);
 
-        initializeWeather();
+
         initializeZoomAndPan();
 
         layerViewport.createLayerControls(LAYER_VIEW_NAME, layerSelector);
         layerViewport.renderLayers();
+    }
+
+    private Task<LeData> tryLoadingData()
+    {
+        try {
+            final File file = trySelectingFile();
+            return loadDataFromFile(file);
+        } catch (OperationNotSupportedException ex) {
+            //TODO handle this better in the UI!
+            Platform.exit();
+            throw new IllegalStateException("You fucked up boi");
+        }
     }
 
     private File trySelectingFile() throws OperationNotSupportedException
@@ -124,24 +131,23 @@ public class Controller
         }
     }
 
-    private void loadDataFromFile(final File file)
+    private Task<LeData> loadDataFromFile(final File file)
     {
-        executeLoadingData(createTaskLoadingFromSerFile(file));
+        return executeLoadingData(createLoadingDataTaskFromFile(file));
     }
 
-    private Task<LeData> createTaskLoadingFromSerFile(final File serFile)
+    private Task<LeData> createLoadingDataTaskFromFile(final File serFile)
     {
         final SerFileProcessor serFileProcessor = new SerFileProcessor(serFile);
         return serFileProcessor.createProcessingTask();
     }
 
-    private void executeLoadingData(final Task<LeData> dataTask)
+    private Task<LeData> executeLoadingData(final Task<LeData> dataTask)
     {
         executorService.execute(dataTask);
-        calculateRisk = new AvalancheRisk(dataTask); // TODO check if this can be converted to local
-//        calculateRisk.setExecutor(executorService); TODO check if this is needed when app works
-
+//        executorService.execute(avalancheRiskController.prepareAvalanchePredictionTask());
         bindUi(dataTask);
+        return dataTask;
     }
 
     private void bindUi(final Task<LeData> dataTask)
@@ -149,13 +155,15 @@ public class Controller
         TERRAIN_ALTITUDE_LAYER.dataProperty().bind(dataTask.valueProperty());
         GRADE_LAYER.dataProperty().bind(dataTask.valueProperty());
         CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
-        AVALANCHE_RISK_LAYER.dataProperty().bind(calculateRisk.valueProperty());
-        HILL_SHADE_LAYER.dataProperty().bind(calculateRisk.valueProperty());
     }
 
 
-    private void initializeWeather()
+    private void initializeWeather(final Task<LeData> dataTask)
     {
+        avalancheRiskController.prepareAvalanchePredictionTask(
+                dataTask.getValue(),
+                AVALANCHE_RISK_LAYER,
+                HILL_SHADE_LAYER);
 
         LocalDate now = LocalDate.now();
         LocalDate wago = now.minus(1, ChronoUnit.WEEKS);
@@ -172,10 +180,8 @@ public class Controller
         tableView.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    WeatherDto weatherDto = new WeatherDto.Builder()
-                    .build((ObservableList<String>) newValue);
-                    calculateRisk.setWeather(weatherDto);
-                    calculateRisk.restart();
+                    WeatherDto weatherDto = new WeatherDto.Builder().build((ObservableList<String>) newValue);
+                    avalancheRiskController.executeTask(weatherDto, executorService);
                 });
         con.setTableView(tableView);
     }

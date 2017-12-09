@@ -1,4 +1,4 @@
-package backend.service;
+package avalanche.model.database;
 
 import backend.Utils.Dirs;
 import backend.Utils.Util;
