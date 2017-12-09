@@ -1,8 +1,10 @@
-package backend;
+package old;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+//TODO need to look into that while the weather part is working
+// only static methods form here are being used
 public class ResourceHandler {
     private static final String mainDataFile = "";
     private static String mainDataFilePath;

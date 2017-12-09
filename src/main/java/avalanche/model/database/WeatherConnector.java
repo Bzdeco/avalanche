@@ -1,7 +1,6 @@
 package avalanche.model.database;
 
-import backend.Utils.Dirs;
-import backend.Utils.Util;
+import avalanche.model.Dirs;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,10 +9,17 @@ import javafx.scene.control.TableView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 
-import static backend.ResourceHandler.*;
+import static old.ResourceHandler.getDbDriver;
+import static old.ResourceHandler.getDbPass;
+import static old.ResourceHandler.getDbUrl;
+import static old.ResourceHandler.getDbUser;
 
 public class WeatherConnector {
     private static final Logger logger = LogManager.getLogger();
@@ -79,7 +85,7 @@ public class WeatherConnector {
                     col.setCellValueFactory(param -> {
                         @SuppressWarnings("unchecked") Object prop = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
                         if (j == 6) {
-                            Short windDirEnum = Util.toShort(prop.toString());
+                            Short windDirEnum = Short.parseShort(prop.toString());
                             return new SimpleStringProperty(prop != null && windDirEnum != null ?
                                     (Dirs.values()[windDirEnum]).toString() : "null");
                         }

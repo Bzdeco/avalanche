@@ -1,7 +1,7 @@
 package avalanche.model.database;
 
-import backend.Utils.Dirs;
-import backend.Utils.Util;
+import avalanche.model.Dirs;
+import old.Utils.Util;
 import javafx.collections.ObservableList;
 import lombok.Data;
 
@@ -148,7 +148,7 @@ public class WeatherDto {
         }
 
         public Builder temp(String val) {
-            temp = Util.toFloat(val);
+            temp = Float.parseFloat(val);
             return this;
         }
 
@@ -158,34 +158,34 @@ public class WeatherDto {
         }
 
         public Builder windAvg(String val) {
-            windAvg = Util.toShort(val);
+            windAvg = Short.parseShort(val);
             return this;
         }
 
         public Builder windMax(String val) {
-            windMax = Util.toShort(val);
+            windMax = Short.parseShort(val);
             return this;
         }
 
         public Builder windDirDeg(String val) {
 
-            windDirDeg = Util.toShort(val);
+            windDirDeg = Short.parseShort(val);
             return this;
         }
 
         public Builder windDir(String val) {
-            Short windDirEnum = Util.toShort(val);
+            Short windDirEnum = Short.parseShort(val);
             this.windDir = windDirEnum == null ? null : Dirs.values()[windDirEnum];
             return this;
         }
 
         public Builder precipAmount(String val) {
-            precipAmount = Util.toFloat(val);
+            precipAmount = Float.parseFloat(val);
             return this;
         }
 
         public Builder precipInterval(String val) {
-            precipInterval = Util.toShort(val);
+            precipInterval = Short.parseShort(val);
             return this;
         }
 
@@ -195,22 +195,22 @@ public class WeatherDto {
         }
 
         public Builder cloudLevel(String val) {
-            cloudLevel = Util.toShort(val);
+            cloudLevel = Short.parseShort(val);
             return this;
         }
 
         public Builder cloudSum(String val) {
-            cloudSum = Util.toShort(val);
+            cloudSum = Short.parseShort(val);
             return this;
         }
 
         public Builder cloudLow(String val) {
-            cloudLow = Util.toShort(val);
+            cloudLow = Short.parseShort(val);
             return this;
         }
 
         public Builder snowLevel(String val) {
-            snowLevel = Util.toShort(val);
+            snowLevel = Short.parseShort(val);
             return this;
         }
 
