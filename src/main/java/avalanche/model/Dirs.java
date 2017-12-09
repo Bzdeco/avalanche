@@ -1,4 +1,4 @@
-package backend.Utils;
+package avalanche.model;
 
 public enum Dirs {
     NW("płn. zach."),

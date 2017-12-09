@@ -1,8 +1,10 @@
-package backend.rasterizer;
+package old.legacy;
 
 import tinfour.semivirtual.SemiVirtualIncrementalTin;
 import tinfour.testutils.GridSpecification;
 
+//TODO not removing this since @Bzdeco was mentioning this
+//may be useful
 public class GridTin {
     private SemiVirtualIncrementalTin tin;
     private GridSpecification grid;
