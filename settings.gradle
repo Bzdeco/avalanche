@@ -1,2 +1,3 @@
-rootProject.name = 'Projekt_lawinowy'
+rootProject.name = 'avalanche_core'
 
+include 'weather'

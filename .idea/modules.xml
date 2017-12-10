@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Projekt_lawinowy.iml" filepath="$PROJECT_DIR$/Projekt_lawinowy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_main.iml" group="Projekt_lawinowy" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_package.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_package.iml" group="Projekt_lawinowy" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projekt_lawinowy_test.iml" group="Projekt_lawinowy" />
+      <module fileurl="file://$PROJECT_DIR$/avalanche.iml" filepath="$PROJECT_DIR$/avalanche.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_core.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_core_main.iml" group="avalanche_core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_core_package.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_core_package.iml" group="avalanche_core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_core_test.iml" group="avalanche_core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather.iml" group="weather" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather_main.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather_main.iml" group="weather" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather_test.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather_test.iml" group="weather" />
     </modules>
   </component>
 </project>

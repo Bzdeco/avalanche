@@ -1,7 +1,7 @@
-package weatherCollector.repositories;
+package weathercollector.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import weatherCollector.entities.Weather;
+import weathercollector.entities.Weather;
 
 import java.util.Date;
 
