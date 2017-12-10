@@ -1,3 +1,4 @@
 rootProject.name = 'avalanche_core'
 
 include 'weather'
+include 'las2etin'

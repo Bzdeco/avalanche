@@ -18,6 +18,11 @@
       <module name="avalanche_core_main" target="1.8" />
       <module name="avalanche_core_package" target="1.8" />
       <module name="avalanche_core_test" target="1.8" />
+      <module name="avalanche_main" target="1.8" />
+      <module name="avalanche_package" target="1.8" />
+      <module name="avalanche_test" target="1.8" />
+      <module name="las2etin_main" target="1.8" />
+      <module name="las2etin_test" target="1.8" />
       <module name="Projekt_lawinowy_main" target="1.8" />
       <module name="Projekt_lawinowy_package" target="1.8" />
       <module name="Projekt_lawinowy_test" target="1.8" />
