@@ -50,7 +50,7 @@ public class WeatherMeasurement
                 snowMeasurement,
                 temperatureMeasurement,
                 windMeasurement)
-                .allMatch(measurement -> measurement.getTime() == cloudMeasurement.getTime());
+                .allMatch(measurement -> measurement.getTime().equals(cloudMeasurement.getTime()));
     }
 
     private WeatherMeasurement(final CloudMeasurement cloudMeasurement,
