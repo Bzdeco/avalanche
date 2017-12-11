@@ -6,10 +6,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_main.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_main.iml" group="avalanche" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_package.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_package.iml" group="avalanche" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/avalanche_test.iml" filepath="$PROJECT_DIR$/.idea/modules/avalanche_test.iml" group="avalanche" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/las2etin.iml" filepath="$PROJECT_DIR$/.idea/modules/las2etin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/las2etin.iml" filepath="$PROJECT_DIR$/.idea/modules/las2etin.iml" group="las2etin" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/las2etin_main.iml" filepath="$PROJECT_DIR$/.idea/modules/las2etin_main.iml" group="las2etin" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/las2etin_test.iml" filepath="$PROJECT_DIR$/.idea/modules/las2etin_test.iml" group="las2etin" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather.iml" group="weather" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather_main.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather_main.iml" group="weather" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather/weather_test.iml" filepath="$PROJECT_DIR$/.idea/modules/weather/weather_test.iml" group="weather" />
     </modules>
