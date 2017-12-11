@@ -43,7 +43,6 @@ public class LASReaderOptionsBuilder
         return this;
     }
 
-
     public LASReaderOptions build()
     {
         return new LASReaderOptions(this);

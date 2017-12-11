@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class LASReader
 {
@@ -20,6 +21,8 @@ public class LASReader
     private final LASReaderOptions options;
     private final LasPoint pointHolder;
     private final LasFileReader tinfourReader;
+
+    private List<Vertex> vertices;
 
     private LASReader(LASFile file, LASReaderOptions options, LasPoint pointHolder, LasFileReader tinfourReader)
     {
@@ -60,14 +63,36 @@ public class LASReader
 
     public List<Vertex> getVerticesRecords() throws IOException
     {
+        getAllVerticesFromFile();
+        filterByThinningFactor();
+        trimIfNumberOfVerticesExceedsMaxNumber();
+
+        return vertices;
+    }
+
+    private void getAllVerticesFromFile()
+    {
         long numberOfPoints = tinfourReader.getNumberOfPointRecords();
 
-        List<Vertex> vertices = new ArrayList<>(options.getMaxNumberOfVertices());
+        vertices = new ArrayList<>();
         for (long pointIndex = 0; pointIndex < numberOfPoints; pointIndex++) {
             convertPointIntoVertex(pointIndex).ifPresent(vertices::add);
         }
+    }
 
-        return vertices;
+    private void filterByThinningFactor()
+    {
+        if (options.isThinningEnabled()) {
+            VertexFilter thinningFilter = new ThinningVertexFilter(options.getVerticesNumberThinningFactor());
+            vertices = vertices.stream().filter(thinningFilter::accept).collect(Collectors.toList());
+        }
+    }
+
+    private void trimIfNumberOfVerticesExceedsMaxNumber()
+    {
+        if (vertices.size() > options.getMaxNumberOfVertices()) {
+            vertices = vertices.stream().limit(options.getMaxNumberOfVertices()).collect(Collectors.toList());
+        }
     }
 
     private Optional<Vertex> convertPointIntoVertex(long pointIndex)
@@ -75,7 +100,7 @@ public class LASReader
         try {
             return readPointRecord(pointIndex);
         }
-        catch (IOException e) {
+        catch (IOException ex) {
             return handleUnreadablePointRecord(pointIndex);
         }
     }
@@ -83,13 +108,11 @@ public class LASReader
     private Optional<Vertex> readPointRecord(long pointIndex) throws IOException
     {
         tinfourReader.readRecord(pointIndex, pointHolder);
-        Vertex vertex = new VertexWithClassification(
-                pointHolder.x,
-                pointHolder.y,
-                pointHolder.z,
-                (int) pointIndex,
-                pointHolder.classification
-        );
+        Vertex vertex = new VertexWithClassification(pointHolder.x,
+                                                     pointHolder.y,
+                                                     pointHolder.z,
+                                                     (int) pointIndex,
+                                                     pointHolder.classification);
         return Optional.of(vertex);
     }
 
