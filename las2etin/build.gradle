@@ -20,5 +20,7 @@ dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 }
 

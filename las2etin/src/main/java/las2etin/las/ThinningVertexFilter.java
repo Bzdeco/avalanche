@@ -11,8 +11,13 @@ public class ThinningVertexFilter implements VertexFilter
 
     public ThinningVertexFilter(float thinningFactor)
     {
+        this(thinningFactor, new Random());
+    }
+
+    public ThinningVertexFilter(float thinningFactor, Random generator)
+    {
         this.thinningFactor = thinningFactor;
-        this.generator = new Random();
+        this.generator = generator;
     }
 
     @Override
