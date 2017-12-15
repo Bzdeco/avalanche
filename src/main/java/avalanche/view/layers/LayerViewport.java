@@ -161,5 +161,4 @@ public class LayerViewport extends Pane
                     canvas.setHeight(h);
                 });
     }
-
 }

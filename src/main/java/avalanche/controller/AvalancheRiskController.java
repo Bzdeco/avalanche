@@ -5,7 +5,8 @@ import avalanche.model.database.WeatherDto;
 import avalanche.view.layers.LayerUI;
 import avalanche.view.layers.magicalindexes.RiskProps;
 import avalanche.view.layers.magicalindexes.TerrainProps;
-import old.legacy.Utils;
+import com.sun.javafx.util.Utils;
+
 import javafx.concurrent.Task;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;

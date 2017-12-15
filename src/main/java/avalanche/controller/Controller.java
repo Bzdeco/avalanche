@@ -46,7 +46,7 @@ public class Controller
     private static final CurvatureLayer CURVATURE_LAYER = new CurvatureLayer("Krzywizna terenu");
     private static final GradeLayer GRADE_LAYER = new GradeLayer("Nachylenie terenu");
     private static final HillShadeLayer HILL_SHADE_LAYER = new HillShadeLayer("Zacienienie");
-    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer("Teren");
+    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer("Wysokośc terenu");
     private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer("Ryzyko lawinowe");
     private static final String LAYER_VIEW_NAME = "Warstwy";
 
@@ -91,7 +91,6 @@ public class Controller
 
         final Task<LeData> leDataTask = tryLoadingData();
         initializeWeather(leDataTask);
-
 
         initializeZoomAndPan();
 
