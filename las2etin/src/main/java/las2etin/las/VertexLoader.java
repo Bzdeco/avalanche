@@ -1,5 +1,6 @@
 package las2etin.las;
 
+import las2etin.las.vertex.Bounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tinfour.common.Vertex;
@@ -59,6 +60,16 @@ class VertexLoader
         }
 
         return vertices;
+    }
+
+    Bounds getRealBounds()
+    {
+        double minX = tinfourReader.getMinX();
+        double maxX = tinfourReader.getMaxX();
+        double minY = tinfourReader.getMinY();
+        double maxY = tinfourReader.getMaxY();
+
+        return new Bounds(minX, minY, maxX, maxY);
     }
 
     private Optional<Vertex> getVertexForIndexedPoint(long pointIndex)

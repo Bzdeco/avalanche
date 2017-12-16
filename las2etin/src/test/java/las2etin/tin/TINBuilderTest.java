@@ -1,10 +1,10 @@
 package las2etin.tin;
 
+import las2etin.las.vertex.Bounds;
 import org.junit.Test;
 import testutil.TestUtil;
 import tinfour.common.IIncrementalTin;
 import tinfour.common.Vertex;
-import tinfour.standard.IncrementalTin;
 
 import java.util.List;
 
@@ -18,15 +18,16 @@ public class TINBuilderTest
         // given
         int numberOfVertices = 100_000;
         List<Vertex> verticesBuildingMesh = TestUtil.generateRandomVertices(numberOfVertices);
-        TINBuilder tinBuilder = new TINBuilder();
+        TinBuilder tinBuilder = new TinBuilder();
 
         // when
-        IIncrementalTin tin = tinBuilder.buildFrom(verticesBuildingMesh);
+        Tin tin = tinBuilder.withVertices(verticesBuildingMesh)
+                            .withBounds(new Bounds(0, 0, 0, 0))
+                            .build();
 
         // then
-        assertThat(tin.isBootstrapped()).isTrue();
-        assertThat(tin.getVertices().size()).isLessThanOrEqualTo(numberOfVertices)
-                                            .isGreaterThan(0);
+        assertThat(tin.getIncrementalTin().isBootstrapped()).isTrue();
+        assertThat(tin.getIncrementalTin().getVertices().size()).isLessThanOrEqualTo(numberOfVertices).isGreaterThan(0);
     }
 
 }

@@ -1,5 +1,6 @@
 package las2etin.tin;
 
+import las2etin.las.vertex.Bounds;
 import las2etin.tin.exception.TINBuildingException;
 import tinfour.common.IIncrementalTin;
 import tinfour.common.Vertex;
@@ -7,22 +8,34 @@ import tinfour.standard.IncrementalTin;
 
 import java.util.List;
 
-public final class TINBuilder
+public final class TinBuilder
 {
     private IIncrementalTin incrementalTin;
+    private Bounds bounds;
 
-    public TINBuilder()
+    public TinBuilder()
     {
         incrementalTin = new IncrementalTin();
     }
 
-    public IIncrementalTin buildFrom(List<Vertex> vertices)
+    public TinBuilder withVertices(List<Vertex> vertices)
     {
         boolean isBuildSuccessful = incrementalTin.add(vertices, null); // RIP
 
         if (isBuildSuccessful)
-            return incrementalTin;
+            return this;
         else
             throw new TINBuildingException("Building incremental TIN failed");
+    }
+
+    public TinBuilder withBounds(Bounds bounds)
+    {
+        this.bounds = bounds;
+        return this;
+    }
+
+    public Tin build()
+    {
+        return new Tin(incrementalTin, bounds);
     }
 }

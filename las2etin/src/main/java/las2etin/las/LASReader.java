@@ -1,5 +1,6 @@
 package las2etin.las;
 
+import las2etin.las.vertex.Bounds;
 import las2etin.las.vertex.ThinningVertexFilter;
 import las2etin.las.vertex.VertexUtil;
 import tinfour.common.Vertex;
@@ -44,5 +45,10 @@ public class LASReader
         vertices = VertexUtil.trimNumberOfVertices(vertices, options.getMaxNumberOfVertices());
 
         return vertices;
+    }
+
+    public Bounds getVerticesBounds()
+    {
+        return loader.getRealBounds();
     }
 }
