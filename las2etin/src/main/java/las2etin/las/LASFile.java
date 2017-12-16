@@ -19,9 +19,9 @@ public class LASFile
         return path;
     }
 
-    public static LASFile fromFilename(String filename) throws FileNotFoundException
+    public static LASFile fromFilePath(String filePath) throws FileNotFoundException
     {
-        Path path = Paths.get(filename);
+        Path path = Paths.get(filePath);
         if (Files.exists(path)) {
             return new LASFile(path);
         }

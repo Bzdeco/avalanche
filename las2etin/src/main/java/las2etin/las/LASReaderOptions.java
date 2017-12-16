@@ -4,13 +4,13 @@ public class LASReaderOptions
 {
     private final int maxNumberOfVertices;
     private final boolean thinningEnabled;
-    private final float verticesNumberThinningFactor;
+    private final float thinningFactor;
 
     LASReaderOptions(LASReaderOptionsBuilder builder)
     {
         this.maxNumberOfVertices = builder.getMaxNumberOfVertices();
         this.thinningEnabled = builder.isThinningEnabled();
-        this.verticesNumberThinningFactor = builder.getThinningFactor();
+        this.thinningFactor = builder.getThinningFactor();
     }
 
     public static LASReaderOptions getDefault()
@@ -28,8 +28,8 @@ public class LASReaderOptions
         return thinningEnabled;
     }
 
-    public float getVerticesNumberThinningFactor()
+    public float getThinningFactor()
     {
-        return verticesNumberThinningFactor;
+        return thinningFactor;
     }
 }

@@ -1,5 +1,7 @@
-package las2etin.las;
+package las2etin.las.vertex;
 
+import las2etin.las.vertex.ThinningVertexFilter;
+import las2etin.las.vertex.VertexFilter;
 import org.junit.Test;
 import tinfour.common.Vertex;
 

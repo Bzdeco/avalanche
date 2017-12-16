@@ -25,9 +25,9 @@ public class LASReaderOptionsBuilder
         return thinningFactor;
     }
 
-    public LASReaderOptionsBuilder withMaxNumberOfVertices(int numberOfVerticies)
+    public LASReaderOptionsBuilder withMaxNumberOfVertices(int numberOfVertices)
     {
-        maxNumberOfVertices = numberOfVerticies;
+        maxNumberOfVertices = numberOfVertices;
         return this;
     }
 

@@ -1,10 +1,11 @@
-package las2etin.las;
+package las2etin.las.vertex;
 
+import las2etin.las.vertex.VertexFilter;
 import tinfour.common.Vertex;
 
 import java.util.Random;
 
-public class ThinningVertexFilter implements VertexFilter
+public final class ThinningVertexFilter implements VertexFilter
 {
     private float thinningFactor;
     private Random generator;

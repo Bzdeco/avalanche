@@ -1,4 +1,4 @@
-package las2etin.las;
+package las2etin.las.vertex;
 
 import tinfour.common.Vertex;
 
