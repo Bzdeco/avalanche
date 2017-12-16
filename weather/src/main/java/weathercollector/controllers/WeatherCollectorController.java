@@ -25,7 +25,12 @@ public class WeatherCollectorController {
     @RequestMapping(name = "/getWeatherData", method = RequestMethod.GET)
     public ResponseEntity getWeather() {
         LOGGER.info("Collecting weather data stared.");
-        collectorService.collectWeatherData();
+        try {
+            collector.collectWeatherData();
+        } catch (IOException e) {
+            LOGGER.warn("Error while retrieving data.", e);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
         LOGGER.info("Collecting weather data finished.");
         return new ResponseEntity(HttpStatus.OK);
     }
