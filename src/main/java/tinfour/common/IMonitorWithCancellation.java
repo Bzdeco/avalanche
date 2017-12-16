@@ -31,7 +31,7 @@ package tinfour.common;
 
 
 /**
- * Provides an interface that allows an process to report its progress to
+ * Provides an interface that allows an createProcessingTask to report its progress to
  * a monitoring application and also permits the implementation of a
  * "voluntary cancellation" action.
  * <p>
@@ -66,7 +66,7 @@ public interface IMonitorWithCancellation {
      * Gets the minimum interval for reporting progress, thus indicating
      * the frequency with which the reportProgress method should be
      * called. It is important to avoid reporting progress too often since
-     * doing so could adversely affect the performance of the process.
+     * doing so could adversely affect the performance of the createProcessingTask.
      * Values smaller than 5 percent or greater than 25 percent are generally
      * not recommended.
      *
@@ -109,13 +109,13 @@ public interface IMonitorWithCancellation {
 
     /**
      * Indicates whether the calling application would like this
-     * process to terminate voluntarily.  Note that the processing code may elect
+     * createProcessingTask to terminate voluntarily.  Note that the processing code may elect
      * to not call this method or to ignore its result. So there is no
      * guarantee that having an implementation of this method return
      * "true" will ensure termination.
      *
-     * @return true if the process is canceled and should be voluntarily
-     * interrupted; false if the process is not canceled.
+     * @return true if the createProcessingTask is canceled and should be voluntarily
+     * interrupted; false if the createProcessingTask is not canceled.
      */
     boolean isCanceled();
 }

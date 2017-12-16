@@ -67,7 +67,7 @@
  *          total                     24
  *
  * The index element of this class is used to assign a unique integer value
- * to each edge created in the TIN-building process or other applications.
+ * to each edge created in the TIN-building createProcessingTask or other applications.
  * In the case of the EdgePool, it is used to manage allocation of edges.
  * If instances are not managed by an EdgePool, the index value is free
  * for use in other interpretations.

@@ -294,7 +294,7 @@ class NeighborhoodPointsCollector implements IProcessUsingTin, INeighborhoodPoin
         Vertex vq = null;
         if (ambiguity) {
             // vq will be used as an indicator of whether the code is
-            // to process the ambiguous case.  At this point, it is
+            // to createProcessingTask the ambiguous case.  At this point, it is
             // still possible that the coordinates (x,y) are lying on a
             // perimeter edge.  Of so, the logic that assigns a vertex reference to
             // vq will assign it a reference to the ghost vertex, which of course

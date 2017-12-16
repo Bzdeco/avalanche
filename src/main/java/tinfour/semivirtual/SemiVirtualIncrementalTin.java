@@ -68,7 +68,7 @@ import java.util.List;
  * <p>
  * Unfortunately, this reduction comes with a cost. In testing, the
  * virtual implementation requires approximately 60 percent more runtime
- * to process vertices than the direct implementation. Both
+ * to createProcessingTask vertices than the direct implementation. Both
  * implementations experience a degradation of throughput when the
  * memory use approaches the maximum allowed by the JVM (specified
  * on the command line using the -Xmx#### option). But since the
@@ -391,7 +391,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
             vertexList.add(v);
             boolean status = bootstrap(vertexList);
             if (status) {
-                // the bootstrap process uses 3 vertices from
+                // the bootstrap createProcessingTask uses 3 vertices from
                 // the vertex list but does not remove them from
                 // the list.   The processVertexInsertion method has the ability
                 // to ignore multiple insert actions for the same vertex.
@@ -418,9 +418,9 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
      * In the bootstrap phase, three points are chosen at random from the vertex
      * list to create the initial triangle for insertion. The initialization
      * will make a small number of selection attempts and select the triangle
-     * with the largest number. In the event that this process does not find
+     * with the largest number. In the event that this createProcessingTask does not find
      * three points that are not a suitable choice (as when they are collinear
-     * or nearly collinear), the process will be repeated until a valid initial
+     * or nearly collinear), the createProcessingTask will be repeated until a valid initial
      * triangle is selected.
      * <p>
      * Thus, there is a small performance advantage in
@@ -490,7 +490,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
                 return false;
             }
             // if the bootstrap succeeded, just fall through
-            // and process the remainder of the list.
+            // and createProcessingTask the remainder of the list.
         }
 
         this.preAllocateEdges(aList.size());
@@ -937,7 +937,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
         Vertex a = edge.getA();
         if (a == v) {
             // this vertex was already inserted.  usually this is
-            // because the vertex was used in the bootstrap process
+            // because the vertex was used in the bootstrap createProcessingTask
             // but it could happen if the list gave the same vertex more
             // than once.
             return;
@@ -951,7 +951,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
             group = new VertexMergerGroup(edge.getA());
             group.setResolutionRule(vertexMergeRule);
             coincidenceList.add(group);
-            // build a list of edges that contain the target vertex.
+            // convert a list of edges that contain the target vertex.
             // for each of these, replace the previously existing
             // vertex (a) with the new group.
             SemiVirtualEdge start = edge;
@@ -1106,7 +1106,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
 
     /**
      * Print statistics and diagnostic information collected during the
-     * TIN construction process. This information will be removed and
+     * TIN construction createProcessingTask. This information will be removed and
      * reset by a call to the clear() method.
      *
      * @param ps A valid instance of a PrintStream to receive the output.
@@ -1301,7 +1301,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
      * produces this result. Ensure that the search is set with
      * an interior-side edge.
      *
-     * @param e the search edge identified by the removal process.
+     * @param e the search edge identified by the removal createProcessingTask.
      */
     private void setSearchEdgeAfterRemoval(SemiVirtualEdge e) {
         SemiVirtualEdge b = e.getBaseReference();
@@ -1438,7 +1438,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
 
         if (nEar == 3) {
             // the removal of the vertex resulted in a single triangle
-            // which is already Delaunay.  The cavitation process should
+            // which is already Delaunay.  The cavitation createProcessingTask should
             // have reset the links.  So the removal operation is done.
             setSearchEdgeAfterRemoval(firstEar.c);
             return true;
@@ -1458,7 +1458,7 @@ public class SemiVirtualIncrementalTin implements IIncrementalTin {
         // I do not believe that Devillers' original paper
         // adequately covered the case where the removal vertex is
         // on the permimeter. If the deletion point was
-        // on the perimeter, it is possible that the process reduced the ears
+        // on the perimeter, it is possible that the createProcessingTask reduced the ears
         // to the exterior edges of the network.
         //   When that happens we will be left with ears that generate
         // two kinds of triangles: degenerates and ghosts.  We do not

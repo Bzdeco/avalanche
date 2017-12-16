@@ -10,7 +10,7 @@
         <!--</TextAreaAppender>-->
     </Appenders>
     <Loggers>
-        <!--<Logger name="gui.Main" level="info">-->
+        <!--<Logger naavalanche.view.MainMain" level="info">-->
         <!--<AppenderRef ref="JavaFXLogger"/>-->
         <!--</Logger>-->
         <Root level="info">
