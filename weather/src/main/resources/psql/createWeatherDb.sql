@@ -1,4 +1,4 @@
---login as postgres user: sudo su postgres
+-- login as postgres user: sudo su postgres
 -- execute this sql:  \i path
 
 DROP DATABASE if EXISTS lawiny_test;
@@ -14,26 +14,22 @@ ALTER DATABASE lawiny_test OWNER TO lawiny;
 
 begin;
 
-DROP TYPE IF EXISTS DIR CASCADE;
-CREATE TYPE DIR AS ENUM ('NW','N','NE','E','SE','S','SW','W');
-
 DROP TABLE IF EXISTS weather;
 CREATE TABLE weather
 (
-  time                  TIMESTAMP PRIMARY KEY     NOT NULL,
+  time                  TIMESTAMP   PRIMARY KEY   NOT NULL,
   temp                  REAL,
-  temp_desc             VARCHAR(40),
-  wind_avg              SMALLINT,
-  wind_max              SMALLINT,
-  wind_dir_deg          SMALLINT,
-  wind_dir              INTEGER,
-  precip_amount         REAL,
-  precip_interval       SMALLINT,
-  precip_type           VARCHAR(40),
-  cloud_level           SMALLINT,
-  cloud_sum             SMALLINT,
-  cloud_low             SMALLINT,
-  snow_level            SMALLINT
+  temp_min              REAL,
+  temp_max              REAL,
+  pressure              REAL,
+  sea_level             REAL,
+  grnd_level            REAL,
+  humidity              REAL,
+  cloudiness            REAL,
+  wind_speed            REAL,
+  wind_deg              REAL,
+  rain                  REAL,
+  snow                  REAL
 );
 
 ALTER TABLE weather OWNER TO lawiny;

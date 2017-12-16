@@ -15,7 +15,8 @@ import java.io.IOException;
 @Controller
 public class WeatherCollectorController {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @Autowired
     private WeatherCollectorService collector;
 
@@ -25,17 +26,14 @@ public class WeatherCollectorController {
      */
     @RequestMapping(name = "/getWeatherData", method = RequestMethod.GET)
     public ResponseEntity getWeather() {
-        logger.info("Collecting weather data stared.");
+        LOGGER.info("Collecting weather data stared.");
         try {
             collector.collectWeatherData();
-        } catch (IllegalStateException e) {
-            logger.warn("Error while retrieving data from HTML.", e);
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            logger.warn("Error while retrieving data from HTML.", e);
+            LOGGER.warn("Error while retrieving data.", e);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        logger.info("Collecting weather data finished.");
+        LOGGER.info("Collecting weather data finished.");
         return new ResponseEntity(HttpStatus.OK);
     }
 }

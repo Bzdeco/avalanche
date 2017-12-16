@@ -1,16 +1,28 @@
 package weatherCollector.services;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import weatherCollector.entities.Weather;
-import weatherCollector.parser.dto.*;
 import weatherCollector.repositories.WeatherRepository;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Scanner;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 public class WeatherCollectorService {
+
+    public final String API_KEY = "ab96126fe8504573743775d5d0665f78";
+    public final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/forecast";
+
     @Autowired
     private WeatherParser parser;
 
@@ -18,22 +30,23 @@ public class WeatherCollectorService {
     private WeatherRepository weatherRepo;
 
     public void collectWeatherData() throws IOException {
-        List<Measurement> temp = parser.getTemperature();
-        List<Measurement> wind = parser.getWind();
-        List<Measurement> precip = parser.getPrecipitation();
-        List<Measurement> clouds = parser.getClouds();
-        List<Measurement> snow = parser.getSnow();
+        String charset = UTF_8.name();
+        String latitude = "50.06143"; //TODO
+        String longitude = "19.93658"; //TODO
 
-        if (temp.size() != wind.size() || temp.size() != precip.size()
-                || temp.size() != clouds.size() || temp.size() != snow.size())
-            throw new IllegalStateException("Lists' size is not equal.");
+        String query = String.format("lat=%s&lon=%s&units=metric",
+                URLEncoder.encode(latitude, charset),
+                URLEncoder.encode(longitude, charset));
 
-        for (int i = 0; i < temp.size(); i++) {
-            Weather weather = new Weather((TempM) temp.get(i), (WindM) wind.get(i),
-                    (PrecipitationM) precip.get(i),(CloudsM) clouds.get(i),(SnowM) snow.get(i));
-            Weather found = weatherRepo.findOne(weather.getTime());
-            if (found == null)
-                weatherRepo.save(weather);
-        }
+        URLConnection connection = new URL(WEATHER_URL + "?" + query).openConnection();
+        connection.setRequestProperty("Accept-Charset", charset);
+        connection.addRequestProperty("X-Api-Key", API_KEY);
+        InputStream response = connection.getInputStream();
+        Scanner scanner = new Scanner(response);
+        String responseBody = scanner.useDelimiter("\\A").next();
+        JSONObject jsonWeatherListObject = new JSONObject(responseBody);
+        JSONArray weatherList = jsonWeatherListObject.getJSONArray("list");
+        List<Weather> weatherObjectsList = parser.convertToListOfWeather(weatherList);
+        weatherRepo.save(weatherObjectsList);
     }
 }
