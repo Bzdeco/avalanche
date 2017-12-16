@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="!?*.java" />
       <entry name="!?*.form" />
@@ -11,14 +10,14 @@
       <entry name="!?*.flex" />
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
-      <entry name="!?*.aj" />
     </wildcardResourcePatterns>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true">
-        <processorPath useClasspath="true" />
-      </profile>
+      <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="avalanche_core_main" target="1.8" />
+      <module name="avalanche_core_package" target="1.8" />
+      <module name="avalanche_core_test" target="1.8" />
       <module name="Projekt_lawinowy_main" target="1.8" />
       <module name="Projekt_lawinowy_package" target="1.8" />
       <module name="Projekt_lawinowy_test" target="1.8" />

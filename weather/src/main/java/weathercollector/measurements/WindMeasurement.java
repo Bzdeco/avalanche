@@ -1,16 +1,14 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
 
 @Data
-public class WindM implements Measurement {
-    private final String URL = "ART=wind&SI=kph&WMO=12650&LEVEL=140";
-    private final String filter = "tr:contains(°)";
+public class WindMeasurement implements Measurement
+{
     private Date time;
     private Short avgSpeed;     //km/h
     private Short maxSpeed;
@@ -18,19 +16,21 @@ public class WindM implements Measurement {
     private DIRS dir;
 
     @Override
-    public WindM fromElement(Element el) throws ParseException {
-        WindM windM = new WindM();
+    public WindMeasurement fromElement(Element el) throws ParseException
+    {
+        WindMeasurement windMeasurement = new WindMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
-        windM.setTime(SIMPLE_DATE_FORMAT.parse(time));
+        windMeasurement.setTime(SIMPLE_DATE_FORMAT.parse(time));
 
-        windM.setAvgSpeed(Util.toShort(el.child(1).text()));
-        windM.setMaxSpeed(Util.toShort(el.child(3).text()));
-        windM.setDirDegree(Util.toShort(el.child(4).text().replace("°", "")));
-        windM.setDir(DIRS.fromString(el.child(5).text().trim()));
-        return windM;
+        windMeasurement.setAvgSpeed(Short.parseShort(el.child(1).text()));
+        windMeasurement.setMaxSpeed(Short.parseShort(el.child(3).text()));
+        windMeasurement.setDirDegree(Short.parseShort(el.child(4).text().replace("°", "")));
+        windMeasurement.setDir(DIRS.fromString(el.child(5).text().trim()));
+        return windMeasurement;
     }
 
-    public enum DIRS {
+    public enum DIRS
+    {
         NW("płn. zach."),
         N("płn."),
         NE("płn. wsch."),
@@ -42,11 +42,13 @@ public class WindM implements Measurement {
 
         private String text;
 
-        DIRS(String text) {
+        DIRS(String text)
+        {
             this.text = text;
         }
 
-        public static DIRS fromString(String text) {
+        public static DIRS fromString(String text)
+        {
             if (text != null)
                 for (DIRS d : DIRS.values())
                     if (text.equalsIgnoreCase(d.text))
@@ -58,13 +60,13 @@ public class WindM implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "ART=wind&SI=kph&WMO=12650&LEVEL=140";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return "tr:contains(°)";
     }
 
     @Override

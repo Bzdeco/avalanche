@@ -1,8 +1,7 @@
-package weatherCollector.parser.dto;
+package weathercollector.measurements;
 
 import lombok.Data;
 import org.jsoup.nodes.Element;
-import weatherCollector.util.Util;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,9 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
-public class CloudsM implements Measurement {
-    private final String URL = "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=wolken";
-    private final String filter = "tr:matches((\\d\\d.){2}\\d{4})";
+public class CloudMeasurement implements Measurement {
 
     private Date time;
     private Short level;   //m
@@ -21,7 +18,7 @@ public class CloudsM implements Measurement {
 
     @Override
     public Measurement fromElement(Element el) throws ParseException {
-        CloudsM c = new CloudsM();
+        CloudMeasurement c = new CloudMeasurement();
         String time = el.child(0).text().replace("\u00a0", " ");
         c.setTime(SIMPLE_DATE_FORMAT.parse(time));
         String s2,s3;
@@ -30,16 +27,16 @@ public class CloudsM implements Measurement {
         Matcher m = pattern.matcher(s);
         boolean found = m.find();
 
-        c.setLevel(found ? Util.toShort(m.group().replace("m", "").trim()) : null);
+        c.setLevel(found ? Short.parseShort(m.group().replace("m", "").trim()) : null);
 
         Pattern pattern2 = Pattern.compile("\\d/\\d");
 
         m.reset();
         m.usePattern(pattern2);
         if(m.find())
-            c.setSum(Util.toShort(m.group().substring(0, 1)));
+            c.setSum(Short.parseShort(m.group().substring(0, 1)));
         if(m.find())
-            c.setLow(Util.toShort(m.group().substring(0, 1)));
+            c.setLow(Short.parseShort(m.group().substring(0, 1)));
 
         return c;
     }
@@ -47,13 +44,13 @@ public class CloudsM implements Measurement {
     @Override
     public String getURL()
     {
-        return URL;
+        return "CEL=C&SI=kph&WMO=12650&TIME=std&LEVEL=140&ART=wolken";
     }
 
     @Override
     public String getFilter()
     {
-        return filter;
+        return  "tr:matches((\\d\\d.){2}\\d{4})";
     }
 
     @Override
