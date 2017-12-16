@@ -60,4 +60,27 @@ public class Terrain implements Serializable
     {
         return settings.getHeightInCells() * x + y;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Terrain terrain = (Terrain) o;
+
+        if (!terrainCells.equals(terrain.terrainCells))
+            return false;
+        return settings.equals(terrain.settings);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = terrainCells.hashCode();
+        result = 31 * result + settings.hashCode();
+        return result;
+    }
 }

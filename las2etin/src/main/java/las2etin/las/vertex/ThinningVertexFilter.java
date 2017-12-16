@@ -1,6 +1,5 @@
 package las2etin.las.vertex;
 
-import las2etin.las.vertex.VertexFilter;
 import tinfour.common.Vertex;
 
 import java.util.Random;

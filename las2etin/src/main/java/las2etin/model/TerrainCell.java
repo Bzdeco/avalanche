@@ -63,4 +63,50 @@ public class TerrainCell
     {
         return profileCurvature;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        TerrainCell that = (TerrainCell) o;
+
+        if (Double.compare(that.altitude, altitude) != 0)
+            return false;
+        if (Double.compare(that.aspect, aspect) != 0)
+            return false;
+        if (Double.compare(that.grade, grade) != 0)
+            return false;
+        if (Double.compare(that.slope, slope) != 0)
+            return false;
+        if (Double.compare(that.planCurvature, planCurvature) != 0)
+            return false;
+        if (Double.compare(that.profileCurvature, profileCurvature) != 0)
+            return false;
+        return normal.equals(that.normal);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(altitude);
+        result = (int) (temp ^ (temp >>> 32));
+        result = 31 * result + normal.hashCode();
+        temp = Double.doubleToLongBits(aspect);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(grade);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(slope);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(planCurvature);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(profileCurvature);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

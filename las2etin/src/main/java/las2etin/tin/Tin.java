@@ -23,4 +23,27 @@ public class Tin
     {
         return bounds;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Tin tin = (Tin) o;
+
+        if (!incrementalTin.equals(tin.incrementalTin))
+            return false;
+        return bounds.equals(tin.bounds);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = incrementalTin.hashCode();
+        result = 31 * result + bounds.hashCode();
+        return result;
+    }
 }
