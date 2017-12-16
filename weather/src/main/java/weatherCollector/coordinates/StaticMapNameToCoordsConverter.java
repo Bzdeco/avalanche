@@ -1,4 +1,4 @@
-package avalanche.model.coordinates;
+package weatherCollector.coordinates;
 
 import java.util.HashMap;
 import java.util.Map;
