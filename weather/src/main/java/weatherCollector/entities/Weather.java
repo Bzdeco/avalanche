@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.Map;
 
 @Entity
-@NoArgsConstructor
 @Data
 @JsonDeserialize
 @JsonIgnoreProperties(ignoreUnknown = true)

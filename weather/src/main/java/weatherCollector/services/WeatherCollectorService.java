@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import weatherCollector.coordinates.Coords;
+import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 import weatherCollector.entities.Weather;
 import weatherCollector.repositories.WeatherRepository;
 
@@ -22,6 +24,7 @@ public class WeatherCollectorService {
 
     public final String API_KEY = "ab96126fe8504573743775d5d0665f78";
     public final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/forecast";
+    public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
 
     @Autowired
     private WeatherParser parser;
@@ -31,8 +34,10 @@ public class WeatherCollectorService {
 
     public void collectWeatherData() throws IOException {
         String charset = UTF_8.name();
-        String latitude = "50.06143"; //TODO
-        String longitude = "19.93658"; //TODO
+        final Coords coords = converter.convert(extractName(System.getProperty("filename")));
+
+        String latitude = Float.toString(coords.getLatitude());
+        String longitude = Float.toString(coords.getLongitude());
 
         String query = String.format("lat=%s&lon=%s&units=metric",
                 URLEncoder.encode(latitude, charset),
@@ -48,5 +53,10 @@ public class WeatherCollectorService {
         JSONArray weatherList = jsonWeatherListObject.getJSONArray("list");
         List<Weather> weatherObjectsList = parser.convertToListOfWeather(weatherList);
         weatherRepo.save(weatherObjectsList);
+    }
+
+    private String extractName(String filename)
+    {
+        return filename.substring(0, filename.length() - 6);
     }
 }
