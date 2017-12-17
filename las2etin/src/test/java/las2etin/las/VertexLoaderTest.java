@@ -10,32 +10,6 @@ import static org.assertj.core.api.Assertions.*;
 
 public class VertexLoaderTest
 {
-    /*@Test
-    public void checkingFileProperties() throws Exception
-    {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("test.las").getFile());
-
-        LasFileReader reader = new LasFileReader(file);
-        System.out.println(reader.getCoordinateReferenceSystemOption());
-        System.out.println(reader.getPointDataRecordFormat());
-        System.out.println(reader.usesGeographicCoordinates());
-
-        LasScaleAndOffset scaleAndOffset = reader.getScaleAndOffset();
-        double xOffset = scaleAndOffset.xOffset;
-        double xScaleFactor = scaleAndOffset.xScaleFactor;
-        double yOffset = scaleAndOffset.yOffset;
-        double yScaleFactor = scaleAndOffset.yScaleFactor;
-
-        double x = reader.getMaxX() * xScaleFactor + xOffset;
-        double y = reader.getMaxY() * yScaleFactor + yOffset;
-
-        System.out.println(x);
-        System.out.println(y);
-        System.out.println(reader.getMaxX());
-        System.out.println(reader.getMaxY());
-    }*/
-
     @Test
     public void createVertexLoaderForExistingFile() throws Exception
     {
