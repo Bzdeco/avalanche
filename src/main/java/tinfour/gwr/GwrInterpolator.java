@@ -145,7 +145,7 @@ public class GwrInterpolator {
      *
      * @param qx       the x coordinate for the interpolation point
      * @param qy       the y coordinate for the interpolation point
-     * @param nSamples the number of samples to process
+     * @param nSamples the number of samples to createProcessingTask
      * @param samples  a nSamples-by-3 array giving the x, y, and z
      *                 coordinates for input samples.
      * @return if the interpolation is successful, a valid floating point
@@ -373,7 +373,7 @@ public class GwrInterpolator {
         //   6) If yTest<yBest, set xBest = xTest, yBest = yTest.
         //   7) Adjust the coordinates of the three parabola points so that
         //      the (xTest, yTest) is now the center point.  Repeat the
-        //      process starting at step 4 for a fixed number of times or until
+        //      createProcessingTask starting at step 4 for a fixed number of times or until
         //      no improvement in yBest is available within the current interval.
         //      If no improvement is available, select the next set of three
         //      control points as parabola points and continue from step 4.

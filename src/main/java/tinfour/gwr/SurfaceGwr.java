@@ -40,7 +40,7 @@
   one matrix while computing the "hat" matrix (needed to compute variance,
   standard deviation, etc.) requires repeating this operation n-sample times.
   So if an application does not need the additional statistics, there is no
-  need to build these elements.
+  need to convert these elements.
     However, this approach does have a consequence. In order to
   preserve the necessary data for computing these statistics, it is
   necessary for an instance of this class to retain an internal reference to

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import gui.Viewport?>
+<?import avalanche.view.layers.LayerViewport?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller" prefHeight="600.0" prefWidth="800.0"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="avalanche.controller.Controller" prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/8">
     <left>
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
@@ -23,7 +23,7 @@
         </Accordion>
     </left>
     <center>
-        <Viewport fx:id="vp"/>
+        <LayerViewport fx:id="layerViewport"/>
     </center>
     <bottom>
         <TitledPane expanded="false" animated="false" text="Pogoda" BorderPane.alignment="CENTER">
@@ -48,7 +48,7 @@
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Button fx:id="saveBtn" mnemonicParsing="false" text="Zapisz teren" onMouseClicked="#saveTerrain"/>
+            <!--<Button fx:id="saveBtn" mnemonicParsing="false" text="Zapisz teren" onMouseClicked="#saveTerrain"/>-->
             <Separator orientation="VERTICAL"/>
             <Button fx:id="centerView" mnemonicParsing="false" text="Wycentruj"/>
             <ProgressBar fx:id="progress"/>

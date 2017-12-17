@@ -69,7 +69,7 @@ public interface INeighborhoodPointsCollector extends IProcessUsingTin {
      * attempt to find at least the number of vertices specified.
      * If it cannot do so by apply the specified search depth, it will
      * extend to search further out from the initial triangle.
-     * This process is expensive because in order to extend the search
+     * This createProcessingTask is expensive because in order to extend the search
      * further out, the method must first traverse the part of the TIN
      * already covered.
      *
