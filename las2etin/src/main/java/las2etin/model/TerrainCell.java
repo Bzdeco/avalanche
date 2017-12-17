@@ -2,7 +2,9 @@ package las2etin.model;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class TerrainCell
+import java.io.Serializable;
+
+public class TerrainCell implements Serializable
 {
     private final double altitude;
     private final Vector3D normal;

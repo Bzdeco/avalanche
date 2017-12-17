@@ -1,64 +1,38 @@
 package las2etin.model;
 
-import las2etin.las.vertex.Bounds;
-import las2etin.tin.Tin;
-import tinfour.common.Vertex;
-import tinfour.interpolation.GwrTinInterpolator;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Terrain implements Serializable
 {
-    private final List<TerrainCell> terrainCells;
-    private final TerrainSettings settings;
+    private final Map<Integer, List<TerrainCell>> terrainCells;
+    private final TerrainProperties terrainProperties;
 
-    private Terrain(List<TerrainCell> terrainCells, TerrainSettings settings)
+    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties)
     {
         this.terrainCells = terrainCells;
-        this.settings = settings;
+        this.terrainProperties = terrainProperties;
     }
 
-    public TerrainCell getCellWithCoordinates(int x, int y)
+    public TerrainProperties getTerrainProperties()
     {
-        return terrainCells.get(getIndexForCoordinates(x, y));
+        return terrainProperties;
     }
 
-    public Terrain create(Tin tin, TerrainSettings settings)
+    public Optional<TerrainCell> getCellWithCoordinates(int x, int y)
     {
-        int widthInCells = settings.getWidthInCells();
-        int heightInCells = settings.getHeightInCells();
-        int totalNumberOfCells = widthInCells * heightInCells;
-
-        List<TerrainCell> cells = new ArrayList<>(totalNumberOfCells);
-
-        Bounds bounds = tin.getBounds();
-        double realCellWidth = bounds.getWidth() / widthInCells;
-        double realCellHeight = bounds.getHeight() / heightInCells;
-        double widthOffset = realCellWidth / 2;
-        double heightOffset = realCellHeight / 2;
-
-        GwrTinInterpolator interpolator = new GwrTinInterpolator(tin.getIncrementalTin());
-
-        for (int x = 0; x < widthInCells; x++) {
-            for (int y = 0; y < heightInCells; y++) {
-                Vertex interpolatedVertex = new Vertex(widthOffset + x * realCellWidth,
-                                                         heightOffset + y * realCellHeight,
-                                                         0);
-                TerrainCell cell = new TerrainCellBuilder().withInterpolator(interpolator)
-                                                           .withVertex(interpolatedVertex)
-                                                           .build();
-                cells.add(getIndexForCoordinates(x, y), cell);
-            }
+        List<TerrainCell> searchedRow = terrainCells.getOrDefault(x, new ArrayList<>());
+        if (isColumnPresentInRow(y, searchedRow)) {
+            return Optional.of(searchedRow.get(y));
         }
-
-        return new Terrain(cells, settings);
+        else {
+            return Optional.empty();
+        }
     }
 
-    private int getIndexForCoordinates(int x, int y)
+    private boolean isColumnPresentInRow(int columnIndex, List<TerrainCell> searchedRow)
     {
-        return settings.getHeightInCells() * x + y;
+        return columnIndex <= searchedRow.size();
     }
 
     @Override
@@ -73,14 +47,14 @@ public class Terrain implements Serializable
 
         if (!terrainCells.equals(terrain.terrainCells))
             return false;
-        return settings.equals(terrain.settings);
+        return terrainProperties.equals(terrain.terrainProperties);
     }
 
     @Override
     public int hashCode()
     {
         int result = terrainCells.hashCode();
-        result = 31 * result + settings.hashCode();
+        result = 31 * result + terrainProperties.hashCode();
         return result;
     }
 }

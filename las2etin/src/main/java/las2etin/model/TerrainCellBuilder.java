@@ -43,13 +43,23 @@ public class TerrainCellBuilder
 
         double altitude = getAltitude();
         Vector3D normal = calculateNormal();
-        double aspect = calculateAspect(coefficients);
-        double grade = calculateGrade(coefficients);
-        double slope = calculateSlope(grade);
-        double planCurvature = calculatePlanCurvature(coefficients);
-        double profileCurvature = calculateProfileCurvature(coefficients);
 
-        return new TerrainCell(altitude, normal, aspect, grade, slope, planCurvature, profileCurvature);
+        if (isCoefficientsAvailable(coefficients)) {
+            double aspect = calculateAspect(coefficients);
+            double grade = calculateGrade(coefficients);
+            double slope = calculateSlope(grade);
+            double planCurvature = calculatePlanCurvature(coefficients);
+            double profileCurvature = calculateProfileCurvature(coefficients);
+
+            return new TerrainCell(altitude, normal, aspect, grade, slope, planCurvature, profileCurvature);
+        }
+        else
+            return new TerrainCell(altitude, normal, 0, 0, 0, 0, 0);
+    }
+
+    private boolean isCoefficientsAvailable(double[] coefficients)
+    {
+        return coefficients.length > 0;
     }
 
     private double getAltitude()
