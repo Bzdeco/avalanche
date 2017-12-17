@@ -1,4 +1,4 @@
-group 'Project_avalanche'
+group 'avalanche'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
