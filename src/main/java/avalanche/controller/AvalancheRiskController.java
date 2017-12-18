@@ -5,18 +5,21 @@ import avalanche.model.database.WeatherDto;
 import avalanche.view.layers.LayerUI;
 import avalanche.view.layers.magicalindexes.RiskProps;
 import avalanche.view.layers.magicalindexes.TerrainProps;
+import weatherCollector.coordinates.Coords;
 import com.sun.javafx.util.Utils;
-
 import javafx.concurrent.Task;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;
 import net.e175.klaus.solarpositioning.Grena3;
+import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 
 public class AvalancheRiskController
 {
+    public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
+
     private WeatherDto weather;
     private Task<LeData> task;
 
@@ -35,6 +38,11 @@ public class AvalancheRiskController
         bindUI(avalancheRiskLayer, hillShadeLayer);
     }
 
+    private String extractName(String filename)
+    {
+        return filename.substring(0, filename.length() - 6);
+    }
+
     private LeData predict(final LeData data) throws Exception
     {
         // Hillshade calculation according to current weather
@@ -43,10 +51,15 @@ public class AvalancheRiskController
         GregorianCalendar dateTime = new GregorianCalendar();
         dateTime.setTime(weather.getTime());
 
+        final Coords coords = converter.convert(extractName(System.getProperty("filename")));
+
+        Float latitude = coords.getLatitude();
+        Float longitude = coords.getLongitude();
+
         AzimuthZenithAngle position = Grena3.calculateSolarPosition(
                 dateTime,
-                49.232528, // latitude (degrees)
-                19.981833, // longitude (degrees)
+                latitude,
+                longitude,
                 DeltaT.estimate(dateTime)); // avg. air temperature (°C)
 
         double sunAzimuth = Math.toRadians(position.getAzimuth());
@@ -85,15 +98,15 @@ public class AvalancheRiskController
                 float risk = 1f;
 
                 if (t[TerrainProps.PROFCURV] > 1E-3) {
-                    risk += 0.5;   //teren wklęsły
+                    risk += 0.5; //teren wklęsły
                     if (t[TerrainProps.PROFCURV] > 1E-2)
                         risk += 0.2; //teren bardzo wklesly
                 } else if (t[TerrainProps.PROFCURV] < -1E-3) {
-                    risk += 0.2;//teren wypukły
+                    risk += 0.2; //teren wypukły
                     if (t[TerrainProps.PROFCURV] > 1E-2)
-                        risk += 0.2;//bardziej wypukły
+                        risk += 0.2; //bardziej wypukły
                 } else {
-                    risk = 0;//teren w przybliżeniu płaski
+                    risk = 0; //teren w przybliżeniu płaski
                     r[RiskProps.RISK] = risk;
                     continue;
                 }
@@ -112,21 +125,15 @@ public class AvalancheRiskController
                     continue;
                 }
 
-
-                if (hillshade > 2 * ambient) {
-                    if (weather.getCloudSum() == null || weather.getCloudSum() < 6)
-                        risk += 0.1;
-                }
-                if (weather.getWindAvg() != null && weather.getWindAvg() > 30)
+                if (weather.getWind_speed() != null && weather.getWind_speed() > 5)
                     risk += 0.1;
-                if (weather.getWindAvg() != null && weather.getWindAvg() > 80)
+                if (weather.getWind_speed() != null && weather.getWind_speed() > 70)
                     risk += 0.2;
-                if (weather.getSnowLevel() != null && weather.getSnowLevel() > 100)
+                if (weather.getSnow() != null && weather.getSnow() > 100)
                     risk += 0.2;
-
                 if (t[TerrainProps.GRADE] < Math.toRadians(25) || t[TerrainProps.GRADE] > Math.toRadians(60))
                     risk = 0;
-                if (weather.getSnowLevel() != null && weather.getSnowLevel() < 20)
+                if (weather.getSnow() != null && weather.getSnow() < 20)
                     risk = 0;
                 r[RiskProps.RISK] = risk;
             }

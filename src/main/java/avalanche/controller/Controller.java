@@ -164,25 +164,8 @@ public class Controller
                 AVALANCHE_RISK_LAYER,
                 HILL_SHADE_LAYER);
 
-        LocalDate now = LocalDate.now();
-        LocalDate wago = now.minus(1, ChronoUnit.WEEKS);
-        fromDate.setValue(wago);
-        toDate.setValue(now);
-
-        WeatherConnector con = WeatherConnector.getInstance();
-
-        EventStreams.changesOf(fromDate.valueProperty())
-                .subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
-        EventStreams.changesOf(toDate.valueProperty())
-                .subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
-
-        tableView.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    WeatherDto weatherDto = new WeatherDto.Builder().build((ObservableList<String>) newValue);
-                    avalancheRiskController.executeTask(weatherDto, executorService);
-                });
-        con.setTableView(tableView);
+        WeatherConnector connector = WeatherConnector.getInstance();
+        connector.setTableView(tableView);
     }
 
     private void initializeZoomAndPan()
