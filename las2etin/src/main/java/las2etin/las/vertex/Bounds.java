@@ -1,18 +1,24 @@
 package las2etin.las.vertex;
 
-public class Bounds
+import java.io.Serializable;
+
+public class Bounds implements Serializable
 {
     private double minX;
     private double minY;
     private double maxX;
     private double maxY;
+    private double minZ;
+    private double maxZ;
 
-    public Bounds(double minX, double minY, double maxX, double maxY)
+    public Bounds(double minX, double minY, double maxX, double maxY, double minZ, double maxZ)
     {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
+        this.minZ = minZ;
+        this.maxZ = maxZ;
     }
 
     public double getWidth()
@@ -43,6 +49,16 @@ public class Bounds
     public double getMaxY()
     {
         return maxY;
+    }
+
+    public double getMinZ()
+    {
+        return minZ;
+    }
+
+    public double getMaxZ()
+    {
+        return maxZ;
     }
 
     @Override

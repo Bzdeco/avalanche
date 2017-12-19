@@ -1,5 +1,7 @@
 package las2etin.model;
 
+import las2etin.las.vertex.Bounds;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -7,16 +9,23 @@ public class Terrain implements Serializable
 {
     private final Map<Integer, List<TerrainCell>> terrainCells;
     private final TerrainProperties terrainProperties;
+    private final Bounds bounds;
 
-    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties)
+    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties, Bounds bounds)
     {
         this.terrainCells = terrainCells;
         this.terrainProperties = terrainProperties;
+        this.bounds = bounds;
     }
 
     public TerrainProperties getTerrainProperties()
     {
         return terrainProperties;
+    }
+
+    public Bounds getBounds()
+    {
+        return bounds;
     }
 
     public Optional<TerrainCell> getCellWithCoordinates(int x, int y)

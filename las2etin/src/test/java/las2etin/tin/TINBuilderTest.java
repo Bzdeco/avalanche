@@ -22,7 +22,7 @@ public class TINBuilderTest
 
         // when
         Tin tin = tinBuilder.withVertices(verticesBuildingMesh)
-                            .withBounds(new Bounds(0, 0, 0, 0))
+                            .withBounds(new Bounds(0, 0, 0, 0, 0, 0))
                             .build();
 
         // then

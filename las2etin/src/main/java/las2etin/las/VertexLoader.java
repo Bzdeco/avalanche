@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import tinfour.common.Vertex;
 import tinfour.las.LasFileReader;
 import tinfour.las.LasPoint;
+import tinfour.las.LasRecordFilterByLastReturn;
 import tinfour.test.utils.VertexWithClassification;
 
 import java.io.File;
@@ -20,6 +21,7 @@ class VertexLoader
 
     private final LasPoint pointHolder;
     private final LasFileReader tinfourReader;
+    private final LasRecordFilterByLastReturn lastReturnFilter = new LasRecordFilterByLastReturn();
 
     private VertexLoader(LasPoint pointHolder, LasFileReader tinfourReader)
     {
@@ -68,8 +70,10 @@ class VertexLoader
         double maxX = tinfourReader.getMaxX();
         double minY = tinfourReader.getMinY();
         double maxY = tinfourReader.getMaxY();
+        double minZ = tinfourReader.getMinZ();
+        double maxZ = tinfourReader.getMaxZ();
 
-        return new Bounds(minX, minY, maxX, maxY);
+        return new Bounds(minX, minY, maxX, maxY, minZ, maxZ);
     }
 
     private Optional<Vertex> getVertexForIndexedPoint(long pointIndex)
@@ -85,12 +89,18 @@ class VertexLoader
     private Optional<Vertex> readPointRecord(long pointIndex) throws IOException
     {
         tinfourReader.readRecord(pointIndex, pointHolder);
-        Vertex vertex = new VertexWithClassification(pointHolder.x,
-                                                     pointHolder.y,
-                                                     pointHolder.z,
-                                                     (int) pointIndex,
-                                                     pointHolder.classification);
-        return Optional.of(vertex);
+
+        // FIXME this means ground
+        if(pointHolder.classification == 2) {
+            Vertex vertex = new VertexWithClassification(pointHolder.x,
+                                                         pointHolder.y,
+                                                         pointHolder.z,
+                                                         (int) pointIndex,
+                                                         pointHolder.classification);
+            return Optional.of(vertex);
+        }
+        else
+            return Optional.empty();
     }
 
     private Optional<Vertex> handleUnreadablePointRecord(long pointIndex)

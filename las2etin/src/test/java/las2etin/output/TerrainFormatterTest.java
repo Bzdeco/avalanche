@@ -34,7 +34,7 @@ public class TerrainFormatterTest
         vertices.add(minVertex);
         vertices.add(maxVertex);
 
-        Bounds fakeBounds = new Bounds(minVertex.x, minVertex.y, maxVertex.x, maxVertex.y);
+        Bounds fakeBounds = new Bounds(minVertex.x, minVertex.y, maxVertex.x, maxVertex.y, 0, 0);
 
         Tin terrainMesh = new TinBuilder().withVertices(vertices).withBounds(fakeBounds).build();
 
@@ -59,7 +59,7 @@ public class TerrainFormatterTest
     public void serializeAndDeserializeTestLasFile() throws Exception
     {
         // given
-        LASFile file = LASFile.fromFilePath("src/test/resources/test.las");
+        LASFile file = LASFile.fromFilePath("src/test/resources/M-34-100-B-b-3-3-4.las");
         LASReader reader = LASReader.createFor(file);
         List<Vertex> readVertices = reader.getVerticesRecords();
         Bounds bounds = reader.getVerticesBounds();
@@ -78,5 +78,43 @@ public class TerrainFormatterTest
 
         // then
         assertThat(terrainToSerialize).isEqualTo(deserializedTerrain);
+    }
+
+    @Test
+    @Ignore("Serialization and deserializtion of real .las files, takes very long")
+    public void serializeAndDeserializeTestLasFileLowerResolution() throws Exception
+    {
+        // given
+        LASFile file = LASFile.fromFilePath("src/test/resources/M-34-100-B-b-3-3-4.las");
+        LASReader reader = LASReader.createFor(file);
+        List<Vertex> readVertices = reader.getVerticesRecords();
+        Bounds bounds = reader.getVerticesBounds();
+        Tin terrainMesh = new TinBuilder().withVertices(readVertices).withBounds(bounds).build();
+        int widthInCells = 100;
+        int heightInCells = 100;
+        TerrainSettings settings = new TerrainSettingsBuilder().withWidthInCells(widthInCells)
+                                                               .withHeightInCells(heightInCells)
+                                                               .build();
+        Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings).build();
+
+        // when
+        Path saveLocation = Paths.get("src/test/resources/test_lowres.ser");
+        Path serializedTerrain = TerrainFormatter.serialize(terrainToSerialize, saveLocation);
+        Terrain deserializedTerrain = TerrainFormatter.deserialize(serializedTerrain);
+
+        // then
+        assertThat(terrainToSerialize).isEqualTo(deserializedTerrain);
+    }
+
+    @Test
+    public void testRead() throws Exception
+    {
+        // given
+        LASFile file = LASFile.fromFilePath("src/test/resources/test.las");
+        LASReader reader = LASReader.createFor(file);
+        List<Vertex> readVertices = reader.getVerticesRecords();
+        for(int i = 1000; i < readVertices.size(); i++) {
+            System.out.println(readVertices.get(i));
+        }
     }
 }
