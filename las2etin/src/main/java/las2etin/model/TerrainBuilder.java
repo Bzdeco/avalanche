@@ -67,17 +67,19 @@ public class TerrainBuilder
 
     private TerrainCell createTerrainCell(int xCoord, int yCoord)
     {
-        Vertex interpolatedVertex = createVertexForInterpolation(xCoord, yCoord);
+        Coordinates coordinates = new Coordinates(xCoord, yCoord);
+        Vertex interpolatedVertex = createVertexForInterpolation(coordinates);
         return new TerrainCellBuilder().withInterpolator(interpolator)
                                        .withVertex(interpolatedVertex)
+                                       .withCoordinates(coordinates)
                                        .build();
     }
 
-    private Vertex createVertexForInterpolation(int xCoord, int yCoord)
+    private Vertex createVertexForInterpolation(Coordinates coordinates)
     {
-        // FIXME !!!!!
-        return new Vertex(bounds.getMinX() + properties.getWidthOffset() + xCoord * properties.getRealCellWidth(),
-                          bounds.getMinY() + properties.getHeightOffset() + yCoord * properties.getRealCellHeight(),
-                          0);
+        return new Vertex(
+            bounds.getMinX() + properties.getWidthOffset() + coordinates.getX() * properties.getRealCellWidth(),
+            bounds.getMinY() + properties.getHeightOffset() + coordinates.getY() * properties.getRealCellHeight(),
+            0);
     }
 }

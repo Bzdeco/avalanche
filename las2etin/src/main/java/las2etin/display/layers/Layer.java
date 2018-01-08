@@ -1,10 +1,10 @@
-package las2etin.display;
+package las2etin.display.layers;
 
 import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public interface LayerPrinter
+public interface Layer
 {
     void drawCell(Graphics2D graphics, TerrainCell cell);
 }

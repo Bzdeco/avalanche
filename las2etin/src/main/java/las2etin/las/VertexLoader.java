@@ -79,19 +79,18 @@ class VertexLoader
     private Optional<Vertex> getVertexForIndexedPoint(long pointIndex)
     {
         try {
-            return readPointRecord(pointIndex);
+            return readGroundPointRecord(pointIndex);
         }
         catch (IOException ex) {
             return handleUnreadablePointRecord(pointIndex);
         }
     }
 
-    private Optional<Vertex> readPointRecord(long pointIndex) throws IOException
+    private Optional<Vertex> readGroundPointRecord(long pointIndex) throws IOException
     {
         tinfourReader.readRecord(pointIndex, pointHolder);
 
-        // FIXME this means ground
-        if(pointHolder.classification == 2) {
+        if(isGroundPoint(pointHolder)) {
             Vertex vertex = new VertexWithClassification(pointHolder.x,
                                                          pointHolder.y,
                                                          pointHolder.z,
@@ -107,5 +106,10 @@ class VertexLoader
     {
         LOGGER.info(String.format("Unable to read data for LAS record (id: %d), skipping the entry", pointIndex));
         return Optional.empty();
+    }
+
+    private boolean isGroundPoint(LasPoint point)
+    {
+        return point.classification == 2;
     }
 }

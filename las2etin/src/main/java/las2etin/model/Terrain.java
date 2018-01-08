@@ -28,8 +28,11 @@ public class Terrain implements Serializable
         return bounds;
     }
 
-    public Optional<TerrainCell> getCellWithCoordinates(int x, int y)
+    public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
     {
+        int x = coordinates.getX();
+        int y = coordinates.getY();
+
         List<TerrainCell> searchedRow = terrainCells.getOrDefault(x, new ArrayList<>());
         if (isColumnPresentInRow(y, searchedRow)) {
             return Optional.of(searchedRow.get(y));

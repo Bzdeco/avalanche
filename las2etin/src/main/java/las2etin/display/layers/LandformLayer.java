@@ -1,17 +1,17 @@
-package las2etin.display;
+package las2etin.display.layers;
 
 import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public class LandformLayerPrinter implements LayerPrinter
+public class LandformLayer implements Layer
 {
     private static final double MIN_LEVEL = 0.0;
     private static final double LEVEL_RANGE = 2499.0;
     private static final float LEVEL_COLOR_HUE = 0.4f;
     private static final float LEVEL_COLOR_SATURATION = 1f;
 
-    public LandformLayerPrinter()
+    public LandformLayer()
     {
     }
 
@@ -20,7 +20,7 @@ public class LandformLayerPrinter implements LayerPrinter
     {
         Color pixelColor = getColorFromAltitude(cell.getAltitude());
 
-        Shape cellRectangle = new Rectangle(x, y, 1, 1);
+        Shape cellRectangle = new Rectangle(cell.getX(), cell.getY(), 1, 1);
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
