@@ -5,10 +5,8 @@ src/main/resources/helen.las
 *.las
 *.ser
 *.png
-out/
 
 # User-specific stuff:
-.idea/workspace.xml
 .idea/tasks.xml
 *.iml
 .idea/
@@ -65,7 +63,6 @@ hs_err_pid*
 
 # Gradle
 .gradle
-/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
