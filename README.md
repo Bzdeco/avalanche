@@ -13,6 +13,6 @@
 Building `Terrain` with relatively big size and precision (e.g. 1000x1000 cells) is a very
 memory-heavy process. To succeed without getting `OutOfMemoryError` you need to increase the
 JVM's heap-size before running the serialization (`TerrainFormatter.serialize`). To do this,
-IntelliJ IDEA go to `Run > Edit Configurations` and pass additional argument to VM options:
-`-Vmx<number>g`, where `<number>` is the amount of the GB used for JVM heap. The exact number
+in IntelliJ IDEA go to `Run > Edit Configurations` and pass additional argument to VM options:
+`-Xmx<number>g`, where `<number>` is the amount of the GB used for JVM heap. The exact number
 depends on `Terrain` resolution specified via `TerrainSettings`.
