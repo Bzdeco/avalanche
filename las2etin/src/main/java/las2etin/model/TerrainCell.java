@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class TerrainCell implements Serializable
 {
+    private final Coordinates coordinates;
     private final double altitude;
     private final Vector3D normal;
     private final double aspect;
@@ -14,7 +15,8 @@ public class TerrainCell implements Serializable
     private final double planCurvature;
     private final double profileCurvature;
 
-    TerrainCell(double altitude,
+    TerrainCell(Coordinates coordinates,
+                double altitude,
                 Vector3D normal,
                 double aspect,
                 double grade,
@@ -22,6 +24,7 @@ public class TerrainCell implements Serializable
                 double planCurvature,
                 double profileCurvature)
     {
+        this.coordinates = coordinates;
         this.altitude = altitude;
         this.normal = normal;
         this.aspect = aspect;
@@ -29,6 +32,16 @@ public class TerrainCell implements Serializable
         this.slope = slope;
         this.planCurvature = planCurvature;
         this.profileCurvature = profileCurvature;
+    }
+
+    public int getX()
+    {
+        return coordinates.getX();
+    }
+
+    public int getY()
+    {
+        return coordinates.getY();
     }
 
     public double getAltitude()

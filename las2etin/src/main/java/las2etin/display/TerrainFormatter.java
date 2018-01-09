@@ -1,4 +1,4 @@
-package las2etin.output;
+package las2etin.display;
 
 import las2etin.model.Terrain;
 import org.apache.commons.lang3.SerializationUtils;

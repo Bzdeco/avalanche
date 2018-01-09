@@ -17,6 +17,7 @@ public class TerrainBuilder
     private Tin tin;
     private GwrTinInterpolator interpolator;
     private TerrainProperties properties;
+    private Bounds bounds;
 
     public TerrainBuilder(Tin tin)
     {
@@ -29,9 +30,11 @@ public class TerrainBuilder
         int widthInCells = settings.getWidthInCells();
         int heightInCells = settings.getHeightInCells();
 
-        Bounds bounds = tin.getBounds();
+        this.bounds = tin.getBounds();
         double realCellWidth = bounds.getWidth() / widthInCells;
         double realCellHeight = bounds.getHeight() / heightInCells;
+
+        // TODO check
 
         this.properties = new TerrainProperties(widthInCells, heightInCells, realCellWidth, realCellHeight);
         return this;
@@ -43,7 +46,7 @@ public class TerrainBuilder
 
         Map<Integer, List<TerrainCell>> cells = createAllTerrainCells();
 
-        return new Terrain(cells, properties);
+        return new Terrain(cells, properties, tin.getBounds());
     }
 
     private Map<Integer, List<TerrainCell>> createAllTerrainCells()
@@ -64,16 +67,19 @@ public class TerrainBuilder
 
     private TerrainCell createTerrainCell(int xCoord, int yCoord)
     {
-        Vertex interpolatedVertex = createVertexForInterpolation(xCoord, yCoord);
+        Coordinates coordinates = new Coordinates(xCoord, yCoord);
+        Vertex interpolatedVertex = createVertexForInterpolation(coordinates);
         return new TerrainCellBuilder().withInterpolator(interpolator)
                                        .withVertex(interpolatedVertex)
+                                       .withCoordinates(coordinates)
                                        .build();
     }
 
-    private Vertex createVertexForInterpolation(int xCoord, int yCoord)
+    private Vertex createVertexForInterpolation(Coordinates coordinates)
     {
-        return new Vertex(properties.getWidthOffset() + xCoord * properties.getRealCellWidth(),
-                          properties.getHeightOffset() + yCoord * properties.getRealCellHeight(),
-                          0);
+        return new Vertex(
+            bounds.getMinX() + properties.getWidthOffset() + coordinates.getX() * properties.getRealCellWidth(),
+            bounds.getMinY() + properties.getHeightOffset() + coordinates.getY() * properties.getRealCellHeight(),
+            0);
     }
 }
