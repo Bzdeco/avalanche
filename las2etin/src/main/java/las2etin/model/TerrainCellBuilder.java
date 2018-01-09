@@ -17,6 +17,7 @@ public class TerrainCellBuilder
 
     private GwrTinInterpolator interpolator;
     private Vertex vertex;
+    private Coordinates coordinates;
 
     public TerrainCellBuilder()
     {
@@ -34,10 +35,17 @@ public class TerrainCellBuilder
         return this;
     }
 
+    public TerrainCellBuilder withCoordinates(Coordinates coordinates)
+    {
+        this.coordinates = coordinates;
+        return this;
+    }
+
     public TerrainCell build()
     {
         checkNotNull(interpolator);
         checkNotNull(vertex);
+        checkNotNull(coordinates);
 
         double[] coefficients = interpolator.getCoefficients();
 
@@ -51,10 +59,25 @@ public class TerrainCellBuilder
             double planCurvature = calculatePlanCurvature(coefficients);
             double profileCurvature = calculateProfileCurvature(coefficients);
 
-            return new TerrainCell(altitude, normal, aspect, grade, slope, planCurvature, profileCurvature);
+            return new TerrainCell(coordinates,
+                                   altitude,
+                                   normal,
+                                   aspect,
+                                   grade,
+                                   slope,
+                                   planCurvature,
+                                   profileCurvature);
         }
-        else
-            return new TerrainCell(altitude, normal, 0, 0, 0, 0, 0);
+        else {
+            return new TerrainCell(coordinates,
+                                   altitude,
+                                   normal,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
+                                   0);
+        }
     }
 
     private boolean isCoefficientsAvailable(double[] coefficients)
