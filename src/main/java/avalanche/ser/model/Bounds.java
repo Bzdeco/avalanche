@@ -1,4 +1,4 @@
-package las2etin.las.vertex;
+package avalanche.ser.model;
 
 import java.io.Serializable;
 

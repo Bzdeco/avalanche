@@ -1,6 +1,6 @@
-package las2etin.model;
+package avalanche.ser.model;
 
-import las2etin.tin.Tin;
+import avalanche.ser.tin.Tin;
 import tinfour.common.Vertex;
 import tinfour.interpolation.GwrTinInterpolator;
 

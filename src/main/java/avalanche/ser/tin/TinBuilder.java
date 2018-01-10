@@ -1,7 +1,7 @@
-package las2etin.tin;
+package avalanche.ser.tin;
 
-import las2etin.model.Bounds;
-import las2etin.tin.exception.TINBuildingException;
+import avalanche.ser.model.Bounds;
+import avalanche.ser.tin.exception.TINBuildingException;
 import tinfour.common.IIncrementalTin;
 import tinfour.common.Vertex;
 import tinfour.standard.IncrementalTin;

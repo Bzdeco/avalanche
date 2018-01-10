@@ -24,6 +24,10 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1212.jre7'
     compile group: 'net.e175.klaus', name: 'solarpositioning', version: '0.0.9'
     compile 'com.google.guava:guava:23.5-jre'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.25'
+
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'org.jsoup:jsoup:1.10.1'
