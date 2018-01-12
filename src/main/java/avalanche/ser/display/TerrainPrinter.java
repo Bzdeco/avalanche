@@ -30,8 +30,13 @@ public class TerrainPrinter
         this.bufferedImage = new BufferedImage(widthInPixels, heightInPixels, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void print(Layer layer) throws IOException {
+    public void print(Layer layer) throws IOException
+    {
+        print(layer, "test");
+    }
 
+    public void print(final Layer layer, final String resourcePath) throws IOException
+    {
         Graphics2D graphics = bufferedImage.createGraphics();
 
         for (int x = 0; x < widthInPixels; x++) {
@@ -42,6 +47,6 @@ public class TerrainPrinter
             }
         }
 
-        ImageIO.write(bufferedImage, "PNG", new File("src/test/resources/test.png"));
+        ImageIO.write(bufferedImage, "PNG", new File(resourcePath));
     }
 }

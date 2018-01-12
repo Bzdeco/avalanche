@@ -4,13 +4,16 @@ import avalanche.model.LeData;
 import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
 import avalanche.model.fileprocessors.SerFileProcessor;
+import avalanche.ser.TerrainFormatter;
+import avalanche.ser.display.TerrainPrinter;
+import avalanche.ser.display.layers.LandformLayer;
+import avalanche.ser.model.Terrain;
 import avalanche.view.layers.AvalancheRiskLayer;
 import avalanche.view.layers.CurvatureLayer;
 import avalanche.view.layers.GradeLayer;
 import avalanche.view.layers.HillShadeLayer;
 import avalanche.view.layers.LayerViewport;
 import avalanche.view.layers.TerrainAltitudeLayer;
-import com.google.common.collect.ImmutableList;
 import com.sun.javafx.util.Utils;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -33,6 +36,7 @@ import org.reactfx.util.Tuples;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -49,8 +53,10 @@ public class Controller
     private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer("Wysokośc terenu");
     private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer("Ryzyko lawinowe");
     private static final String LAYER_VIEW_NAME = "Warstwy";
+    private static final String LANDFORM_LAYER_PATH = "src/main/resources/landform.png";
 
     private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
+    private ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     @FXML
     public Button centerView;
@@ -76,33 +82,58 @@ public class Controller
     @FXML
     private TableView tableView;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
-
     @FXML
     public void initialize()
     {
-        layerViewport.registerLayers(ImmutableList.of(
-                CURVATURE_LAYER,
-                GRADE_LAYER,
-                HILL_SHADE_LAYER,
-                TERRAIN_ALTITUDE_LAYER,
-                AVALANCHE_RISK_LAYER
-        ));
+//        layerViewport.registerLayers(ImmutableList.of(
+//                CURVATURE_LAYER,
+//                GRADE_LAYER,
+//                HILL_SHADE_LAYER,
+//                TERRAIN_ALTITUDE_LAYER,
+//                AVALANCHE_RISK_LAYER
+//        ));
+//
+//        final Task<LeData> leDataTask = tryLoadingData();
+        // TODO select file .ser
+        final File file = selectFile();
 
-        final Task<LeData> leDataTask = tryLoadingData();
-        initializeWeather(leDataTask);
+        // TODO deserialize to Terrain
+        final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
 
-        initializeZoomAndPan();
+        // TODO display png
+        final TerrainPrinter terrainPrinter = new TerrainPrinter(terrain);
+        try {
+            terrainPrinter.print(new LandformLayer(), LANDFORM_LAYER_PATH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        layerViewport.createLayerControls(LAYER_VIEW_NAME, layerSelector);
-        layerViewport.renderLayers();
+
+//        final Task<LeData> leDataTask = tryLoadingData();
+//        initializeWeather(leDataTask);
+
+//        initializeZoomAndPan();
+
+//        layerViewport.createLayerControls(LAYER_VIEW_NAME, layerSelector);
+//        layerViewport.renderLayers();
     }
 
-    private Task<LeData> tryLoadingData()
-    {
+//    private Task<LeData> tryLoadingData()
+//    {
+//        try {
+//            final File file = trySelectFile();
+//            return loadDataFromFile(file);
+//        } catch (OperationNotSupportedException ex) {
+//            //TODO handle this better in the UI!
+//            Platform.exit();
+//            throw new IllegalStateException("You fucked up boi");
+//        }
+//    }
+
+    private File selectFile() {
         try {
-            final File file = trySelectingFile();
-            return loadDataFromFile(file);
+            return trySelectFile();
+
         } catch (OperationNotSupportedException ex) {
             //TODO handle this better in the UI!
             Platform.exit();
@@ -110,7 +141,7 @@ public class Controller
         }
     }
 
-    private File trySelectingFile() throws OperationNotSupportedException
+    private File trySelectFile() throws OperationNotSupportedException
     {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
