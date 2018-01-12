@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public class TerrainCell implements Serializable
 {
+    private static final long serialVersionUID = -5616958564343992038L;
+
     private final Coordinates coordinates;
     private final double altitude;
     private final Vector3D normal;

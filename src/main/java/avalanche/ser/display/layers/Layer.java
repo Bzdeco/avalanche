@@ -1,6 +1,6 @@
 package avalanche.ser.display.layers;
 
-import avalanche.ser.model.TerrainCell;
+import las2etin.model.TerrainCell;
 
 import java.awt.*;
 

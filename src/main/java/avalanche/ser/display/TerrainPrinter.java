@@ -1,10 +1,10 @@
 package avalanche.ser.display;
 
 import avalanche.ser.display.layers.Layer;
-import avalanche.ser.model.Coordinates;
-import avalanche.ser.model.Terrain;
-import avalanche.ser.model.TerrainCell;
-import avalanche.ser.model.TerrainProperties;
+import las2etin.model.Coordinates;
+import las2etin.model.Terrain;
+import las2etin.model.TerrainCell;
+import las2etin.model.TerrainProperties;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

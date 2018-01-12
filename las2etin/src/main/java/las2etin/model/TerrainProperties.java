@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class TerrainProperties implements Serializable
 {
+    private static final long serialVersionUID = -979805754018662669L;
+
     private final int widthInCells;
     private final int heightInCells;
     private final int numberOfCells;

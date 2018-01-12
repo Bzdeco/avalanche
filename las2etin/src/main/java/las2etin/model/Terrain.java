@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Terrain implements Serializable
 {
+    private static final long serialVersionUID = -7848043410735605796L;
+
     private final Map<Integer, List<TerrainCell>> terrainCells;
     private final TerrainProperties terrainProperties;
     private final Bounds bounds;

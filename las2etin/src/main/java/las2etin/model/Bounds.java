@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class Bounds implements Serializable
 {
+    private static final long serialVersionUID = -2564908662911290297L;
+
     private double minX;
     private double minY;
     private double maxX;

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class Coordinates implements Serializable
 {
+    private static final long serialVersionUID = 4596453708352625490L;
+
     private int x;
     private int y;
 
