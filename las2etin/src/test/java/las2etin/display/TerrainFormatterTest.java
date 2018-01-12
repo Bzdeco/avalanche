@@ -2,7 +2,7 @@ package las2etin.display;
 
 import las2etin.las.LASFile;
 import las2etin.las.LASReader;
-import las2etin.las.vertex.Bounds;
+import las2etin.model.Bounds;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainBuilder;
 import las2etin.model.TerrainSettings;

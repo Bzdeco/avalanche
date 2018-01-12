@@ -1,6 +1,6 @@
-package las2etin.tin;
+package avalanche.ser.tin;
 
-import las2etin.model.Bounds;
+import avalanche.ser.model.Bounds;
 import tinfour.common.IIncrementalTin;
 
 public class Tin

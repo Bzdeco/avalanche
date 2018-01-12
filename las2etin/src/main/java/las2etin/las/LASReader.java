@@ -1,6 +1,6 @@
 package las2etin.las;
 
-import las2etin.las.vertex.Bounds;
+import las2etin.model.Bounds;
 import las2etin.las.vertex.ThinningVertexFilter;
 import las2etin.las.vertex.VertexUtil;
 import tinfour.common.Vertex;
