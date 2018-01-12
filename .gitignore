@@ -5,6 +5,7 @@
 *.ser
 *.png
 out/
+build/
 
 # User-specific stuff:
 .idea/workspace.xml
