@@ -1,7 +1,10 @@
-package las2etin.model;
+package avalanche.ser.model;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Terrain implements Serializable
 {

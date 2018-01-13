@@ -1,9 +1,8 @@
 package las2etin.tin;
 
-import las2etin.las.vertex.Bounds;
+import las2etin.model.Bounds;
 import org.junit.Test;
 import testutil.TestUtil;
-import tinfour.common.IIncrementalTin;
 import tinfour.common.Vertex;
 
 import java.util.List;
