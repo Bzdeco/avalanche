@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuples;
+import weatherCollector.WeatherApplication;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;

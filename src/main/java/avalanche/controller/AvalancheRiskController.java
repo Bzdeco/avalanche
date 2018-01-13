@@ -25,8 +25,7 @@ public class AvalancheRiskController
 
     public void prepareAvalanchePredictionTask(final LeData data,
                                                final LayerUI avalancheRiskLayer,
-                                               final LayerUI hillShadeLayer)
-    {
+                                               final LayerUI hillShadeLayer) {
         task = new Task<LeData>()
         {
             @Override

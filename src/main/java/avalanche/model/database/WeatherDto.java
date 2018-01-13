@@ -1,6 +1,5 @@
 package avalanche.model.database;
 
-import avalanche.model.Dirs;
 import javafx.collections.ObservableList;
 import lombok.Data;
 

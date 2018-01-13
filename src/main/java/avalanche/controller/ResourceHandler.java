@@ -6,40 +6,41 @@ import org.apache.logging.log4j.Logger;
 //TODO need to look into that while the weather part is working
 // only static methods form here are being used
 public class ResourceHandler {
-    private static final String mainDataFile = "";
-    private static String mainDataFilePath;
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private static final String mainDataFile = "";
+    private static String mainDataFilePath;
     private static String extensionRemoved;
-
     private static String terrainDataFilePath,
-            normalsDataFilePath,
-            hillShadeDataFilePath,
-            steepnessDataFilePath,
-            dbDriver,
-            dbUrl,
-            dbUser,
-            dbPass;
+        normalsDataFilePath,
+        hillShadeDataFilePath,
+        steepnessDataFilePath,
+        dbDriver,
+        dbUrl,
+        dbUser,
+        dbPass;
 
     static {
-        try {
-//            mainDataFilePath = ResourceHandler.class.getClassLoader().getResource(mainDataFile).getFile();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
+        // probably not needed, but lemme say: not sure
 
-        try {
-            if (mainDataFilePath.indexOf(".") > 0)
-                extensionRemoved = mainDataFilePath.substring(0, mainDataFilePath.lastIndexOf("."));
-        } catch (Exception exception) {
-            LOGGER.error(exception.getClass().getName() + ": " + exception.getMessage());
-        } finally {
-            terrainDataFilePath = extensionRemoved + "_terrain.ser";
-            normalsDataFilePath = extensionRemoved + "_normals.ser";
-            hillShadeDataFilePath = extensionRemoved + "_hillShade.ser";
-            steepnessDataFilePath = extensionRemoved + "_steepness.ser";
-        }
+//        try {
+//           mainDataFilePath = ResourceHandler.class.getClassLoader().getResource(mainDataFile).getFile();
+//        } catch (Exception exception) {
+//            exception.printStackTrace();
+//            System.exit(1);
+//        }
+//
+//        try {
+//            if (mainDataFilePath.indexOf(".") > 0)
+//                extensionRemoved = mainDataFilePath.substring(0, mainDataFilePath.lastIndexOf("."));
+//        } catch (Exception exception) {
+//            LOGGER.error(exception.getClass().getName() + ": " + exception.getMessage());
+//        } finally {
+//            terrainDataFilePath = extensionRemoved + "_terrain.ser";
+//            normalsDataFilePath = extensionRemoved + "_normals.ser";
+//            hillShadeDataFilePath = extensionRemoved + "_hillShade.ser";
+//            steepnessDataFilePath = extensionRemoved + "_steepness.ser";
+//        }
 
         dbDriver = "org.postgresql.Driver";
         dbUrl = "jdbc:postgresql://127.0.0.1:5432/lawiny_test";
