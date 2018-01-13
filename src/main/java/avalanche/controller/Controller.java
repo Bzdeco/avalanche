@@ -4,6 +4,7 @@ import avalanche.model.LeData;
 import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
 import avalanche.model.fileprocessors.SerFileProcessor;
+import avalanche.model.risk.Risk;
 import avalanche.ser.display.TerrainPrinter;
 import avalanche.ser.display.layers.LandformLayer;
 import avalanche.view.layers.AvalancheRiskLayer;
@@ -14,7 +15,6 @@ import avalanche.view.layers.LayerViewport;
 import avalanche.view.layers.TerrainAltitudeLayer;
 import com.sun.javafx.util.Utils;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -33,13 +33,14 @@ import org.apache.logging.log4j.Logger;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuples;
-import weatherCollector.WeatherApplication;
+import org.w3c.dom.ls.LSOutput;
+import weatherCollector.coordinates.Coords;
+import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,7 +58,8 @@ public class Controller
     private static final String LANDFORM_LAYER_PATH = "src/main/resources/landform.png";
 
     private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    //private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
 
     @FXML
     public Button centerView;
@@ -109,7 +111,11 @@ public class Controller
             e.printStackTrace();
         }
 
-        initializeWeather();
+        Coords terrainCoords = converter.convert(file.getName());
+        initializeAvalancheRiskPrediction(terrain, terrainCoords);
+        List<WeatherDto> weatherDtoList = initializeWeather();
+        avalancheRiskController.addWeather(weatherDtoList);
+        Risk risk = avalancheRiskController.predict(terrain);
 
 //        final Task<LeData> leDataTask = tryLoadingData();
 
@@ -175,7 +181,7 @@ public class Controller
 
     private Task<LeData> executeLoadingData(final Task<LeData> dataTask)
     {
-        executorService.execute(dataTask);
+//        executorService.execute(dataTask);
 //        executorService.execute(avalancheRiskController.prepareAvalanchePredictionTask());
         bindUi(dataTask);
         return dataTask;
@@ -188,16 +194,15 @@ public class Controller
         CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
     }
 
-    private void initializeWeather()
+    private List<WeatherDto> initializeWeather()
     {
-//        avalancheRiskController.prepareAvalanchePredictionTask(
-//                dataTask.getValue(),
-//                AVALANCHE_RISK_LAYER,
-//                HILL_SHADE_LAYER);
-
         WeatherConnector connector = WeatherConnector.getInstance();
         connector.setTableView(tableView);
-        connector.buildData();
+        return connector.buildData();
+    }
+
+    private void initializeAvalancheRiskPrediction(final Terrain terrain, Coords terrainCoords) {
+        avalancheRiskController.prepareAvalanchePrediction(terrain, terrainCoords);
     }
 
     private void initializeZoomAndPan()
@@ -227,9 +232,9 @@ public class Controller
 
     public void shutdown() throws InterruptedException
     {
-        executorService.shutdown();
-        executorService.awaitTermination(10, TimeUnit.SECONDS);
-        executorService.shutdownNow();
+//        executorService.shutdown();
+//        executorService.awaitTermination(10, TimeUnit.SECONDS);
+//        executorService.shutdownNow();
     }
 
 //TODO get back to saving stuff

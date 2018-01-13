@@ -1,5 +1,6 @@
 package avalanche.model.database;
 
+import avalanche.controller.AvalancheRiskController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +13,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static avalanche.controller.ResourceHandler.getDbDriver;
 import static avalanche.controller.ResourceHandler.getDbPass;
@@ -24,6 +29,8 @@ public class WeatherConnector {
     private Connection connection;
     private PreparedStatement statement;
     private TableView tableView;
+    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
 
     private WeatherConnector() {}
 
@@ -47,8 +54,9 @@ public class WeatherConnector {
         LOGGER.info("Opened database successfully");
     }
 
-    public void buildData() {
+    public List<WeatherDto> buildData() {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
+        List<WeatherDto> weatherDtoList = new LinkedList<>();
 
         try {
             if (connection == null) connect();
@@ -83,6 +91,10 @@ public class WeatherConnector {
                 }
                 LOGGER.debug("Row [{}] added {}", cnt++, row);
                 data.add(row);
+
+                WeatherDto weatherDto = new WeatherDto.Builder().build(row);
+                weatherDtoList.add(weatherDto);
+
             }
 
             tableView.setItems(data);
@@ -91,6 +103,7 @@ public class WeatherConnector {
             e.printStackTrace();
             LOGGER.error("Error on Building Data");
         }
+        return weatherDtoList;
     }
 
     private static class LazyHandler {

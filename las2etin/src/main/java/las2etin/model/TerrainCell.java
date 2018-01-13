@@ -36,6 +36,10 @@ public class TerrainCell implements Serializable
         this.profileCurvature = profileCurvature;
     }
 
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
     public int getX()
     {
         return coordinates.getX();
