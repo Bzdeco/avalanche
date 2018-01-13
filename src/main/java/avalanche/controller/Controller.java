@@ -108,9 +108,9 @@ public class Controller
             e.printStackTrace();
         }
 
+        initializeWeather();
 
 //        final Task<LeData> leDataTask = tryLoadingData();
-//        initializeWeather(leDataTask);
 
 //        initializeZoomAndPan();
 
@@ -187,16 +187,16 @@ public class Controller
         CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
     }
 
-    private void initializeWeather(final Task<LeData> dataTask)
+    private void initializeWeather()
     {
-        avalancheRiskController.prepareAvalanchePredictionTask(
-                dataTask.getValue(),
-                AVALANCHE_RISK_LAYER,
-                HILL_SHADE_LAYER);
+//        avalancheRiskController.prepareAvalanchePredictionTask(
+//                dataTask.getValue(),
+//                AVALANCHE_RISK_LAYER,
+//                HILL_SHADE_LAYER);
 
         WeatherConnector connector = WeatherConnector.getInstance();
-        connector.buildData();
         connector.setTableView(tableView);
+        connector.buildData();
     }
 
     private void initializeZoomAndPan()
