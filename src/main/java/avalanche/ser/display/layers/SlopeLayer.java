@@ -10,8 +10,11 @@ public class SlopeLayer implements Layer
     private static final float SLOPE_COLOR_HUE = 0f;
     private static final float SLOPE_COLOR_BRIGHTNESS = 1f;
 
-    public SlopeLayer()
+    private final String name;
+
+    public SlopeLayer(final String name)
     {
+        this.name = name;
     }
 
     @Override
@@ -23,6 +26,11 @@ public class SlopeLayer implements Layer
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     private Color getColorFromSlope(double slope)

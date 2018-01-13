@@ -14,8 +14,10 @@ public class SusceptiblePlacesLayer implements Layer
     private static final float SUSCEPTIBILITY_COLOR_HUE = 0f;
     private static final float SUSCEPTIBILITY_COLOR_BRIGHTNESS = 1f;
 
-    public SusceptiblePlacesLayer()
-    {
+    private final String name;
+
+    public SusceptiblePlacesLayer(String name) {
+        this.name = name;
     }
 
     @Override
@@ -27,6 +29,11 @@ public class SusceptiblePlacesLayer implements Layer
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     private Color getSusceptibilityColorFromSlope(double slope)
