@@ -1,4 +1,4 @@
-package old;
+package avalanche.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 public class ResourceHandler {
     private static final String mainDataFile = "";
     private static String mainDataFilePath;
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static String extensionRemoved;
 
@@ -33,7 +33,7 @@ public class ResourceHandler {
             if (mainDataFilePath.indexOf(".") > 0)
                 extensionRemoved = mainDataFilePath.substring(0, mainDataFilePath.lastIndexOf("."));
         } catch (Exception exception) {
-            logger.error(exception.getClass().getName() + ": " + exception.getMessage());
+            LOGGER.error(exception.getClass().getName() + ": " + exception.getMessage());
         } finally {
             terrainDataFilePath = extensionRemoved + "_terrain.ser";
             normalsDataFilePath = extensionRemoved + "_normals.ser";

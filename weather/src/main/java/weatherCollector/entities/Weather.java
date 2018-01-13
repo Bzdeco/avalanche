@@ -54,8 +54,8 @@ public class Weather {
         this.cloudiness = clouds.get("all");
         this.wind_speed = wind.get("speed");
         this.wind_deg = wind.get("deg");
-        this.rain = rain == null ? new Float(0) : rain.get("3h");
-        this.snow = snow == null ? new Float(0) : snow.get("3h");
+        this.rain = rain == null || rain.get("3h") == null ? new Float(0) : rain.get("3h");
+        this.snow = snow == null || snow.get("3h") == null ? new Float(0) : snow.get("3h");
     }
 
     public Date getTime() {
