@@ -156,7 +156,6 @@ public class Controller
         CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
     }
 
-
     private void initializeWeather(final Task<LeData> dataTask)
     {
         avalancheRiskController.prepareAvalanchePredictionTask(
@@ -165,6 +164,7 @@ public class Controller
                 HILL_SHADE_LAYER);
 
         WeatherConnector connector = WeatherConnector.getInstance();
+        connector.buildData();
         connector.setTableView(tableView);
     }
 

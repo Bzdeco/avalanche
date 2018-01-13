@@ -26,7 +26,7 @@ public class WeatherConnector {
     private PreparedStatement statement;
     private TableView tableView;
 
-    private WeatherConnector(){}
+    private WeatherConnector() {}
 
     public static WeatherConnector getInstance(){
         return LazyHandler.instance;
@@ -48,7 +48,7 @@ public class WeatherConnector {
         LOGGER.info("Opened database successfully");
     }
 
-    public void buildData(LocalDate from, LocalDate to) {
+    public void buildData() {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
 
         try {
@@ -86,8 +86,8 @@ public class WeatherConnector {
                 data.add(row);
             }
 
-            //FINALLY ADDED TO TableView
             tableView.setItems(data);
+
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("Error on Building Data");
