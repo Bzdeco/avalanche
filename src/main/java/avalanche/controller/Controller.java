@@ -67,11 +67,9 @@ public class Controller
     {
 
 
-//        final File file = selectFile();
-        final File file = new File("/home/lick/sample.ser");
+        final File file = selectFile();
         final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
         new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
-
 
 //        initializeWeather(leDataTask);
 //
