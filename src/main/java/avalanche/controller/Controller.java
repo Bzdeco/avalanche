@@ -73,12 +73,9 @@ public class Controller
     @FXML
     public void initialize()
     {
-
-
         final File file = selectFile();
         final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
         new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
-
 
         Coords terrainCoords = converter.convert(file.getName());
         initializeAvalancheRiskPrediction(terrain, terrainCoords);
@@ -102,9 +99,9 @@ public class Controller
     {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Model zserializowany", "*.ser")
+                new FileChooser.ExtensionFilter("Serialized terrain model", "*.ser")
         );
-        fileChooser.setTitle("Wybierz plik modelu terenu");
+        fileChooser.setTitle("Choose serialized terrain model file (.ser)");
         final File file = fileChooser.showOpenDialog(null);
         validateFileSelection(file);
         return file;
