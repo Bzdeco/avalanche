@@ -1,4 +1,3 @@
 rootProject.name = 'avalanche'
 
-include 'weather'
-include 'las2etin'
+include ':weather', ':las2etin'

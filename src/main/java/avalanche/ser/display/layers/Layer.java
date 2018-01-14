@@ -1,10 +1,12 @@
 package avalanche.ser.display.layers;
 
-import avalanche.ser.model.TerrainCell;
+import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
 public interface Layer
 {
+    String name();
+
     void drawCell(Graphics2D graphics, TerrainCell cell);
 }

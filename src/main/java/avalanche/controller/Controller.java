@@ -1,41 +1,28 @@
 package avalanche.controller;
 
-import avalanche.model.LeData;
-import avalanche.model.database.WeatherConnector;
-import avalanche.model.database.WeatherDto;
-import avalanche.model.fileprocessors.SerFileProcessor;
-import avalanche.view.layers.AvalancheRiskLayer;
-import avalanche.view.layers.CurvatureLayer;
-import avalanche.view.layers.GradeLayer;
-import avalanche.view.layers.HillShadeLayer;
-import avalanche.view.layers.LayerViewport;
-import avalanche.view.layers.TerrainAltitudeLayer;
+import avalanche.ser.display.TerrainPrinter;
+import avalanche.ser.display.layers.LandformLayer;
+import avalanche.ser.display.layers.Layer;
+import avalanche.ser.display.layers.SlopeLayer;
+import avalanche.ser.display.layers.SusceptiblePlacesLayer;
 import com.google.common.collect.ImmutableList;
-import com.sun.javafx.util.Utils;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import las2etin.display.TerrainFormatter;
+import las2etin.model.Terrain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reactfx.EventStreams;
-import org.reactfx.StateMachine;
-import org.reactfx.util.Tuples;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -43,14 +30,13 @@ import java.util.concurrent.TimeUnit;
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final CurvatureLayer CURVATURE_LAYER = new CurvatureLayer("Krzywizna terenu");
-    private static final GradeLayer GRADE_LAYER = new GradeLayer("Nachylenie terenu");
-    private static final HillShadeLayer HILL_SHADE_LAYER = new HillShadeLayer("Zacienienie");
-    private static final TerrainAltitudeLayer TERRAIN_ALTITUDE_LAYER = new TerrainAltitudeLayer("Wysokośc terenu");
-    private static final AvalancheRiskLayer AVALANCHE_RISK_LAYER = new AvalancheRiskLayer("Ryzyko lawinowe");
-    private static final String LAYER_VIEW_NAME = "Warstwy";
+    private static final List<Layer> LAYERS = ImmutableList.of(
+            new LandformLayer("landform"),
+            new SlopeLayer("slope"),
+            new SusceptiblePlacesLayer("susceptible_places")
+    );
 
-    private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
+    private ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     @FXML
     public Button centerView;
@@ -62,7 +48,7 @@ public class Controller
     private TreeView layerSelector;
 
     @FXML
-    private LayerViewport layerViewport;
+    private Pane layerViewport;
 
     @FXML
     private DatePicker fromDate;
@@ -76,33 +62,23 @@ public class Controller
     @FXML
     private TableView tableView;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
-
     @FXML
     public void initialize()
     {
-        layerViewport.registerLayers(ImmutableList.of(
-                CURVATURE_LAYER,
-                GRADE_LAYER,
-                HILL_SHADE_LAYER,
-                TERRAIN_ALTITUDE_LAYER,
-                AVALANCHE_RISK_LAYER
-        ));
 
-        final Task<LeData> leDataTask = tryLoadingData();
-        initializeWeather(leDataTask);
 
-        initializeZoomAndPan();
+        final File file = selectFile();
+        final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
+        new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
 
-        layerViewport.createLayerControls(LAYER_VIEW_NAME, layerSelector);
-        layerViewport.renderLayers();
+//        initializeWeather(leDataTask);
+//
     }
 
-    private Task<LeData> tryLoadingData()
-    {
+    private File selectFile() {
         try {
-            final File file = trySelectingFile();
-            return loadDataFromFile(file);
+            return trySelectFile();
+
         } catch (OperationNotSupportedException ex) {
             //TODO handle this better in the UI!
             Platform.exit();
@@ -110,7 +86,7 @@ public class Controller
         }
     }
 
-    private File trySelectingFile() throws OperationNotSupportedException
+    private File trySelectFile() throws OperationNotSupportedException
     {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
@@ -130,85 +106,33 @@ public class Controller
         }
     }
 
-    private Task<LeData> loadDataFromFile(final File file)
-    {
-        return executeLoadingData(createLoadingDataTaskFromFile(file));
-    }
-
-    private Task<LeData> createLoadingDataTaskFromFile(final File serFile)
-    {
-        final SerFileProcessor serFileProcessor = new SerFileProcessor(serFile);
-        return serFileProcessor.createProcessingTask();
-    }
-
-    private Task<LeData> executeLoadingData(final Task<LeData> dataTask)
-    {
-        executorService.execute(dataTask);
-//        executorService.execute(avalancheRiskController.prepareAvalanchePredictionTask());
-        bindUi(dataTask);
-        return dataTask;
-    }
-
-    private void bindUi(final Task<LeData> dataTask)
-    {
-        TERRAIN_ALTITUDE_LAYER.dataProperty().bind(dataTask.valueProperty());
-        GRADE_LAYER.dataProperty().bind(dataTask.valueProperty());
-        CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
-    }
-
-
-    private void initializeWeather(final Task<LeData> dataTask)
-    {
-        avalancheRiskController.prepareAvalanchePredictionTask(
-                dataTask.getValue(),
-                AVALANCHE_RISK_LAYER,
-                HILL_SHADE_LAYER);
-
-        LocalDate now = LocalDate.now();
-        LocalDate wago = now.minus(1, ChronoUnit.WEEKS);
-        fromDate.setValue(wago);
-        toDate.setValue(now);
-
-        WeatherConnector con = WeatherConnector.getInstance();
-
-        EventStreams.changesOf(fromDate.valueProperty())
-                .subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
-        EventStreams.changesOf(toDate.valueProperty())
-                .subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
-
-        tableView.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    WeatherDto weatherDto = new WeatherDto.Builder().build((ObservableList<String>) newValue);
-                    avalancheRiskController.executeTask(weatherDto, executorService);
-                });
-        con.setTableView(tableView);
-    }
-
-    private void initializeZoomAndPan()
-    {
-        EventStreams.eventsOf(layerViewport, ScrollEvent.SCROLL)
-                .map(sE -> sE.getDeltaY() / 1000)
-                .accumulate(layerViewport.getZoom(), (a, b) -> Utils.clamp(1 / 16, a + b, 2.0))
-                .feedTo(layerViewport.zoomProperty());
-
-        StateMachine.init(Tuples.t(layerViewport.getPan(), Point2D.ZERO))
-                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_PRESSED))
-                .transition((p, m) -> Tuples.t(p._1, new Point2D(m.getX(), m.getY())))
-                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_DRAGGED))
-                .emit((p, m) -> Optional.of(p._1.add(p._2.subtract(m.getX(), m.getY()))))
-                .on(EventStreams.eventsOf(layerViewport, MouseEvent.MOUSE_RELEASED))
-                .transition((p, m) -> Tuples.t(p._1.add(p._2.subtract(m.getX(), m.getY())), Point2D.ZERO))
-                .on(EventStreams.changesOf(layerViewport.zoomProperty()))
-                .transmit((p, c) -> {
-                    final double nz = c.getNewValue().doubleValue(), oz = c.getOldValue().doubleValue();
-                    final Point2D newPan = p._1.multiply(nz / oz);
-                    return Tuples.t(Tuples.t(newPan, p._2), Optional.of(newPan));
-                })
-                .on(EventStreams.eventsOf(centerView, MouseEvent.MOUSE_CLICKED)) // Reset view
-                .transmit((p, c) -> Tuples.t(Tuples.t(Point2D.ZERO, Point2D.ZERO), Optional.of(Point2D.ZERO)))
-                .toEventStream().feedTo(layerViewport.panProperty());
-    }
+//    private void initializeWeather(final Task<LeData> dataTask)
+//    {
+//        avalancheRiskController.prepareAvalanchePredictionTask(
+//                dataTask.getValue(),
+//                AVALANCHE_RISK_LAYER,
+//                HILL_SHADE_LAYER);
+//
+//        LocalDate now = LocalDate.now();
+//        LocalDate wago = now.minus(1, ChronoUnit.WEEKS);
+//        fromDate.setValue(wago);
+//        toDate.setValue(now);
+//
+//        WeatherConnector con = WeatherConnector.getInstance();
+//
+//        EventStreams.changesOf(fromDate.valueProperty())
+//                .subscribe(val -> con.buildData(val.getNewValue(), toDate.getValue()));
+//        EventStreams.changesOf(toDate.valueProperty())
+//                .subscribe(val -> con.buildData(fromDate.getValue(), val.getNewValue()));
+//
+//        tableView.getSelectionModel()
+//                .selectedItemProperty()
+//                .addListener((observable, oldValue, newValue) -> {
+//                    WeatherDto weatherDto = new WeatherDto.Builder().build((ObservableList<String>) newValue);
+//                    avalancheRiskController.executeTask(weatherDto, executorService);
+//                });
+//        con.setTableView(tableView);
+//    }
 
     public void shutdown() throws InterruptedException
     {

@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = 'las2etin.Las2etin'
+applicationDefaultJvmArgs = ["-Xmx1536m"]
 
 repositories {
     jcenter()

@@ -1,6 +1,6 @@
 package avalanche.ser.display.layers;
 
-import avalanche.ser.model.TerrainCell;
+import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
@@ -11,8 +11,11 @@ public class LandformLayer implements Layer
     private static final float LEVEL_COLOR_HUE = 0.4f;
     private static final float LEVEL_COLOR_SATURATION = 1f;
 
-    public LandformLayer()
+    private final String name;
+
+    public LandformLayer(final String name)
     {
+        this.name = name;
     }
 
     @Override
@@ -24,6 +27,11 @@ public class LandformLayer implements Layer
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     // TODO return color ranging in shades used on traditional maps
