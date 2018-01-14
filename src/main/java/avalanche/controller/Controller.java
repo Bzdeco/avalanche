@@ -33,13 +33,19 @@ import org.apache.logging.log4j.Logger;
 import org.reactfx.EventStreams;
 import org.reactfx.StateMachine;
 import org.reactfx.util.Tuples;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.w3c.dom.ls.LSOutput;
+import weatherCollector.WeatherApplication;
 import weatherCollector.coordinates.Coords;
 import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -113,7 +119,8 @@ public class Controller
 
         Coords terrainCoords = converter.convert(file.getName());
         initializeAvalancheRiskPrediction(terrain, terrainCoords);
-        List<WeatherDto> weatherDtoList = initializeWeather();
+
+        List<WeatherDto> weatherDtoList = initializeWeather(file.getName());
         avalancheRiskController.addWeather(weatherDtoList);
         Risk risk = avalancheRiskController.predict(terrain);
 
@@ -194,11 +201,28 @@ public class Controller
         CURVATURE_LAYER.dataProperty().bind(dataTask.valueProperty());
     }
 
-    private List<WeatherDto> initializeWeather()
+    private List<WeatherDto> initializeWeather(String filename)
     {
+        updateWeather(filename);
         WeatherConnector connector = WeatherConnector.getInstance();
         connector.setTableView(tableView);
         return connector.buildData();
+    }
+
+    private void updateWeather(String filename) {
+//        ConfigurableApplicationContext applicationContext =
+//                new SpringApplicationBuilder().sources(WeatherApplication.class).run(new String[]{filename});
+//        System.out.println(applicationContext.isRunning());
+        try {
+            URL url = new URL("http://127.0.0.1:8080/getWeatherData");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            LOGGER.info("Weather updated");
+        } catch (Exception e) {
+            LOGGER.error("Weather not updated");
+        }
+        //applicationContext.close();
+
     }
 
     private void initializeAvalancheRiskPrediction(final Terrain terrain, Coords terrainCoords) {

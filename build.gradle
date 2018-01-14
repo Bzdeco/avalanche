@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     compile project(':las2etin')
+    compile group: 'org.springframework.boot', name: 'spring-boot', version: '1.0.0.RELEASE'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
     compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'

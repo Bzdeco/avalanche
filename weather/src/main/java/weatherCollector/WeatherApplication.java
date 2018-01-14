@@ -9,6 +9,7 @@ import java.io.IOException;
 public class WeatherApplication {
 
 	public static void main(String[] args) throws IOException {
+        System.setProperty("filename", args[0]);
         System.out.println("filename: "+System.getProperty("filename"));
         SpringApplication.run(WeatherApplication.class, args);
 	}
