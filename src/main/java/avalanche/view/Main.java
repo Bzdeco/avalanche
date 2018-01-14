@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Main extends Application {
 
-    private static final String STAGE_TITLE = "Projekt lawinowy";
+    private static final String STAGE_TITLE = "Avalanche Risk Project";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {

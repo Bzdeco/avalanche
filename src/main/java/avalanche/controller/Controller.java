@@ -42,8 +42,9 @@ public class Controller
     );
 
     private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
-    //private ExecutorService executorService = Executors.newFixedThreadPool(6);
+
     public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
+
     private ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     @FXML
