@@ -6,5 +6,7 @@ import java.awt.*;
 
 public interface Layer
 {
+    String name();
+
     void drawCell(Graphics2D graphics, TerrainCell cell);
 }
