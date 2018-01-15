@@ -49,7 +49,8 @@ public class AvalancheRiskController {
     public void predict() {
 
         LOGGER.info("Prediction started");
-        risk.updateGlobalRiskValue(predictGlobalRiskValue());
+        float globalRiskValue = predictGlobalRiskValue();
+        risk.updateGlobalRiskValue(globalRiskValue);
         predictLocalRisks();
 
         for (WeatherDto weather : weatherList) {
@@ -134,32 +135,44 @@ public class AvalancheRiskController {
         LOGGER.info("Prediction finished successfully");
     }
 
-    private void predictLocalRisks()
+    public void predictLocalRisks()
     {
         LocalRiskEvaluator localRiskEvaluator = new LocalRiskEvaluator();
         Collection<List<RiskCell>> allRiskCells = risk.getRiskCells().values();
         allRiskCells.forEach(row -> row.forEach(riskCell -> riskCell.evaluateLocalRisk(localRiskEvaluator)));
     }
 
-    private float predictGlobalRiskValue()
+    public float predictGlobalRiskValue()
     {
         List<Float> temperatureMeasurements = weatherList.stream()
                                                          .map(WeatherDto::getTemp)
                                                          .collect(Collectors.toList());
 
         float globalRiskValue = 0;
-        if (isTemperatureWithIncreasingTendency(temperatureMeasurements))
+        if (isTemperatureWithIncreasingTendency(temperatureMeasurements)) {
+            LOGGER.info("Temperature increasing tendency");
             globalRiskValue += 2;
-        if (isHighPrecipitationIntensity())
+        }
+        if (isHighPrecipitationIntensity()) {
+            LOGGER.info("High precipitation intensity");
             globalRiskValue += 2;
-        if (isWindDirectionChangeLow())
+        }
+        if (isWindDirectionChangeLow()) {
+            LOGGER.info("Low wind direction change");
             globalRiskValue += 1;
-        if (isLongLastingLowTemperature(temperatureMeasurements))
+        }
+        if (isLongLastingLowTemperature(temperatureMeasurements)) {
+            LOGGER.info("Long lasting low temperature");
             globalRiskValue += 1;
-        if (isHighTemperatureFluctuation(temperatureMeasurements))
+        }
+        if (isHighTemperatureFluctuation(temperatureMeasurements)) {
+            LOGGER.info("High temperature fluctuations");
             globalRiskValue += 1;
+        }
 
-        return globalRiskValue / 7;
+        float normalizedGlobalRisk = globalRiskValue / 7;
+        LOGGER.info("Global risk value predicted: {}", normalizedGlobalRisk);
+        return normalizedGlobalRisk;
     }
 
     private boolean isTemperatureWithIncreasingTendency(List<Float> temperatureMeasurements)

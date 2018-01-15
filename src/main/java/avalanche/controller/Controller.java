@@ -11,11 +11,7 @@ import avalanche.model.display.layers.SusceptiblePlacesLayer;
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
@@ -48,25 +44,19 @@ public class Controller
     public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
 
     @FXML
-    public Button centerView;
+    private MenuItem openFileMenuItem;
 
     @FXML
-    private ProgressBar progress;
+    private MenuItem exitMenuItem;
+
+    @FXML
+    private ProgressBar globalRisk;
 
     @FXML
     private TreeView layerSelector;
 
     @FXML
     private Pane layerViewport;
-
-    @FXML
-    private DatePicker fromDate;
-
-    @FXML
-    private DatePicker toDate;
-
-    @FXML
-    private Button playBtn;
 
     @FXML
     private TableView tableView;
@@ -87,6 +77,8 @@ public class Controller
 
             List<WeatherDto> weatherForecast = fetchWeather();
             avalancheRiskController.addWeather(weatherForecast);
+            float globalRiskValue = avalancheRiskController.predictGlobalRiskValue();
+            globalRisk.setProgress(globalRiskValue);
             avalancheRiskController.predict();
         }
     }
