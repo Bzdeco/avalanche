@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class Risk {
 
+    private float globalRiskValue;
     private Map<Integer, List<RiskCell>> riskCells = new HashMap<>();
 
     public Risk(Terrain terrain) {
@@ -49,4 +50,13 @@ public class Risk {
     }
 
 
+    public void updateGlobalRiskValue(float globalRiskValue)
+    {
+        this.globalRiskValue = globalRiskValue;
+    }
+
+    public float getGlobalRiskValue()
+    {
+        return globalRiskValue;
+    }
 }

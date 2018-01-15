@@ -1,4 +1,4 @@
-package avalanche.ser.display.layers;
+package avalanche.model.display.layers;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

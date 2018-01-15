@@ -3,11 +3,11 @@ package avalanche.controller;
 import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
 import avalanche.model.risk.Risk;
-import avalanche.ser.display.TerrainPrinter;
-import avalanche.ser.display.layers.LandformLayer;
-import avalanche.ser.display.layers.Layer;
-import avalanche.ser.display.layers.SlopeLayer;
-import avalanche.ser.display.layers.SusceptiblePlacesLayer;
+import avalanche.model.display.TerrainPrinter;
+import avalanche.model.display.layers.LandformLayer;
+import avalanche.model.display.layers.Layer;
+import avalanche.model.display.layers.SlopeLayer;
+import avalanche.model.display.layers.SusceptiblePlacesLayer;
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -22,7 +22,6 @@ import las2etin.display.TerrainFormatter;
 import las2etin.model.Terrain;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import weatherCollector.coordinates.Coords;
@@ -39,16 +38,14 @@ public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final List<Layer> LAYERS = ImmutableList.of(
-            new LandformLayer("landform"),
-            new SlopeLayer("slope"),
-            new SusceptiblePlacesLayer("susceptible_places")
+            new LandformLayer("Landform"),
+            new SlopeLayer("Slope"),
+            new SusceptiblePlacesLayer("Susceptible places")
     );
 
     private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
 
     public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     @FXML
     public Button centerView;
@@ -79,18 +76,19 @@ public class Controller
     {
         final File file = selectFile();
 
-        collectWeatherDataToDatabase(file.getName());
+        if (file != null) {
+            collectWeatherDataToDatabase(file.getName());
 
-        final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-        new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
+            final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
+            new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
 
-        Coords geographicalCoords = converter.convert(file.getName());
-        initializeAvalancheRiskPrediction(terrain, geographicalCoords);
+            Coords geographicalCoords = converter.convert(file.getName());
+            initializeAvalancheRiskPrediction(terrain, geographicalCoords);
 
-        List<WeatherDto> weatherForecast = fetchWeather();
-        avalancheRiskController.addWeather(weatherForecast);
-
-        Risk risk = avalancheRiskController.predict();
+            List<WeatherDto> weatherForecast = fetchWeather();
+            avalancheRiskController.addWeather(weatherForecast);
+            avalancheRiskController.predict();
+        }
     }
 
     private void collectWeatherDataToDatabase(String filename)

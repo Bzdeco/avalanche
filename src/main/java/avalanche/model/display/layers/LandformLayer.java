@@ -1,4 +1,4 @@
-package avalanche.ser.display.layers;
+package avalanche.model.display.layers;
 
 import las2etin.model.TerrainCell;
 

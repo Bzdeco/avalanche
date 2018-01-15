@@ -46,10 +46,10 @@ public class AvalancheRiskController {
         weatherList.addAll(weatherDtoList);
     }
 
-    public Risk predict() {
+    public void predict() {
 
         LOGGER.info("Prediction started");
-        float globalRiskValue = predictGlobalRiskValue();
+        risk.updateGlobalRiskValue(predictGlobalRiskValue());
         predictLocalRisks();
 
         for (WeatherDto weather : weatherList) {
@@ -132,8 +132,6 @@ public class AvalancheRiskController {
         }
 
         LOGGER.info("Prediction finished successfully");
-
-        return risk;
     }
 
     private void predictLocalRisks()

@@ -23,13 +23,13 @@ public class Main extends Application {
         final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main.fxml"));
         final Parent root = loader.load();
         final Controller ctrl = loader.getController();
-        primaryStage.setOnCloseRequest(ev -> {
+        /*primaryStage.setOnCloseRequest(ev -> {
             try {
                 ctrl.shutdown();
             } catch (InterruptedException e) {
                 LOGGER.error("Shutdown interrupted", e);
             }
-        });
+        });*/
         primaryStage.setTitle(STAGE_TITLE);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

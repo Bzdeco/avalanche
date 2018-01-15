@@ -1,7 +1,7 @@
-package avalanche.ser.display;
+package avalanche.model.display;
 
-import avalanche.ser.display.layers.Layer;
-import avalanche.ser.display.layers.LayerZoomAndPanUtility;
+import avalanche.model.display.layers.Layer;
+import avalanche.model.display.layers.LayerZoomAndPanUtility;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
