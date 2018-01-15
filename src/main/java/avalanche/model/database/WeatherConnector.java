@@ -29,8 +29,6 @@ public class WeatherConnector {
     private Connection connection;
     private PreparedStatement statement;
     private TableView tableView;
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
-    private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
 
     private WeatherConnector() {}
 

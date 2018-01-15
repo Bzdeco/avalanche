@@ -4,7 +4,7 @@ import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public class SlopeLayer implements Layer
+public class SlopeLayer implements TerrainLayer
 {
     private static final double MAX_SLOPE_IN_DEGREES = 90;
     private static final float SLOPE_COLOR_HUE = 0f;

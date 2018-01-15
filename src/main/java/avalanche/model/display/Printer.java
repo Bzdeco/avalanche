@@ -1,7 +1,11 @@
 package avalanche.model.display;
 
 import avalanche.model.display.layers.Layer;
+import avalanche.model.display.layers.RiskLayer;
+import avalanche.model.display.layers.TerrainLayer;
 import avalanche.model.display.layers.LayerZoomAndPanUtility;
+import avalanche.model.risk.Risk;
+import avalanche.model.risk.RiskCell;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -21,18 +25,20 @@ import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
-public class TerrainPrinter
+public class Printer
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TerrainPrinter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Printer.class);
 
     private final Terrain terrain;
+    private final Risk risk;
     private final BufferedImage bufferedImage;
     private final int widthInPixels;
     private final int heightInPixels;
 
-    public TerrainPrinter(Terrain terrain)
+    public Printer(Terrain terrain, Risk risk)
     {
         this.terrain = terrain;
+        this.risk = risk;
 
         TerrainProperties properties = terrain.getTerrainProperties();
         widthInPixels = properties.getWidthInCells();
@@ -40,11 +46,15 @@ public class TerrainPrinter
         this.bufferedImage = new BufferedImage(widthInPixels, heightInPixels, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void drawOnPane(final Pane pane, final List<Layer> layers, final TreeView layerSelector)
+    public void drawOnPane(final Pane pane,
+                           final List<TerrainLayer> terrainLayers,
+                           final List<RiskLayer> riskLayers,
+                           final TreeView layerSelector)
     {
         TreeItem<String> layersRoot = new TreeItem<>("Layers");
         layersRoot.setExpanded(true);
-        layers.forEach(layer -> drawOnPane(pane, printToStream(layer), layer, layersRoot));
+        terrainLayers.forEach(layer -> drawOnPane(pane, printTerrainLayerToStream(layer), layer, layersRoot));
+        riskLayers.forEach(layer -> drawOnPane(pane, printRiskLayerToStream(layer), layer, layersRoot));
         layerSelector.setRoot(layersRoot);
     }
 
@@ -59,7 +69,7 @@ public class TerrainPrinter
         setupLayerUiController(layer, layerUiController, imageView);
     }
 
-    private InputStream printToStream(final Layer layer)
+    private InputStream printTerrainLayerToStream(final TerrainLayer terrainLayer)
     {
         Graphics2D graphics = bufferedImage.createGraphics();
 
@@ -67,7 +77,29 @@ public class TerrainPrinter
             for (int y = 0; y < heightInPixels; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
                 Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(coordinates);
-                terrainCell.ifPresent(cell -> layer.drawCell(graphics, cell));
+                terrainCell.ifPresent(cell -> terrainLayer.drawCell(graphics, cell));
+            }
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "PNG", outputStream);
+        }
+        catch (IOException e) {
+            LOGGER.error("Error creating image");
+        }
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    private InputStream printRiskLayerToStream(final RiskLayer riskLayer)
+    {
+        Graphics2D graphics = bufferedImage.createGraphics();
+
+        for (int x = 0; x < widthInPixels; x++) {
+            for (int y = 0; y < heightInPixels; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(coordinates);
+                riskCell.ifPresent(cell -> riskLayer.drawCell(graphics, cell));
             }
         }
 

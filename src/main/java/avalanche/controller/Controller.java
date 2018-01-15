@@ -2,12 +2,9 @@ package avalanche.controller;
 
 import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
+import avalanche.model.display.Printer;
+import avalanche.model.display.layers.*;
 import avalanche.model.risk.Risk;
-import avalanche.model.display.TerrainPrinter;
-import avalanche.model.display.layers.LandformLayer;
-import avalanche.model.display.layers.Layer;
-import avalanche.model.display.layers.SlopeLayer;
-import avalanche.model.display.layers.SusceptiblePlacesLayer;
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,19 +24,16 @@ import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final List<Layer> LAYERS = ImmutableList.of(
+    private static final List<TerrainLayer> TERRAIN_LAYERS = ImmutableList.of(
             new LandformLayer("Landform"),
             new SlopeLayer("Slope"),
             new SusceptiblePlacesLayer("Susceptible places")
     );
-
-    private final AvalancheRiskController avalancheRiskController = new AvalancheRiskController();
+    private static final List<RiskLayer> RISK_LAYERS = ImmutableList.of();
 
     public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
 
@@ -70,16 +64,17 @@ public class Controller
             collectWeatherDataToDatabase(file.getName());
 
             final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
+            final Coords geographicalCoordinates = converter.convert(file.getName());
+            AvalancheRiskController avalancheRiskController = new AvalancheRiskController(terrain,
+                                                                                          geographicalCoordinates);
+            List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
 
-            Coords geographicalCoords = converter.convert(file.getName());
-            initializeAvalancheRiskPrediction(terrain, geographicalCoords);
+            final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
 
-            List<WeatherDto> weatherForecast = fetchWeather();
-            avalancheRiskController.addWeather(weatherForecast);
-            float globalRiskValue = avalancheRiskController.predictGlobalRiskValue();
+            new Printer(terrain, risk).drawOnPane(layerViewport, TERRAIN_LAYERS, RISK_LAYERS, layerSelector);
+
+            float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
             globalRisk.setProgress(globalRiskValue);
-            avalancheRiskController.predict();
         }
     }
 
@@ -126,17 +121,6 @@ public class Controller
             LOGGER.error("User cancelled file selection");
             throw new OperationNotSupportedException("You have to select a file to proceed");
         }
-    }
-
-    private void initializeAvalancheRiskPrediction(final Terrain terrain, Coords geographicalCoordinates) {
-        avalancheRiskController.prepareAvalanchePrediction(terrain, geographicalCoordinates);
-    }
-
-    private List<WeatherDto> fetchWeather()
-    {
-        WeatherConnector connector = WeatherConnector.getInstance();
-        connector.setTableView(tableView);
-        return connector.fetchAndBuildData();
     }
 
     public void shutdown() throws InterruptedException

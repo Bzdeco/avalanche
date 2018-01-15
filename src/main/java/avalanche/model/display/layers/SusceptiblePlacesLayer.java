@@ -4,7 +4,7 @@ import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public class SusceptiblePlacesLayer implements Layer
+public class SusceptiblePlacesLayer implements TerrainLayer
 {
     private static final double MINIMAL_SLOPE = 30;
     private static final double MAXIMAL_SLOPE = 45;

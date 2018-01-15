@@ -4,7 +4,7 @@ import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public class LandformLayer implements Layer
+public class LandformLayer implements TerrainLayer
 {
     private static final double MIN_LEVEL = 0.0;
     private static final double LEVEL_RANGE = 2499.0;
