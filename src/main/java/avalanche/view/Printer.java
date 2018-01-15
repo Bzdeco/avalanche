@@ -1,9 +1,9 @@
-package avalanche.model.display;
+package avalanche.view;
 
-import avalanche.model.display.layers.Layer;
-import avalanche.model.display.layers.RiskLayer;
-import avalanche.model.display.layers.TerrainLayer;
-import avalanche.model.display.layers.LayerZoomAndPanUtility;
+import avalanche.view.layers.Layer;
+import avalanche.view.layers.RiskLayer;
+import avalanche.view.layers.TerrainLayer;
+import avalanche.view.layers.LayerZoomAndPanUtility;
 import avalanche.model.risk.Risk;
 import avalanche.model.risk.RiskCell;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +25,9 @@ import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class prints created {@link Layer}s as images and displayes them in the UI.
+ */
 public class Printer
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Printer.class);
@@ -53,8 +56,11 @@ public class Printer
     {
         TreeItem<String> layersRoot = new TreeItem<>("Layers");
         layersRoot.setExpanded(true);
+
+        // Drawing terrain and risk layers in the UI
         terrainLayers.forEach(layer -> drawOnPane(pane, printTerrainLayerToStream(layer), layer, layersRoot));
         riskLayers.forEach(layer -> drawOnPane(pane, printRiskLayerToStream(layer), layer, layersRoot));
+
         layerSelector.setRoot(layersRoot);
     }
 
@@ -143,7 +149,7 @@ public class Printer
     private TreeItem<String> getAlphaSlider(final ImageView imageView)
     {
         TreeItem<String> alphaSlider = new TreeItem<>("Alpha");
-        Slider slider = new Slider(0.1, 1.0, 0.50);
+        Slider slider = new Slider(0.0, 1.0, 0.50);
         alphaSlider.setGraphic(slider);
         slider.valueProperty().bindBidirectional(imageView.opacityProperty());
         return alphaSlider;

@@ -1,4 +1,4 @@
-package avalanche.model.display.layers;
+package avalanche.view.layers;
 
 import las2etin.model.TerrainCell;
 
@@ -8,7 +8,6 @@ public class SusceptiblePlacesLayer implements TerrainLayer
 {
     private static final double MINIMAL_SLOPE = 30;
     private static final double MAXIMAL_SLOPE = 45;
-    private static final double DIFF = 5;
     private static final float SUSCEPTIBILITY_COLOR_HUE = 0f;
     private static final float SUSCEPTIBILITY_COLOR_BRIGHTNESS = 1f;
 

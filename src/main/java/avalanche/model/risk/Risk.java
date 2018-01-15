@@ -11,13 +11,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by annterina on 13.01.18.
+ * Class representing avalanche risk evaluated for entire {@link Terrain}. {@code Risk} consists of {@link RiskCell}s
+ * (similarly to {@link Terrain} that consists of {@link TerrainCell}s) and also contains global risk value and
+ * parameters for assessing global risk value.
  */
 public class Risk {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final int NUMBER_OF_MEASUREMENTS = 40;
+    // Parameters used for assessment of global risk value
     private static final int NUMBER_OF_MEASUREMENT_DAYS = 5;
     private static final int NUMBER_OF_MEASUREMENTS_PER_DAY = 8;
     private static final int SNOW_PRECIPITATION_THRESHOLD_IN_CM = 10;
@@ -63,29 +65,24 @@ public class Risk {
         return riskCells;
     }
 
-    public String getAllRiskValues() {
-        String values = "";
-        for (Map.Entry<Integer, List<RiskCell>> entry : riskCells.entrySet()) {
-            for (RiskCell riskCell : entry.getValue()) {
-                values += riskCell.getRiskValue() + " ";
-            }
-            values += "\n";
-        }
-        return values;
-    }
-
     public float getGlobalRiskValue()
     {
         return globalRiskValue;
     }
 
-    public void predictLocalRisks()
+    /**
+     * Local risk is the risk predicted separately for each {@link TerrainCell} represented later by {@link RiskCell}.
+     */
+    public void predictLocalRisks(LocalRiskEvaluator localRiskEvaluator)
     {
-        LocalRiskEvaluator localRiskEvaluator = new LocalRiskEvaluator();
         Collection<List<RiskCell>> allRiskCells = getRiskCells().values();
         allRiskCells.forEach(row -> row.forEach(riskCell -> riskCell.evaluateLocalRisk(localRiskEvaluator)));
     }
 
+    /**
+     * Global avalanche risk determines general weather condition and indicates if such weather conditions are likely
+     * to be ones preceding. If 3 or more out of 5 factors are present, avalanche global risk is set to maximum value.
+     */
     public void predictGlobalRiskValue(List<WeatherDto> weatherConditions)
     {
         List<Float> temperatureMeasurements = weatherConditions.stream()
@@ -93,46 +90,54 @@ public class Risk {
                                                                .collect(Collectors.toList());
 
         float globalRiskValue = 0;
+        int factorsPresent = 0;
         if (isTemperatureWithIncreasingTendency(temperatureMeasurements)) {
             LOGGER.info("Temperature increasing tendency");
             globalRiskValue += 2;
+            factorsPresent++;
         }
         if (isHighPrecipitationIntensity(weatherConditions)) {
             LOGGER.info("High precipitation intensity");
             globalRiskValue += 2;
+            factorsPresent++;
         }
         if (isWindDirectionChangeLow(weatherConditions)) {
             LOGGER.info("Low wind direction change");
             globalRiskValue += 1;
+            factorsPresent++;
         }
         if (isLongLastingLowTemperature(temperatureMeasurements)) {
             LOGGER.info("Long lasting low temperature");
             globalRiskValue += 1;
+            factorsPresent++;
         }
         if (isHighTemperatureFluctuation(temperatureMeasurements)) {
             LOGGER.info("High temperature fluctuations");
             globalRiskValue += 1;
+            factorsPresent++;
         }
 
         float normalizedGlobalRisk = globalRiskValue / 7;
         LOGGER.info("Global risk value predicted: {}", normalizedGlobalRisk);
 
-        this.globalRiskValue = normalizedGlobalRisk;
+        if (factorsPresent >= 3)
+            this.globalRiskValue = 1f;
+        else
+            this.globalRiskValue = normalizedGlobalRisk;
     }
 
+    /**
+     * Increasing temperature has been observed to precede avalanches
+     */
     private boolean isTemperatureWithIncreasingTendency(List<Float> temperatureMeasurements)
     {
         List<Float> temperatureIntervals = calculateIntervals(temperatureMeasurements);
 
-        double totalChange = temperatureIntervals.stream().mapToDouble(Float::floatValue).sum();
-        float lastTempMeasurement = temperatureMeasurements.get(temperatureMeasurements.size() - 1);
-
-        boolean isTotalChangePositive =
-                totalChange > 0 && isLastTempInTemperatureZone(lastTempMeasurement);
+        // Longest warming period as long as or longer than 24h
         boolean isLongWarmingPeriod =
                 calculateLongestIncreaseLength(temperatureIntervals) >= NUMBER_OF_MEASUREMENTS_PER_DAY;
 
-        return isTotalChangePositive || isLongWarmingPeriod;
+        return isLongWarmingPeriod;
     }
 
     private List<Float> calculateIntervals(List<Float> temperatureMeasurements)
@@ -166,11 +171,9 @@ public class Risk {
         return longestIncreaseLength;
     }
 
-    private boolean isLastTempInTemperatureZone(float lastTempMeasurement)
-    {
-        return lastTempMeasurement >= -10f && lastTempMeasurement <= 0;
-    }
-
+    /**
+     * Intense snow precipitations can lead to unstable snow cover and therefore avalanches
+     */
     private boolean isHighPrecipitationIntensity(List<WeatherDto> weatherConditions)
     {
         double snowPrecipitationSum = weatherConditions.stream()
@@ -181,6 +184,9 @@ public class Risk {
         return averageDayPrecipitationSum >= SNOW_PRECIPITATION_THRESHOLD_IN_CM;
     }
 
+    /**
+     * Low wind direction changes allows bigger snow accumulation
+     */
     private boolean isWindDirectionChangeLow(List<WeatherDto> weatherConditions)
     {
         List<Float> windDirections = weatherConditions.stream()
@@ -194,6 +200,9 @@ public class Risk {
         return Math.abs(maxDirectionDegree - minDirectionDegree) < MAX_WIND_DEGREE_CHANGE;
     }
 
+    /**
+     * Long lasting low temperature leads to stiff structure of snow slabs that can cause avalanches
+     */
     private boolean isLongLastingLowTemperature(List<Float> temperatureMeasurements)
     {
         int longestLowTempPeriod = 0;
@@ -214,6 +223,10 @@ public class Risk {
         return lowTempDays >= LOW_TEMPERATURE_MIN_DAYS_THRESHOLD;
     }
 
+    /**
+     * High temperature fluctuations may lead to uneven snow cover structure and formation of different snow cover
+     * layers.
+     */
     private boolean isHighTemperatureFluctuation(List<Float> temperatureMeasurements)
     {
         List<List<Float>> perDayTemperatures = getPerDayTemperatures(temperatureMeasurements);

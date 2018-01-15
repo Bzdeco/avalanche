@@ -8,6 +8,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+/**
+ * Class representing single weather measurement
+ */
 @Data
 public class WeatherDto {
 

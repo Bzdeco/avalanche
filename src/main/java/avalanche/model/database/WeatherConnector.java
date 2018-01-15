@@ -1,6 +1,5 @@
 package avalanche.model.database;
 
-import avalanche.controller.AvalancheRiskController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,14 +14,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static avalanche.controller.ResourceHandler.getDbDriver;
 import static avalanche.controller.ResourceHandler.getDbPass;
 import static avalanche.controller.ResourceHandler.getDbUrl;
 import static avalanche.controller.ResourceHandler.getDbUser;
 
+/**
+ * Class used for connecting with database and fetching weather measurements as well as attaching them to UI
+ */
 public class WeatherConnector {
     private static final Logger LOGGER = LogManager.getLogger();
 

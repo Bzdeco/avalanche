@@ -90,7 +90,7 @@ class VertexLoader
     {
         tinfourReader.readRecord(pointIndex, pointHolder);
 
-        if(isGroundPoint(pointHolder)) {
+        if(isGroundPoint(pointHolder) && isRealAltitude(pointHolder.z)) {
             Vertex vertex = new VertexWithClassification(pointHolder.x,
                                                          pointHolder.y,
                                                          pointHolder.z,
@@ -111,5 +111,10 @@ class VertexLoader
     private boolean isGroundPoint(LasPoint point)
     {
         return point.classification == 2;
+    }
+
+    private boolean isRealAltitude(double altitude)
+    {
+        return altitude >= 0 && altitude <= 2500;
     }
 }

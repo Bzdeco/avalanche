@@ -1,4 +1,4 @@
-package avalanche.model.display.layers;
+package avalanche.view.layers;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -8,6 +8,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+/**
+ * Utilities for zooming and panning on generated images.
+ */
 public class LayerZoomAndPanUtility
 {
     private static final int MIN_PIXELS = 100;

@@ -3,9 +3,6 @@ package avalanche.model.risk;
 import las2etin.model.Coordinates;
 import las2etin.model.TerrainCell;
 
-/**
- * Created by annterina on 13.01.18.
- */
 public class RiskCell {
 
     private final TerrainCell terrainCell;
@@ -19,16 +16,26 @@ public class RiskCell {
         return terrainCell.getCoordinates();
     }
 
-    public double getRiskValue() {
-        return riskValue;
-    }
-
     public void evaluateLocalRisk(LocalRiskEvaluator localRiskEvaluator)
     {
         riskValue = localRiskEvaluator.evaluate(terrainCell);
     }
 
+    public float getRiskValue() {
+        return riskValue;
+    }
+
     public void setRiskValue(float riskValue) {
         this.riskValue = riskValue;
+    }
+
+    public int getX()
+    {
+        return terrainCell.getX();
+    }
+
+    public int getY()
+    {
+        return terrainCell.getY();
     }
 }

@@ -1,9 +1,8 @@
 package avalanche.controller;
 
-import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
-import avalanche.model.display.Printer;
-import avalanche.model.display.layers.*;
+import avalanche.view.Printer;
+import avalanche.view.layers.*;
 import avalanche.model.risk.Risk;
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
@@ -25,23 +24,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Main application controller setting the UI, displaying fetched weather and drawing generated terrain and risk
+ * images in the UI
+ */
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final List<TerrainLayer> TERRAIN_LAYERS = ImmutableList.of(
-            new LandformLayer("Landform"),
-            new SlopeLayer("Slope"),
-            new SusceptiblePlacesLayer("Susceptible places")
-    );
-    private static final List<RiskLayer> RISK_LAYERS = ImmutableList.of();
+    private List<TerrainLayer> terrainLayers;
+    private List<RiskLayer> riskLayers = ImmutableList.of();
 
     public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
-
-    @FXML
-    private MenuItem openFileMenuItem;
-
-    @FXML
-    private MenuItem exitMenuItem;
 
     @FXML
     private ProgressBar globalRisk;
@@ -55,6 +48,9 @@ public class Controller
     @FXML
     private TableView tableView;
 
+    /**
+     * Method called when main application window is launched
+     */
     @FXML
     public void initialize()
     {
@@ -67,17 +63,29 @@ public class Controller
             final Coords geographicalCoordinates = converter.convert(file.getName());
             AvalancheRiskController avalancheRiskController = new AvalancheRiskController(terrain,
                                                                                           geographicalCoordinates);
-            List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
+            terrainLayers = ImmutableList.of(
+                    new LandformLayer("Landform"),
+                    new SlopeLayer("Slope"),
+                    new SusceptiblePlacesLayer("Susceptible places"),
+                    new HillshadeLayer("Hillshade", geographicalCoordinates)
+            );
 
+            riskLayers = ImmutableList.of(
+                    new AvalancheRiskLayer("Avalanche risk")
+            );
+
+            List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
             final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
 
-            new Printer(terrain, risk).drawOnPane(layerViewport, TERRAIN_LAYERS, RISK_LAYERS, layerSelector);
-
+            new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
             float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
             globalRisk.setProgress(globalRiskValue);
         }
     }
 
+    /**
+     * Gets most recent 5-day weather forecast to local database
+     */
     private void collectWeatherDataToDatabase(String filename)
     {
         OkHttpClient avalancheClient = new OkHttpClient();
@@ -121,9 +129,5 @@ public class Controller
             LOGGER.error("User cancelled file selection");
             throw new OperationNotSupportedException("You have to select a file to proceed");
         }
-    }
-
-    public void shutdown() throws InterruptedException
-    {
     }
 }

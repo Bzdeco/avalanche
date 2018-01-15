@@ -98,9 +98,14 @@ public class TerrainCellBuilder
     private Vector3D calculateNormal()
     {
         double[] doubleCoordinates = interpolator.getSurfaceNormal();
-        double normalX = doubleCoordinates[0];
-        double normalY = doubleCoordinates[1];
-        double normalZ = doubleCoordinates[2];
+        double normalX = 0;
+        double normalY = 0;
+        double normalZ = 0;
+        if (doubleCoordinates.length >= 3) {
+            normalX = doubleCoordinates[0];
+            normalY = doubleCoordinates[1];
+            normalZ = doubleCoordinates[2];
+        }
 
         return new Vector3D(normalX, normalY, normalZ);
     }

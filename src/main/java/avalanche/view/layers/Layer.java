@@ -1,4 +1,4 @@
-package avalanche.model.display.layers;
+package avalanche.view.layers;
 
 public interface Layer
 {

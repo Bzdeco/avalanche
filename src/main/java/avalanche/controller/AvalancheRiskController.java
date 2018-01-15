@@ -2,6 +2,7 @@ package avalanche.controller;
 
 import avalanche.model.database.WeatherConnector;
 import avalanche.model.database.WeatherDto;
+import avalanche.model.risk.LocalRiskEvaluator;
 import avalanche.model.risk.Risk;
 import avalanche.model.risk.RiskCell;
 import javafx.scene.control.TableView;
@@ -42,7 +43,7 @@ public class AvalancheRiskController {
     {
         LOGGER.info("Risk evaluation started");
         risk.predictGlobalRiskValue(weatherConditions);
-        risk.predictLocalRisks();
+        risk.predictLocalRisks(new LocalRiskEvaluator(weatherConditions));
         //oldRiskPrediction(weatherConditions);
         LOGGER.info("Risk evaluation finished successfully");
 

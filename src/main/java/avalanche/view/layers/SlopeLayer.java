@@ -1,17 +1,23 @@
-package las2etin.display.layers;
+package avalanche.view.layers;
 
 import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-public class SlopeLayer implements Layer
+/**
+ * Layer for displaying how steep the terrain is.
+ */
+public class SlopeLayer implements TerrainLayer
 {
     private static final double MAX_SLOPE_IN_DEGREES = 90;
     private static final float SLOPE_COLOR_HUE = 0f;
     private static final float SLOPE_COLOR_BRIGHTNESS = 1f;
 
-    public SlopeLayer()
+    private final String name;
+
+    public SlopeLayer(final String name)
     {
+        this.name = name;
     }
 
     @Override
@@ -23,6 +29,11 @@ public class SlopeLayer implements Layer
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     private Color getColorFromSlope(double slope)
