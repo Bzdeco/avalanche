@@ -20,6 +20,7 @@ public class Risk {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Parameters used for assessment of global risk value
+    private static final int NUMBER_OF_MEASUREMENTS = 40;
     private static final int NUMBER_OF_MEASUREMENT_DAYS = 5;
     private static final int NUMBER_OF_MEASUREMENTS_PER_DAY = 8;
     private static final int SNOW_PRECIPITATION_THRESHOLD_IN_CM = 10;
@@ -89,11 +90,12 @@ public class Risk {
                                                                .map(WeatherDto::getTemp)
                                                                .collect(Collectors.toList());
 
-        float globalRiskValue = 0;
+        float globalRiskValue = 0f;
         int factorsPresent = 0;
-        if (isTemperatureWithIncreasingTendency(temperatureMeasurements)) {
+        int longestWarmingPeriod = calculateLongestWarmingPeriod(temperatureMeasurements);
+        if (longestWarmingPeriod >= NUMBER_OF_MEASUREMENTS_PER_DAY - 1) {
             LOGGER.info("Temperature increasing tendency");
-            globalRiskValue += 2;
+            globalRiskValue += 3 * (longestWarmingPeriod/(float)NUMBER_OF_MEASUREMENTS);
             factorsPresent++;
         }
         if (isHighPrecipitationIntensity(weatherConditions)) {
@@ -117,7 +119,7 @@ public class Risk {
             factorsPresent++;
         }
 
-        float normalizedGlobalRisk = globalRiskValue / 7;
+        float normalizedGlobalRisk = globalRiskValue / 8;
         LOGGER.info("Global risk value predicted: {}", normalizedGlobalRisk);
 
         if (factorsPresent >= 3)
@@ -129,15 +131,14 @@ public class Risk {
     /**
      * Increasing temperature has been observed to precede avalanches
      */
-    private boolean isTemperatureWithIncreasingTendency(List<Float> temperatureMeasurements)
+    private int calculateLongestWarmingPeriod(List<Float> temperatureMeasurements)
     {
         List<Float> temperatureIntervals = calculateIntervals(temperatureMeasurements);
 
         // Longest warming period as long as or longer than 24h
-        boolean isLongWarmingPeriod =
-                calculateLongestIncreaseLength(temperatureIntervals) >= NUMBER_OF_MEASUREMENTS_PER_DAY;
-
-        return isLongWarmingPeriod;
+        int longestWarmingPeriod = calculateLongestIncreaseLength(temperatureIntervals);
+        LOGGER.info("Longest increase length: {}", longestWarmingPeriod);
+        return longestWarmingPeriod;
     }
 
     private List<Float> calculateIntervals(List<Float> temperatureMeasurements)

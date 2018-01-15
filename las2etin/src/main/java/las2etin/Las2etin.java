@@ -26,15 +26,14 @@ public class Las2etin
     @Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
     private String lasFilepath;
 
-    @Parameter(names = {"--output", "-o"}, description = "Serialized representation of LAS file")
-    private String serFilepath = "";
-
-    @Parameter(names = {"--resolution", "-r"}, description = "Number of probed points across one direction. Total " +
-            "number of probed points is equal to this argument squared (probes are taken in X and Y direction.")
+    @Parameter(names = {"--resolution", "-r"}, description = "Number of probed points across one direction (max 500)." +
+            " Total number of probed points is equal to this argument squared (probes are taken in X and Y direction).")
     int resolution = 500;
 
     @Parameter(names = {"--help", "-h"}, help = true)
     private boolean help = false;
+
+    private String serFilepath;
 
     public static void main(String[] args)
     {
@@ -70,23 +69,30 @@ public class Las2etin
         Bounds bounds = reader.getVerticesBounds();
         reportProgress("Building terrain mesh...");
         Tin terrainMesh = new TinBuilder().withVertices(readVertices).withBounds(bounds).build();
+        trimResolution();
+
         TerrainSettings settings = new TerrainSettingsBuilder().withWidthInCells(resolution)
                                                                .withHeightInCells(resolution)
                                                                .build();
         Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings).build();
 
-        setSavePathToDefaultIfNotSpecified();
+        setSavePathToDefault();
 
         Path saveLocation = Paths.get(serFilepath);
         reportProgress("Saving terrain to file...");
         TerrainFormatter.serialize(terrainToSerialize, saveLocation);
     }
 
-    private void setSavePathToDefaultIfNotSpecified()
+    private void trimResolution()
     {
-        int fileExtensionLenght = 4;
-        if(serFilepath.equals(""))
-            serFilepath = String.format("%s.ser", lasFilepath.substring(0, lasFilepath.length() - fileExtensionLenght));
+        if (resolution > 500 || resolution < 0)
+            resolution = 500;
+    }
+
+    private void setSavePathToDefault()
+    {
+        int fileExtensionLength = 4;
+        serFilepath = String.format("%s.ser", lasFilepath.substring(0, lasFilepath.length() - fileExtensionLength));
     }
 
     private LASFile tryLocatingLasFile() throws LasFileException
