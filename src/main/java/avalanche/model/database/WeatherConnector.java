@@ -54,7 +54,7 @@ public class WeatherConnector {
         LOGGER.info("Opened database successfully");
     }
 
-    public List<WeatherDto> buildData() {
+    public List<WeatherDto> fetchAndBuildData() {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
         List<WeatherDto> weatherDtoList = new LinkedList<>();
 

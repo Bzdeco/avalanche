@@ -20,6 +20,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
 import las2etin.model.Terrain;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import weatherCollector.coordinates.Coords;
@@ -27,10 +30,10 @@ import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Controller
 {
@@ -75,14 +78,35 @@ public class Controller
     public void initialize()
     {
         final File file = selectFile();
+
+        collectWeatherDataToDatabase(file.getName());
+
         final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
         new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
 
         Coords geographicalCoords = converter.convert(file.getName());
         initializeAvalancheRiskPrediction(terrain, geographicalCoords);
-        List<WeatherDto> weatherDtoList = initializeWeather();
-        avalancheRiskController.addWeather(weatherDtoList);
+
+        List<WeatherDto> weatherForecast = fetchWeather();
+        avalancheRiskController.addWeather(weatherForecast);
+
         Risk risk = avalancheRiskController.predict();
+    }
+
+    private void collectWeatherDataToDatabase(String filename)
+    {
+        OkHttpClient avalancheClient = new OkHttpClient();
+        String requestURL = String.format("http://localhost:8080/getWeatherData?filename=%s", filename);
+        Request request = new Request.Builder()
+                .url(requestURL)
+                .build();
+
+        try {
+            avalancheClient.newCall(request).execute();
+        }
+        catch (IOException e) {
+            LOGGER.warn("Could not update weather data in the database");
+        }
     }
 
     private File selectFile() {
@@ -118,11 +142,11 @@ public class Controller
         avalancheRiskController.prepareAvalanchePrediction(terrain, geographicalCoordinates);
     }
 
-    private List<WeatherDto> initializeWeather()
+    private List<WeatherDto> fetchWeather()
     {
         WeatherConnector connector = WeatherConnector.getInstance();
         connector.setTableView(tableView);
-        return connector.buildData();
+        return connector.fetchAndBuildData();
     }
 
     public void shutdown() throws InterruptedException
