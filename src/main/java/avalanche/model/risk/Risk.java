@@ -23,7 +23,7 @@ public class Risk {
     private static final int NUMBER_OF_MEASUREMENTS = 40;
     private static final int NUMBER_OF_MEASUREMENT_DAYS = 5;
     private static final int NUMBER_OF_MEASUREMENTS_PER_DAY = 8;
-    private static final int SNOW_PRECIPITATION_THRESHOLD_IN_CM = 10;
+    private static final int SNOW_PRECIPITATION_THRESHOLD_IN_MM = 15;
     private static final int MAX_WIND_DEGREE_CHANGE = 90;
     private static final int PER_DAY_FLUCTUATION_THRESHOLD = 10;
     private static final float LOW_TEMPERATURE_INDICATOR = -10f;
@@ -181,8 +181,7 @@ public class Risk {
                                                        .map(WeatherDto::getSnow)
                                                        .mapToDouble(Float::floatValue).sum();
         double averageDayPrecipitationSum = snowPrecipitationSum / NUMBER_OF_MEASUREMENT_DAYS;
-
-        return averageDayPrecipitationSum >= SNOW_PRECIPITATION_THRESHOLD_IN_CM;
+        return averageDayPrecipitationSum >= SNOW_PRECIPITATION_THRESHOLD_IN_MM;
     }
 
     /**

@@ -93,8 +93,7 @@ public class LocalRiskEvaluator
 
             // Snow accumulated
             if ((angleDifference >= 75 && angleDifference <= 95) || (angleDifference >= 265 && angleDifference <= 285))
-                if (terrainCell.getPlanCurvature() > 0)
-                    riskInc += SNOW_ACCUMULATION_INC;
+                riskInc += SNOW_ACCUMULATION_INC;
 
             // Snow blown down
             if (angleDifference >= 135 && angleDifference <= 225)
