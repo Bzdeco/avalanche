@@ -11,19 +11,19 @@ import las2etin.model.Coordinates;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainCell;
 import las2etin.model.TerrainProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
 public class TerrainPrinter
 {
-    private static final String RESOURCE_PATH = "src/main/resources/";
-    private static final int MIN_PIXELS = 10;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TerrainPrinter.class);
 
     private final Terrain terrain;
     private final BufferedImage bufferedImage;
@@ -42,26 +42,24 @@ public class TerrainPrinter
 
     public void drawOnPane(final Pane pane, final List<Layer> layers, final TreeView layerSelector)
     {
-        TreeItem<String> layersRoot = new TreeItem<>("Warstwy");
+        TreeItem<String> layersRoot = new TreeItem<>("Layers");
         layersRoot.setExpanded(true);
-        layers.forEach(layer -> drawOnPane(pane, layer, layersRoot));
+        layers.forEach(layer -> drawOnPane(pane, printToStream(layer), layer, layersRoot));
         layerSelector.setRoot(layersRoot);
     }
 
-    public void drawOnPane(final Pane pane, final Layer layer, final TreeItem layerUiController)
+    public void drawOnPane(final Pane pane,
+                           final InputStream imageStream,
+                           final Layer layer,
+                           final TreeItem layerUiController)
     {
-        try {
-            printToFile(layer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        final Image image = new Image(layer.name() + ".png");
+        final Image image = new Image(imageStream);
         final ImageView imageView = doDrawOnPane(pane, image);
         LayerZoomAndPanUtility.makeZoomable(image, imageView, pane);
         setupLayerUiController(layer, layerUiController, imageView);
     }
 
-    private void printToFile(final Layer layer) throws IOException
+    private InputStream printToStream(final Layer layer)
     {
         Graphics2D graphics = bufferedImage.createGraphics();
 
@@ -73,7 +71,14 @@ public class TerrainPrinter
             }
         }
 
-        ImageIO.write(bufferedImage, "PNG", new File(RESOURCE_PATH + layer.name() + ".png"));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "PNG", outputStream);
+        }
+        catch (IOException e) {
+            LOGGER.error("Error creating image");
+        }
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
     private ImageView doDrawOnPane(final Pane pane, final Image image)

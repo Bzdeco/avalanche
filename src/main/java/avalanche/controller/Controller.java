@@ -78,11 +78,11 @@ public class Controller
         final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
         new TerrainPrinter(terrain).drawOnPane(layerViewport, LAYERS, layerSelector);
 
-        Coords terrainCoords = converter.convert(file.getName());
-        initializeAvalancheRiskPrediction(terrain, terrainCoords);
+        Coords geographicalCoords = converter.convert(file.getName());
+        initializeAvalancheRiskPrediction(terrain, geographicalCoords);
         List<WeatherDto> weatherDtoList = initializeWeather();
         avalancheRiskController.addWeather(weatherDtoList);
-        Risk risk = avalancheRiskController.predict(terrain);
+        Risk risk = avalancheRiskController.predict();
     }
 
     private File selectFile() {
@@ -90,9 +90,8 @@ public class Controller
             return trySelectFile();
 
         } catch (OperationNotSupportedException ex) {
-            //TODO handle this better in the UI!
             Platform.exit();
-            throw new IllegalStateException("You fucked up boi");
+            return null;
         }
     }
 
@@ -100,8 +99,7 @@ public class Controller
     {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Serialized terrain model", "*.ser")
-        );
+                new FileChooser.ExtensionFilter("Serialized terrain model", "*.ser"));
         fileChooser.setTitle("Choose serialized terrain model file (.ser)");
         final File file = fileChooser.showOpenDialog(null);
         validateFileSelection(file);
@@ -116,6 +114,10 @@ public class Controller
         }
     }
 
+    private void initializeAvalancheRiskPrediction(final Terrain terrain, Coords geographicalCoordinates) {
+        avalancheRiskController.prepareAvalanchePrediction(terrain, geographicalCoordinates);
+    }
+
     private List<WeatherDto> initializeWeather()
     {
         WeatherConnector connector = WeatherConnector.getInstance();
@@ -123,14 +125,7 @@ public class Controller
         return connector.buildData();
     }
 
-    private void initializeAvalancheRiskPrediction(final Terrain terrain, Coords terrainCoords) {
-        avalancheRiskController.prepareAvalanchePrediction(terrain, terrainCoords);
-    }
-
     public void shutdown() throws InterruptedException
     {
-        executorService.shutdown();
-        executorService.awaitTermination(10, TimeUnit.SECONDS);
-        executorService.shutdownNow();
     }
 }

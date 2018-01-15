@@ -4,13 +4,11 @@ import las2etin.model.TerrainCell;
 
 import java.awt.*;
 
-// TODO separate logic from plain printing (this layer uses specific values for evaluating risk-like feature)
 public class SusceptiblePlacesLayer implements Layer
 {
-    private static final double MINIMAL_SLOPE = 20;
-    private static final double MAXIMAL_SLOPE = 50;
-    private static final double MEAN_SLOPE = (MAXIMAL_SLOPE + MINIMAL_SLOPE) / 2;
-    private static final double MAX_DIFFERENCE = Math.abs(MAXIMAL_SLOPE - MEAN_SLOPE);
+    private static final double MINIMAL_SLOPE = 30;
+    private static final double MAXIMAL_SLOPE = 45;
+    private static final double DIFF = 5;
     private static final float SUSCEPTIBILITY_COLOR_HUE = 0f;
     private static final float SUSCEPTIBILITY_COLOR_BRIGHTNESS = 1f;
 
@@ -39,9 +37,8 @@ public class SusceptiblePlacesLayer implements Layer
     private Color getSusceptibilityColorFromSlope(double slope)
     {
         float value = 0;
-        if (slope >= MINIMAL_SLOPE || slope <= MAXIMAL_SLOPE) {
-            value = (float) (1 - Math.abs(slope - MEAN_SLOPE) / MAX_DIFFERENCE);
-        }
+        if (slope >= MINIMAL_SLOPE && slope <= MAXIMAL_SLOPE)
+            value = 1f;
 
         return Color.getHSBColor(SUSCEPTIBILITY_COLOR_HUE, value, SUSCEPTIBILITY_COLOR_BRIGHTNESS);
     }

@@ -15,11 +15,11 @@ public class Risk {
 
     public Risk(Terrain terrain) {
         for (Map.Entry<Integer, List<TerrainCell>> entry : terrain.getTerrainCells().entrySet()) {
-            List riskCellsList = new LinkedList();
+            List<RiskCell> riskCellsRow = new ArrayList<>();
             for (TerrainCell terrainCell: entry.getValue()) {
-                riskCellsList.add(new RiskCell(terrainCell.getCoordinates()));
+                riskCellsRow.add(new RiskCell(terrainCell));
             }
-            this.riskCells.put(entry.getKey(), riskCellsList);
+            riskCells.put(entry.getKey(), riskCellsRow);
         }
     }
 
@@ -32,11 +32,16 @@ public class Risk {
         return searchedRow.get(y);
     }
 
+    public Map<Integer, List<RiskCell>> getRiskCells()
+    {
+        return riskCells;
+    }
+
     public String getAllRiskValues() {
         String values = "";
         for (Map.Entry<Integer, List<RiskCell>> entry : riskCells.entrySet()) {
             for (RiskCell riskCell : entry.getValue()) {
-                values += riskCell.getMaxRisk() + " ";
+                values += riskCell.getRiskValue() + " ";
             }
             values += "\n";
         }

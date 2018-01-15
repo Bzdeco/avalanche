@@ -61,19 +61,21 @@ public class WeatherConnector {
         try {
             if (connection == null) connect();
 
-            String query = "select * from weather";
+            String query = "select * from weather order by time";
             statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
 
-            if (tableView.getColumns().size() == 0) { //init tableView
+            // Initialize TableView with column headers
+            if (tableView.getColumns().size() == 0) {
 
                 for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                    //We are using non property style for making dynamic table
+                    // We are using non property style for making dynamic table
                     final int j = i;
                     TableColumn tableColumn = new TableColumn(resultSet.getMetaData().getColumnName(i + 1));
-                    //noinspection unchecked
+                    // noinspection unchecked
                     tableColumn.setCellValueFactory(param -> {
-                        @SuppressWarnings("unchecked") Object property = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
+                        @SuppressWarnings("unchecked")
+                        Object property = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
                         return new SimpleStringProperty(property != null ? property.toString() : "null");
                     });
 
