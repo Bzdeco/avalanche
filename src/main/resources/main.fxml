@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="avalanche.controller.Controller" prefHeight="600.0" prefWidth="800.0"
-            xmlns="http://javafx.com/javafx/8">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="avalanche.controller.Controller"
+            prefHeight="1000.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8">
     <left>
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">
             <panes>
@@ -25,23 +25,9 @@
         <Pane fx:id="layerViewport"/>
     </center>
     <bottom>
-        <TitledPane expanded="false" animated="false" text="Pogoda" BorderPane.alignment="CENTER">
-            <VBox prefHeight="250.0">
-                <padding>
-                    <Insets/>
-                </padding>
-                <ToolBar>
-                    <Separator orientation="VERTICAL"/>
-                    <Label text="Początek"/>
-                    <DatePicker fx:id="fromDate"/>
-                    <Label text="Koniec"/>
-                    <DatePicker fx:id="toDate"/>
-                </ToolBar>
-                <ScrollPane>
-                    <TableView fx:id="tableView">
-                    </TableView>
-                </ScrollPane>
-            </VBox>
+        <TitledPane expanded="true" animated="true" text="Pogoda" BorderPane.alignment="CENTER">
+            <TableView fx:id="tableView" prefHeight="300.0" prefWidth="1300.0">
+            </TableView>
         </TitledPane>
     </bottom>
     <top>

@@ -32,9 +32,9 @@ public class WeatherCollectorService {
     @Autowired
     private WeatherRepository weatherRepo;
 
-    public void collectWeatherData() throws IOException {
+    public void collectWeatherData(String filename) throws IOException {
         String charset = UTF_8.name();
-        final Coords coords = converter.convert(extractName(System.getProperty("filename")));
+        final Coords coords = converter.convert(extractName(filename));
 
         String latitude = Float.toString(coords.getLatitude());
         String longitude = Float.toString(coords.getLongitude());
@@ -52,6 +52,8 @@ public class WeatherCollectorService {
         JSONObject jsonWeatherListObject = new JSONObject(responseBody);
         JSONArray weatherList = jsonWeatherListObject.getJSONArray("list");
         List<Weather> weatherObjectsList = parser.convertToListOfWeather(weatherList);
+
+        weatherRepo.deleteAll();
         weatherRepo.save(weatherObjectsList);
     }
 

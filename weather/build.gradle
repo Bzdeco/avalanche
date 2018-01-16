@@ -1,25 +1,28 @@
-buildscript {
-	ext {
-		springBootVersion = '1.4.2.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
-}
-
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
+mainClassName = 'weatherCollector.WeatherApplication'
 
 jar {
 	baseName = 'weather'
-	version = '0.0.1-SNAPSHOT'
+    manifest {
+        attributes 'Main-Class': 'weatherCollector.WeatherApplication'
+    }
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+/*buildscript {
+    ext {
+        springBootVersion = '1.4.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}*/
 
 repositories {
 	mavenCentral()
@@ -27,19 +30,18 @@ repositories {
 
 
 dependencies {
-	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-	compile 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.9.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.5.9.RELEASE'
     compile 'org.jsoup:jsoup:1.10.1'
-    compile 'org.projectlombok:lombok'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
     compile group: 'org.json', name: 'json', version: '20171018'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.2'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.2'
+	compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.1'
 
-	runtime'org.postgresql:postgresql'
-
-	testCompile 'org.springframework.boot:spring-boot-starter-test'
+    runtime group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 }
 

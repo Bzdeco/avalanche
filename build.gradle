@@ -3,9 +3,10 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'application'
-apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin"
+//apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin"
 
-//noinspection GroovyUnusedAssignment
+mainClassName = 'avalanche.Main'
+
 sourceCompatibility = 1.8
 
 repositories {
@@ -31,18 +32,19 @@ dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'org.jsoup:jsoup:1.10.1'
-    compile 'org.projectlombok:lombok:1.16.10'
+//    compile 'org.jsoup:jsoup:1.10.1'
+//    compile 'org.projectlombok:lombok:1.16.10'
+
+    compile project(':weather')
 }
 
 jar {
-    baseName = 'gs-gradle'
-    version = '0.1.0'
+    baseName = 'avalanche'
+    manifest {
+        attributes 'Main-Class': 'avalanche.Main'
+    }
 }
 
 run {
     jvmArgs = ['-ea', '-Xmx2048m']
 }
-
-//noinspection GroovyUnusedAssignment
-mainClassName = 'gui.Main'

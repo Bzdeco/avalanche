@@ -23,6 +23,7 @@ dependencies {
 }
 
 jar {
+    baseName = 'las2etin'
     manifest {
         attributes 'Main-Class': 'las2etin.Las2etin'
     }

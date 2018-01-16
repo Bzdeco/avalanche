@@ -18,6 +18,10 @@ public class Terrain implements Serializable
         this.bounds = bounds;
     }
 
+    public Map<Integer, List<TerrainCell>> getTerrainCells() {
+        return terrainCells;
+    }
+
     public TerrainProperties getTerrainProperties()
     {
         return terrainProperties;

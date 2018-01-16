@@ -1,6 +1,5 @@
 package avalanche.model.database;
 
-import avalanche.model.Dirs;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,25 +9,28 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 
-import static old.ResourceHandler.getDbDriver;
-import static old.ResourceHandler.getDbPass;
-import static old.ResourceHandler.getDbUrl;
-import static old.ResourceHandler.getDbUser;
+import static avalanche.controller.ResourceHandler.getDbDriver;
+import static avalanche.controller.ResourceHandler.getDbPass;
+import static avalanche.controller.ResourceHandler.getDbUrl;
+import static avalanche.controller.ResourceHandler.getDbUser;
 
+/**
+ * Class used for connecting with database and fetching weather measurements as well as attaching them to UI
+ */
 public class WeatherConnector {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    private Connection c = null;
-    private PreparedStatement stmt = null;
+    private Connection connection;
+    private PreparedStatement statement;
     private TableView tableView;
 
-    private WeatherConnector(){}
+    private WeatherConnector() {}
 
     public static WeatherConnector getInstance(){
         return LazyHandler.instance;
@@ -41,88 +43,70 @@ public class WeatherConnector {
     private void connect() {
         try {
             Class.forName(getDbDriver());
-            c = DriverManager
-                    .getConnection(getDbUrl(), getDbUser(), getDbPass());
+            connection = DriverManager.getConnection(getDbUrl(), getDbUser(), getDbPass());
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        logger.info("Opened database successfully");
+        LOGGER.info("Opened database successfully");
     }
 
-    public void buildData(LocalDate from, LocalDate to) {
+    public List<WeatherDto> fetchAndBuildData() {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
-
-        if (from == null || to == null) {
-            logger.info("Choose dates first.");
-            return;
-        }
+        List<WeatherDto> weatherDtoList = new LinkedList<>();
 
         try {
-            if (c == null)
-                connect();
+            if (connection == null) connect();
 
-            String query = "select * " +
-                    "from weather " +
-                    "where time between ? and ?";
-            stmt = c.prepareStatement(query);
-            //noinspection JpaQueryApiInspection
-            stmt.setDate(1, Date.valueOf(from));
-            //noinspection JpaQueryApiInspection
-            stmt.setDate(2, Date.valueOf(to));
+            String query = "select * from weather order by time";
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
 
-            ResultSet rs = stmt.executeQuery();
+            // Initialize TableView with column headers
+            if (tableView.getColumns().size() == 0) {
 
-            if (tableView.getColumns().size() == 0) {//init table
-
-//TABLE COLUMN ADDED DYNAMICALLY
-                for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
-                    //We are using non property style for making dynamic table
+                for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                    // We are using non property style for making dynamic table
                     final int j = i;
-                    TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
-                    //noinspection unchecked
-                    col.setCellValueFactory(param -> {
-                        @SuppressWarnings("unchecked") Object prop = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
-                        if (j == 6) {
-                            Short windDirEnum = Short.parseShort(prop.toString());
-                            return new SimpleStringProperty(prop != null && windDirEnum != null ?
-                                    (Dirs.values()[windDirEnum]).toString() : "null");
-                        }
-                        return new SimpleStringProperty(prop != null ? prop.toString() : "null");
+                    TableColumn tableColumn = new TableColumn(resultSet.getMetaData().getColumnName(i + 1));
+                    // noinspection unchecked
+                    tableColumn.setCellValueFactory(param -> {
+                        @SuppressWarnings("unchecked")
+                        Object property = ((TableColumn.CellDataFeatures<ObservableList, String>) param).getValue().get(j);
+                        return new SimpleStringProperty(property != null ? property.toString() : "null");
                     });
 
-                    //noinspection unchecked
-                    tableView.getColumns().addAll(col);
-                    logger.debug("Column [{}] ", i);
+                    tableView.getColumns().addAll(tableColumn);
+                    LOGGER.debug("Column [{}] ", i);
                 }
             }
 
-// Data added to ObservableList
+            // Data added to ObservableList
             int cnt = 1;
-            while (rs.next()) {
-                //Iterate Row
+            while (resultSet.next()) {
                 ObservableList<String> row = FXCollections.observableArrayList();
-                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                    //Iterate Column
-                    row.add(rs.getString(i));
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    row.add(resultSet.getString(i));
                 }
-                logger.debug("Row [{}] added {}", cnt++, row);
+                LOGGER.debug("Row [{}] added {}", cnt++, row);
                 data.add(row);
 
+                WeatherDto weatherDto = new WeatherDto.Builder().build(row);
+                weatherDtoList.add(weatherDto);
+
             }
 
-            //FINALLY ADDED TO TableView
-            //noinspection unchecked
             tableView.setItems(data);
+
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("Error on Building Data");
+            LOGGER.error("Error on Building Data");
         }
-
+        return weatherDtoList;
     }
 
-    private static class LazyHandler{
+    private static class LazyHandler {
         private static WeatherConnector instance = new WeatherConnector();
     }
 }
