@@ -1,8 +1,8 @@
 package las2etin.model;
 
 import las2etin.tin.Tin;
-import tinfour.common.Vertex;
-import tinfour.interpolation.GwrTinInterpolator;
+import org.tinfour.common.Vertex;
+import org.tinfour.gwr.GwrTinInterpolator;
 
 import java.util.ArrayList;
 import java.util.HashMap;

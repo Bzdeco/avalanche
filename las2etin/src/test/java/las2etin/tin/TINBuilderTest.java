@@ -1,18 +1,18 @@
 package las2etin.tin;
 
 import las2etin.model.Bounds;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.tinfour.common.Vertex;
 import testutil.TestUtil;
-import tinfour.common.Vertex;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class TINBuilderTest
+class TINBuilderTest
 {
     @Test
-    public void buildFromPreparedListOfVertices() throws Exception
+    void buildFromPreparedListOfVertices()
     {
         // given
         int numberOfVertices = 100_000;

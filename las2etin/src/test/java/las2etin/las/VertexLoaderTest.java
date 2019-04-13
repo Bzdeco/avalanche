@@ -1,17 +1,20 @@
 package las2etin.las;
 
-import org.junit.Test;
-import tinfour.common.Vertex;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.tinfour.common.Vertex;
 
 import java.io.File;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class VertexLoaderTest
+@Disabled("Test file not present locally")
+class VertexLoaderTest
 {
     @Test
-    public void createVertexLoaderForExistingFile() throws Exception
+    void createVertexLoaderForExistingFile()
     {
         // given
         File testLasFile = loadTestLasFile();
@@ -24,7 +27,7 @@ public class VertexLoaderTest
     }
 
     @Test
-    public void throwExceptionWhenCreatingVertexLoaderForNonexistentFile() throws Exception
+    void throwExceptionWhenCreatingVertexLoaderForNonexistentFile()
     {
         // given
         File nonexistentFile = new File("file.las");
@@ -37,7 +40,7 @@ public class VertexLoaderTest
     }
 
     @Test
-    public void getAllVerticesFromFileReturnsFilledList() throws Exception
+    void getAllVerticesFromFileReturnsFilledList()
     {
         // given
         File testLasFile = loadTestLasFile();

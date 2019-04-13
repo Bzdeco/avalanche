@@ -1,6 +1,6 @@
 package las2etin.las.vertex;
 
-import tinfour.common.Vertex;
+import org.tinfour.common.Vertex;
 
 public interface VertexFilter
 {

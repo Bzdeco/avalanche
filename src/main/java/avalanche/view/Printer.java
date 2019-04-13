@@ -1,13 +1,16 @@
 package avalanche.view;
 
-import avalanche.view.layers.Layer;
-import avalanche.view.layers.RiskLayer;
-import avalanche.view.layers.TerrainLayer;
-import avalanche.view.layers.LayerZoomAndPanUtility;
 import avalanche.model.risk.Risk;
 import avalanche.model.risk.RiskCell;
+import avalanche.view.layers.Layer;
+import avalanche.view.layers.LayerZoomAndPanUtility;
+import avalanche.view.layers.RiskLayer;
+import avalanche.view.layers.TerrainLayer;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -15,22 +18,24 @@ import las2etin.model.Coordinates;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainCell;
 import las2etin.model.TerrainProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * This class prints created {@link Layer}s as images and displayes them in the UI.
  */
+@Log4j2
 public class Printer
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Printer.class);
     private static final int WIDTH_IN_PIXELS = 500;
     private static final int HEIGHT_IN_PIXELS = 500;
 
@@ -96,7 +101,7 @@ public class Printer
             ImageIO.write(bufferedImage, "PNG", outputStream);
         }
         catch (IOException e) {
-            LOGGER.error("Error creating image");
+            log.error("Error creating image");
         }
         return new ByteArrayInputStream(outputStream.toByteArray());
     }
@@ -120,7 +125,7 @@ public class Printer
             ImageIO.write(bufferedImage, "PNG", outputStream);
         }
         catch (IOException e) {
-            LOGGER.error("Error creating image");
+            log.error("Error creating image");
         }
         return new ByteArrayInputStream(outputStream.toByteArray());
     }

@@ -9,11 +9,12 @@ import las2etin.model.TerrainSettings;
 import las2etin.model.TerrainSettingsBuilder;
 import las2etin.tin.Tin;
 import las2etin.tin.TinBuilder;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.tinfour.common.Vertex;
 import testutil.TestUtil;
-import tinfour.common.Vertex;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TerrainFormatterTest
 {
     @Test
-    @Ignore("Fake bounds cause errors in calculations")
-    public void serializationAndDeserializationPreservesTerrainState() throws Exception
+    @Disabled("Fake bounds cause errors in calculations")
+    public void serializationAndDeserializationPreservesTerrainState()
     {
         // given
         int numberOfVertices = 100;
@@ -57,9 +58,8 @@ public class TerrainFormatterTest
     }
 
     @Test
-    @Ignore("Serialization and deserialization of real .las files, takes very long")
-    public void serializeAndDeserializeTestLasFile() throws Exception
-    {
+    @Disabled("Serialization and deserialization of real .las files, takes very long")
+    public void serializeAndDeserializeTestLasFile() throws IOException {
         // given
         LASFile file = LASFile.fromFilePath("src/test/resources/test.las");
         LASReader reader = LASReader.createFor(file);
@@ -83,9 +83,8 @@ public class TerrainFormatterTest
     }
 
     @Test
-    @Ignore("Serialization and deserialization of real .las files, takes very long")
-    public void serializeAndDeserializeTestLasFileLowerResolution() throws Exception
-    {
+    @Disabled("Serialization and deserialization of real .las files, takes very long")
+    public void serializeAndDeserializeTestLasFileLowerResolution() throws IOException {
         // given
         LASFile file = LASFile.fromFilePath("src/test/resources/test.las");
         LASReader reader = LASReader.createFor(file);

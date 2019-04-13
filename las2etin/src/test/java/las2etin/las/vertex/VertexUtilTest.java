@@ -1,19 +1,19 @@
 package las2etin.las.vertex;
 
+import org.junit.jupiter.api.Test;
+import org.tinfour.common.Vertex;
 import testutil.TestUtil;
 import org.assertj.core.data.Percentage;
-import org.junit.Test;
-import tinfour.common.Vertex;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class VertexUtilTest
+class VertexUtilTest
 {
 
     @Test
-    public void thinnedNumberOfVerticesRoughlyConformsToThinningFactor() throws Exception
+    void thinnedNumberOfVerticesRoughlyConformsToThinningFactor()
     {
         // given
         int originalNumberOfVertices = 1000;
@@ -30,7 +30,7 @@ public class VertexUtilTest
     }
 
     @Test
-    public void trimNumberOfVerticesToExactValue() throws Exception
+    void trimNumberOfVerticesToExactValue()
     {
         // given
         int originalNumberOfVertices = 1000;

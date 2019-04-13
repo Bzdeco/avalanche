@@ -1,18 +1,16 @@
 package las2etin.display;
 
 import las2etin.model.Terrain;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SerializationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Log4j2
 public class TerrainFormatter
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TerrainFormatter.class);
-
     public static Path serialize(Terrain terrain, Path destinationFilePath)
     {
         try {
@@ -33,7 +31,7 @@ public class TerrainFormatter
     private static void handleWritingToFileError(Exception cause, String filePath)
     {
         String errorMessage = String.format("Failed to save serialized terrain to %s", filePath);
-        LOGGER.error(errorMessage);
+        log.error(errorMessage);
         throw new IllegalStateException(errorMessage, cause);
     }
 
@@ -57,7 +55,7 @@ public class TerrainFormatter
     private static void handleReadingFromFileError(Exception cause, String filePath)
     {
         String errorMessage = String.format("Failed to read serialized terrain from %s", filePath);
-        LOGGER.error(errorMessage);
+        log.error(errorMessage);
         throw new IllegalStateException(errorMessage, cause);
     }
 }

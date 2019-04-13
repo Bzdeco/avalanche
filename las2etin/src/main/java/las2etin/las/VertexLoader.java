@@ -1,13 +1,13 @@
 package las2etin.las;
 
 import las2etin.model.Bounds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tinfour.common.Vertex;
-import tinfour.las.LasFileReader;
-import tinfour.las.LasPoint;
-import tinfour.las.LasRecordFilterByLastReturn;
-import tinfour.test.utils.VertexWithClassification;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.tinfour.common.Vertex;
+import org.tinfour.gis.las.LasFileReader;
+import org.tinfour.gis.las.LasPoint;
+import org.tinfour.gis.utils.VertexWithClassification;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,19 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 class VertexLoader
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VertexLoader.class);
-
     private final LasPoint pointHolder;
     private final LasFileReader tinfourReader;
-    private final LasRecordFilterByLastReturn lastReturnFilter = new LasRecordFilterByLastReturn();
-
-    private VertexLoader(LasPoint pointHolder, LasFileReader tinfourReader)
-    {
-        this.pointHolder = pointHolder;
-        this.tinfourReader = tinfourReader;
-    }
+//    private final LasRecordFilterByLastReturn lastReturnFilter = new LasRecordFilterByLastReturn();
 
     static VertexLoader create(File file)
     {
@@ -48,7 +42,7 @@ class VertexLoader
     private static void handleVertexLoaderInitializationError(Exception ex)
     {
         String errorMessage = String.format("Failed to initialize %s", LasFileReader.class.getCanonicalName());
-        LOGGER.error(errorMessage, ex);
+        log.error(errorMessage, ex);
         throw new IllegalStateException(errorMessage, ex);
     }
 
@@ -98,13 +92,12 @@ class VertexLoader
                                                          pointHolder.classification);
             return Optional.of(vertex);
         }
-        else
-            return Optional.empty();
+        return Optional.empty();
     }
 
     private Optional<Vertex> handleUnreadablePointRecord(long pointIndex)
     {
-        LOGGER.info(String.format("Unable to read data for LAS record (id: %d), skipping the entry", pointIndex));
+        log.info(String.format("Unable to read data for LAS record (id: %d), skipping the entry", pointIndex));
         return Optional.empty();
     }
 

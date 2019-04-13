@@ -1,26 +1,22 @@
 package las2etin.las;
 
-import las2etin.model.Bounds;
 import las2etin.las.vertex.ThinningVertexFilter;
 import las2etin.las.vertex.VertexUtil;
-import tinfour.common.Vertex;
+import las2etin.model.Bounds;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.tinfour.common.Vertex;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class LASReader
 {
     private final LASFile file;
     private final LASReaderOptions options;
     private final VertexLoader loader;
-
-    LASReader(LASFile file, LASReaderOptions options, VertexLoader loader)
-    {
-        this.file = file;
-        this.options = options;
-        this.loader = loader;
-    }
 
     public static LASReader createFor(LASFile file)
     {

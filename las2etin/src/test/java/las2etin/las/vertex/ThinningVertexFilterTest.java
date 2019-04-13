@@ -1,19 +1,18 @@
 package las2etin.las.vertex;
 
-import las2etin.las.vertex.ThinningVertexFilter;
-import las2etin.las.vertex.VertexFilter;
-import org.junit.Test;
-import tinfour.common.Vertex;
+
+import org.junit.jupiter.api.Test;
+import org.tinfour.common.Vertex;
 
 import java.util.Random;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
-public class ThinningVertexFilterTest
+class ThinningVertexFilterTest
 {
     @Test
-    public void shouldAcceptVertexWithGeneratedValueLowerThanThreshold() throws Exception
+    void shouldAcceptVertexWithGeneratedValueLowerThanThreshold()
     {
         // given
         Vertex vertex = new Vertex(1.0, 1.0, 1.0);
@@ -31,7 +30,7 @@ public class ThinningVertexFilterTest
     }
 
     @Test
-    public void shouldAcceptVertexWithGeneratedValueEqualToThreshold() throws Exception
+    void shouldAcceptVertexWithGeneratedValueEqualToThreshold()
     {
         // given
         Vertex vertex = new Vertex(1.0, 1.0, 1.0);
@@ -48,7 +47,7 @@ public class ThinningVertexFilterTest
     }
 
     @Test
-    public void shouldNotAcceptVertexWithGeneratedValueGreaterThanThreshold() throws Exception
+    void shouldNotAcceptVertexWithGeneratedValueGreaterThanThreshold()
     {
         // given
         Vertex vertex = new Vertex(1.0, 1.0, 1.0);

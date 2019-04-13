@@ -1,6 +1,6 @@
 package testutil;
 
-import tinfour.common.Vertex;
+import org.tinfour.common.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;

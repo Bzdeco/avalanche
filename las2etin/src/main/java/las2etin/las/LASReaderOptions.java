@@ -1,5 +1,8 @@
 package las2etin.las;
 
+import lombok.Getter;
+
+@Getter
 public class LASReaderOptions
 {
     private final int maxNumberOfVertices;
@@ -16,20 +19,5 @@ public class LASReaderOptions
     public static LASReaderOptions getDefault()
     {
         return new LASReaderOptionsBuilder().build();
-    }
-
-    public int getMaxNumberOfVertices()
-    {
-        return maxNumberOfVertices;
-    }
-
-    public boolean isThinningEnabled()
-    {
-        return thinningEnabled;
-    }
-
-    public float getThinningFactor()
-    {
-        return thinningFactor;
     }
 }

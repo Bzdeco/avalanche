@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
-    </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="avalanche.avalanche.main" target="1.8" />
-      <module name="avalanche.avalanche.test" target="1.8" />
-      <module name="avalanche.las2etin.main" target="1.8" />
-      <module name="avalanche.las2etin.test" target="1.8" />
-      <module name="avalanche.weather.main" target="1.8" />
-      <module name="avalanche.weather.test" target="1.8" />
       <module name="avalanche_main" target="1.8" />
       <module name="avalanche_package" target="1.8" />
       <module name="avalanche_test" target="1.8" />

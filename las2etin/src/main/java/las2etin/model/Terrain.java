@@ -1,8 +1,15 @@
 package las2etin.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.io.Serializable;
 import java.util.*;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class Terrain implements Serializable
 {
     private static final long serialVersionUID = -7848043410735605796L;
@@ -12,40 +19,7 @@ public class Terrain implements Serializable
     private final GeographicBounds geographicBounds;
     private final Bounds bounds;
 
-    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties,
-			GeographicBounds geographicBounds, Bounds bounds)
-    {
-        this.terrainCells = terrainCells;
-        this.terrainProperties = terrainProperties;
-        this.geographicBounds = geographicBounds;
-        this.bounds = bounds;
-    }
-
-    public Map<Integer, List<TerrainCell>> getTerrainCells() {
-        return terrainCells;
-    }
-
-    public TerrainProperties getTerrainProperties()
-    {
-        return terrainProperties;
-    }
-
-    public Bounds getBounds()
-    {
-        return bounds;
-    }
-
-	public GeographicBounds getGeographicBounds()
-	{
-		return geographicBounds;
-	}
-
-	public GeographicCoordinates getCenterCoords()
-	{
-		return geographicBounds.getCenterCoords();
-	}
-
-	public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
+    public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
     {
         int x = coordinates.getX();
         int y = coordinates.getY();
@@ -59,31 +33,13 @@ public class Terrain implements Serializable
         }
     }
 
+    public GeographicCoordinates getCenterCoords()
+    {
+        return geographicBounds.getCenterCoords();
+    }
+
     private boolean isColumnPresentInRow(int columnIndex, List<TerrainCell> searchedRow)
     {
         return columnIndex <= searchedRow.size();
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        Terrain terrain = (Terrain) o;
-
-        if (!terrainCells.equals(terrain.terrainCells))
-            return false;
-        return terrainProperties.equals(terrain.terrainProperties);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = terrainCells.hashCode();
-        result = 31 * result + terrainProperties.hashCode();
-        return result;
     }
 }
