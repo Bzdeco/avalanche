@@ -12,6 +12,7 @@ import las2etin.tin.TinBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tinfour.common.Vertex;
+import weatherCollector.coordinates.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,8 +23,10 @@ import java.util.List;
 public class Las2etin
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Las2etin.class);
+	public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
 
-    @Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
+
+	@Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
     private String lasFilepath;
 
     @Parameter(names = {"--resolution", "-r"}, description = "Number of probed points across one direction (max 500)." +
@@ -74,7 +77,10 @@ public class Las2etin
         TerrainSettings settings = new TerrainSettingsBuilder().withWidthInCells(resolution)
                                                                .withHeightInCells(resolution)
                                                                .build();
-        Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings).build();
+        Coords centerCoords = converter.convert(lasFilepath);
+        Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings)
+																	.withCenterCoordinates(centerCoords)
+																	.build();
 
         setSavePathToDefault();
 

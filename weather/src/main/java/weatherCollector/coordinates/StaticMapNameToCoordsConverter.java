@@ -7,7 +7,7 @@ public class StaticMapNameToCoordsConverter implements NameToCoordsConverter
 {
     public Coords convert(final String filename)
     {
-        return map.getOrDefault(filename, new Coords(0, 0));
+        return map.getOrDefault(filename.substring(0, filename.length() - 6), new Coords(0, 0));
     }
 
     private Map<String, Coords> map = new HashMap<String, Coords>()

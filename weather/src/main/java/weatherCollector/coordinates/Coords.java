@@ -1,8 +1,9 @@
 package weatherCollector.coordinates;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Coords
+public class Coords implements Serializable
 {
     private final float latitude;
     private final float longitude;

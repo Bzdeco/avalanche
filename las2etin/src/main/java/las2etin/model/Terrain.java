@@ -1,5 +1,7 @@
 package las2etin.model;
 
+import weatherCollector.coordinates.*;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -9,12 +11,15 @@ public class Terrain implements Serializable
 
     private final Map<Integer, List<TerrainCell>> terrainCells;
     private final TerrainProperties terrainProperties;
+    private final Coords centerCoords;
     private final Bounds bounds;
 
-    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties, Bounds bounds)
+    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties,
+			Coords centerCoords, Bounds bounds)
     {
         this.terrainCells = terrainCells;
         this.terrainProperties = terrainProperties;
+        this.centerCoords = centerCoords;
         this.bounds = bounds;
     }
 
@@ -32,7 +37,12 @@ public class Terrain implements Serializable
         return bounds;
     }
 
-    public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
+	public Coords getCenterCoords()
+	{
+		return centerCoords;
+	}
+
+	public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
     {
         int x = coordinates.getX();
         int y = coordinates.getY();

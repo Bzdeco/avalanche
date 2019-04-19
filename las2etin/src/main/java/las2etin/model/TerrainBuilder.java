@@ -3,6 +3,7 @@ package las2etin.model;
 import las2etin.tin.Tin;
 import tinfour.common.Vertex;
 import tinfour.interpolation.GwrTinInterpolator;
+import weatherCollector.coordinates.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class TerrainBuilder
     private Tin tin;
     private GwrTinInterpolator interpolator;
     private TerrainProperties properties;
+	private Coords centerCoords;
     private Bounds bounds;
 
     public TerrainBuilder(Tin tin)
@@ -39,13 +41,19 @@ public class TerrainBuilder
         return this;
     }
 
+    public TerrainBuilder withCenterCoordinates(Coords centerCoords)
+	{
+		this.centerCoords = centerCoords;
+		return this;
+	}
+
     public Terrain build()
     {
         checkNotNull(properties);
 
         Map<Integer, List<TerrainCell>> cells = createAllTerrainCells();
 
-        return new Terrain(cells, properties, tin.getBounds());
+        return new Terrain(cells, properties, centerCoords, tin.getBounds());
     }
 
     private Map<Integer, List<TerrainCell>> createAllTerrainCells()

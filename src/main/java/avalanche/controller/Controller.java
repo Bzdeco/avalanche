@@ -60,14 +60,14 @@ public class Controller
             collectWeatherDataToDatabase(file.getName());
 
             final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            final Coords geographicalCoordinates = converter.convert(file.getName());
+            final Coords centerCoords = terrain.getCenterCoords();
             AvalancheRiskController avalancheRiskController = new AvalancheRiskController(terrain,
-                                                                                          geographicalCoordinates);
+                                                                                          centerCoords);
             terrainLayers = ImmutableList.of(
                     new LandformLayer("Landform"),
                     new SlopeLayer("Slope"),
                     new SusceptiblePlacesLayer("Susceptible places"),
-                    new HillshadeLayer("Hillshade", geographicalCoordinates)
+                    new HillshadeLayer("Hillshade", centerCoords)
             );
 
             riskLayers = ImmutableList.of(
