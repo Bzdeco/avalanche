@@ -9,6 +9,7 @@ public class TerrainCell implements Serializable
     private static final long serialVersionUID = -5616958564343992038L;
 
     private final Coordinates coordinates;
+    private final GeographicCoordinates geographicCoords;
     private final double altitude;
     private final Vector3D normal;
     private final double aspect;
@@ -18,6 +19,7 @@ public class TerrainCell implements Serializable
     private final double profileCurvature;
 
     TerrainCell(Coordinates coordinates,
+                GeographicCoordinates geographicCoords,
                 double altitude,
                 Vector3D normal,
                 double aspect,
@@ -27,6 +29,7 @@ public class TerrainCell implements Serializable
                 double profileCurvature)
     {
         this.coordinates = coordinates;
+        this.geographicCoords = geographicCoords;
         this.altitude = altitude;
         this.normal = normal;
         this.aspect = aspect;
@@ -40,7 +43,12 @@ public class TerrainCell implements Serializable
         return coordinates;
     }
 
-    public int getX()
+	public GeographicCoordinates getGeographicCoords()
+	{
+		return geographicCoords;
+	}
+
+	public int getX()
     {
         return coordinates.getX();
     }

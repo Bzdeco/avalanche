@@ -12,18 +12,18 @@ import las2etin.tin.TinBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tinfour.common.Vertex;
-import weatherCollector.coordinates.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 public class Las2etin
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Las2etin.class);
-	public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
+	public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
 
 
 	@Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
@@ -77,12 +77,12 @@ public class Las2etin
         TerrainSettings settings = new TerrainSettingsBuilder().withWidthInCells(resolution)
                                                                .withHeightInCells(resolution)
                                                                .build();
-        Coords centerCoords = converter.convert(lasFilepath);
+        GeographicBounds geographicBounds = converter.convert(lasFilepath);
         Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings)
-																	.withCenterCoordinates(centerCoords)
+																	.withGeographicBounds(geographicBounds)
 																	.build();
 
-        setSavePathToDefault();
+		setSavePathToDefault();
 
         Path saveLocation = Paths.get(serFilepath);
         reportProgress("Saving terrain to file...");

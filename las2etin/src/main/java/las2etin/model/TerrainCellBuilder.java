@@ -18,6 +18,7 @@ public class TerrainCellBuilder
     private GwrTinInterpolator interpolator;
     private Vertex vertex;
     private Coordinates coordinates;
+    private GeographicCoordinates geographicCoords;
 
     public TerrainCellBuilder()
     {
@@ -41,6 +42,12 @@ public class TerrainCellBuilder
         return this;
     }
 
+    public TerrainCellBuilder withGeographicCoords(GeographicCoordinates geographicCoords)
+	{
+		this.geographicCoords = geographicCoords;
+		return this;
+	}
+
     public TerrainCell build()
     {
         checkNotNull(interpolator);
@@ -60,6 +67,7 @@ public class TerrainCellBuilder
             double profileCurvature = calculateProfileCurvature(coefficients);
 
             return new TerrainCell(coordinates,
+                                   geographicCoords,
                                    altitude,
                                    normal,
                                    aspect,
@@ -70,6 +78,7 @@ public class TerrainCellBuilder
         }
         else {
             return new TerrainCell(coordinates,
+                                   geographicCoords,
                                    altitude,
                                    normal,
                                    0,

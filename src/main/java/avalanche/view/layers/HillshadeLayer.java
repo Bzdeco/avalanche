@@ -1,12 +1,12 @@
 package avalanche.view.layers;
 
 import com.sun.javafx.util.Utils;
+import las2etin.model.GeographicCoordinates;
 import las2etin.model.TerrainCell;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;
 import net.e175.klaus.solarpositioning.Grena3;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import weatherCollector.coordinates.Coords;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -18,12 +18,12 @@ import java.util.GregorianCalendar;
 public class HillshadeLayer implements TerrainLayer
 {
     private final String name;
-    private final Coords geographicalCoordinates;
+    private final GeographicCoordinates geographicCoordinates;
 
-    public HillshadeLayer(String name, Coords geographicalCoordinates)
+    public HillshadeLayer(String name, GeographicCoordinates geographicCoordinates)
     {
         this.name = name;
-        this.geographicalCoordinates = geographicalCoordinates;
+        this.geographicCoordinates = geographicCoordinates;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class HillshadeLayer implements TerrainLayer
 
     private float getSunAngle(Vector3D terrainCellNormal, GregorianCalendar todayNoon)
     {
-        Float latitude = geographicalCoordinates.getLatitude();
-        Float longitude = geographicalCoordinates.getLongitude();
+        Float latitude = geographicCoordinates.getLatitude();
+        Float longitude = geographicCoordinates.getLongitude();
         AzimuthZenithAngle solarPosition = Grena3.calculateSolarPosition(
                 todayNoon,
                 latitude,
