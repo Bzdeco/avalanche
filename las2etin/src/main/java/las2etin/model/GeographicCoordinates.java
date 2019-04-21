@@ -7,11 +7,18 @@ public class GeographicCoordinates implements Serializable
 {
 	private final float latitude;
 	private final float longitude;
+	private double altitude;
 
-	public GeographicCoordinates(final float latitude, final float longitude)
+	public GeographicCoordinates(float latitude, float longitude, double altitude)
 	{
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.altitude = altitude;
+	}
+
+	public GeographicCoordinates(final float latitude, final float longitude)
+	{
+		this(latitude, longitude, 0);
 	}
 
 	public float getLatitude()
@@ -22,6 +29,16 @@ public class GeographicCoordinates implements Serializable
 	public float getLongitude()
 	{
 		return longitude;
+	}
+
+	public double getAltitude()
+	{
+		return altitude;
+	}
+
+	public void setAltitude(double altitude)
+	{
+		this.altitude = altitude;
 	}
 
 	@Override

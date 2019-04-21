@@ -46,6 +46,11 @@ public class GeographicBounds implements Serializable
 		return centerCoords;
 	}
 
+	public void setCenterAltitude(double altitude)
+	{
+		centerCoords.setAltitude(altitude);
+	}
+
 	public float getWidth()
 	{
 		return maxLongitude - minLongitude;

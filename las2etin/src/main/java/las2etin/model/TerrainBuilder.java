@@ -51,11 +51,17 @@ public class TerrainBuilder
         checkNotNull(properties);
 
         Map<Integer, List<TerrainCell>> cells = createAllTerrainCells();
+        geographicBounds.setCenterAltitude(getCenterAltitude(cells));
 
         return new Terrain(cells, properties, geographicBounds, tin.getBounds());
     }
 
-    private Map<Integer, List<TerrainCell>> createAllTerrainCells()
+	private double getCenterAltitude(Map<Integer, List<TerrainCell>> cells)
+	{
+		return cells.get((properties.getWidthInCells() / 2)).get(properties.getHeightInCells() / 2).getAltitude();
+	}
+
+	private Map<Integer, List<TerrainCell>> createAllTerrainCells()
     {
         int widthInCells = properties.getWidthInCells();
         int heightInCells = properties.getHeightInCells();

@@ -30,6 +30,7 @@ public class TerrainCell implements Serializable
     {
         this.coordinates = coordinates;
         this.geographicCoords = geographicCoords;
+        geographicCoords.setAltitude(altitude);
         this.altitude = altitude;
         this.normal = normal;
         this.aspect = aspect;
