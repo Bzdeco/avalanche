@@ -47,4 +47,11 @@ public class Coords
                 ", longitude=" + longitude +
                 '}';
     }
+
+    public double distance(Coords other){
+        double a = getLatitude()  - other.getLatitude();
+        double b = getLongitude() - other.getLongitude();
+        return Math.sqrt(a*a + b*b);
+    }
+
 }

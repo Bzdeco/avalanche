@@ -1,11 +1,12 @@
 package basicWeatherInterpolation.weatherProviders;
 
+import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
+
+import java.io.IOException;
 
 public interface WeatherProvider {
 
-   float getLatitude();
-   float getLongitude();
-   float getElevation();
-   Weather currentWeather();
+   Coords getCoordinates();
+   Weather currentWeather() throws IOException;
 }
