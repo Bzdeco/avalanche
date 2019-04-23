@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -37,13 +38,14 @@ public class Weather {
     private Float rain;
     private Float snow;
 
-    public Weather(){}
+    public Weather() {
+    }
 
     @JsonCreator
     public Weather(@JsonProperty("dt") Long time, @JsonProperty("main") Map<String, Float> main,
                    @JsonProperty("clouds") Map<String, Float> clouds, @JsonProperty("wind") Map<String, Float> wind,
                    @JsonProperty("rain") Map<String, Float> rain, @JsonProperty("snow") Map<String, Float> snow) {
-        this.time = new Date(time*1000L);
+        this.time = new Date(time * 1000L);
         this.temp = main.get("temp");
         this.temp_min = main.get("temp_min");
         this.temp_max = main.get("temp_max");
@@ -63,7 +65,7 @@ public class Weather {
     }
 
     public void setTime(Long time) {
-        this.time = new Date(time*1000L);
+        this.time = new Date(time * 1000L);
     }
 
     public Float getTemp() {
@@ -160,5 +162,27 @@ public class Weather {
 
     public void setSnow(Float snow) {
         this.snow = snow;
+    }
+
+
+    @Override
+    public boolean equals(final Object o){
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Weather other = (Weather) o;
+
+        return  Objects.equals(time, other.time) &&
+                Objects.equals(temp, other.temp) &&
+                Objects.equals(temp_min, other.temp_min) &&
+                Objects.equals(temp_max, other.temp_max) &&
+                Objects.equals(pressure, other.pressure) &&
+                Objects.equals(sea_level, other.sea_level) &&
+                Objects.equals(grnd_level, other.grnd_level) &&
+                Objects.equals(humidity, other.humidity) &&
+                Objects.equals(cloudiness, other.cloudiness) &&
+                Objects.equals(wind_speed, other.wind_speed) &&
+                Objects.equals(wind_deg, other.wind_deg) &&
+                Objects.equals(rain, other.rain) &&
+                Objects.equals(snow, other.snow);
     }
 }
