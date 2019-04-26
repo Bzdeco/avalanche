@@ -1,6 +1,7 @@
 package avalanche.view.layers;
 
 import avalanche.model.risk.RiskCell;
+import las2etin.model.Coordinates;
 
 import java.awt.*;
 
@@ -20,11 +21,11 @@ public class AvalancheRiskLayer implements RiskLayer
     }
 
     @Override
-    public void drawCell(Graphics2D graphics, RiskCell cell)
+    public void drawCell(Graphics2D graphics, RiskCell cell, Coordinates drawCoords, int drawWidth, int drawHeight)
     {
         Color pixelColor = getColorFromRiskValue(cell.getRiskValue());
 
-        Shape cellRectangle = new Rectangle(cell.getX(), cell.getY(), 1, 1);
+        Shape cellRectangle = new Rectangle(drawCoords.getX(), drawCoords.getY(), drawWidth, drawHeight);
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);

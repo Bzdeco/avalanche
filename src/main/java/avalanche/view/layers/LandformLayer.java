@@ -1,5 +1,6 @@
 package avalanche.view.layers;
 
+import las2etin.model.Coordinates;
 import las2etin.model.TerrainCell;
 
 import java.awt.*;
@@ -16,11 +17,11 @@ public class LandformLayer implements TerrainLayer
     }
 
     @Override
-    public void drawCell(Graphics2D graphics, TerrainCell cell)
+    public void drawCell(Graphics2D graphics, TerrainCell cell, Coordinates drawCoords, int drawWidth, int drawHeight)
     {
         Color pixelColor = getColorFromAltitude(cell.getAltitude());
 
-        Shape cellRectangle = new Rectangle(cell.getX(), cell.getY(), 1, 1);
+        Shape cellRectangle = new Rectangle(drawCoords.getX(), drawCoords.getY(), drawWidth, drawHeight);
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);

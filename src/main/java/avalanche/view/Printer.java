@@ -31,6 +31,8 @@ import java.util.Optional;
 public class Printer
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Printer.class);
+    public static final int WIDTH = 500;
+    public static final int HEIGHT = 500;
 
     private final Terrain terrain;
     private final Risk risk;
@@ -46,7 +48,7 @@ public class Printer
         TerrainProperties properties = terrain.getTerrainProperties();
         widthInPixels = properties.getWidthInCells();
         heightInPixels = properties.getHeightInCells();
-        this.bufferedImage = new BufferedImage(widthInPixels, heightInPixels, BufferedImage.TYPE_INT_ARGB);
+        this.bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     }
 
     public void drawOnPane(final Pane pane,
@@ -81,9 +83,11 @@ public class Printer
 
         for (int x = 0; x < widthInPixels; x++) {
             for (int y = 0; y < heightInPixels; y++) {
-                Coordinates coordinates = new Coordinates(x, y);
-                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(coordinates);
-                terrainCell.ifPresent(cell -> terrainLayer.drawCell(graphics, cell));
+                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(new Coordinates(x, y));
+				Coordinates drawCoords = new Coordinates(x * WIDTH / widthInPixels, y * HEIGHT / heightInPixels);
+				int drawWidth = WIDTH / widthInPixels;
+				int drawHeight = HEIGHT / heightInPixels;
+                terrainCell.ifPresent(cell -> terrainLayer.drawCell(graphics, cell, drawCoords, drawWidth, drawHeight));
             }
         }
 
@@ -103,9 +107,11 @@ public class Printer
 
         for (int x = 0; x < widthInPixels; x++) {
             for (int y = 0; y < heightInPixels; y++) {
-                Coordinates coordinates = new Coordinates(x, y);
-                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(coordinates);
-                riskCell.ifPresent(cell -> riskLayer.drawCell(graphics, cell));
+                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(new Coordinates(x, y));
+                Coordinates drawCoords = new Coordinates(x * WIDTH / widthInPixels, y * HEIGHT / heightInPixels);
+                int drawWidth = WIDTH / widthInPixels;
+                int drawHeight = HEIGHT / heightInPixels;
+                riskCell.ifPresent(cell -> riskLayer.drawCell(graphics, cell, drawCoords, drawWidth, drawHeight));
             }
         }
 
