@@ -1,0 +1,13 @@
+server:
+  port: 8081 # run on different port than weather app (running on default 8080)
+spring:
+  application:
+    name: avalanche
+
+avalanche:
+  weather:
+    database:
+      driver: org.h2.Driver
+      url: jdbc:h2:tcp://localhost:9090/mem:avalanche
+      username: avalanche
+      password: avalanche

@@ -1,6 +1,6 @@
-package avalanche.view.layers;
+package org.avalanche.view.layers;
 
-import avalanche.model.risk.RiskCell;
+import org.avalanche.model.risk.RiskCell;
 import las2etin.model.Coordinates;
 
 import java.awt.*;

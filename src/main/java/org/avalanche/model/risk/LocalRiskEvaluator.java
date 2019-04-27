@@ -1,6 +1,6 @@
-package avalanche.model.risk;
+package org.avalanche.model.risk;
 
-import avalanche.model.database.WeatherDto;
+import org.avalanche.model.database.WeatherDto;
 import las2etin.model.TerrainCell;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -53,7 +53,7 @@ public class LocalRiskEvaluator
     }
 
     /**
-     * Profile and plan curvature in a given point can increase or decrease avalanche risk.
+     * Profile and plan curvature in a given point can increase or decrease org.avalanche risk.
      */
     private float applyCurvatureEffect(TerrainCell terrainCell)
     {

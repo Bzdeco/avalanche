@@ -1,4 +1,4 @@
-package avalanche.view.layers;
+package org.avalanche.view.layers;
 
 import las2etin.model.Coordinates;
 import las2etin.model.TerrainCell;

@@ -1,4 +1,4 @@
-package avalanche.model.database;
+package org.avalanche.model.database;
 
 import javafx.collections.ObservableList;
 import lombok.Data;

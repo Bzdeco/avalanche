@@ -1,11 +1,11 @@
-package avalanche.view;
+package org.avalanche.view;
 
-import avalanche.model.risk.Risk;
-import avalanche.model.risk.RiskCell;
-import avalanche.view.layers.Layer;
-import avalanche.view.layers.LayerZoomAndPanUtility;
-import avalanche.view.layers.RiskLayer;
-import avalanche.view.layers.TerrainLayer;
+import org.avalanche.model.risk.Risk;
+import org.avalanche.model.risk.RiskCell;
+import org.avalanche.view.layers.Layer;
+import org.avalanche.view.layers.LayerZoomAndPanUtility;
+import org.avalanche.view.layers.RiskLayer;
+import org.avalanche.view.layers.TerrainLayer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;

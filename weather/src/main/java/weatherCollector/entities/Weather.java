@@ -11,10 +11,13 @@ import javax.persistence.Id;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javax.persistence.Table;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
 @Entity
+@Table(name = "weather")
 @Data
 @JsonDeserialize
 @JsonIgnoreProperties(ignoreUnknown = true)

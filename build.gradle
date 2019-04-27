@@ -73,7 +73,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
 
     // Spring
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.1.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter:2.1.4.RELEASE'
 }
 

@@ -1,7 +1,6 @@
-package avalanche.view.layers;
+package org.avalanche.view.layers;
 
 import avalanche.model.risk.RiskCell;
-import las2etin.model.Coordinates;
 
 import javafx.scene.paint.Color;
 import java.awt.*;
