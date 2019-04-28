@@ -1,11 +1,10 @@
 package basicWeatherInterpolation.weatherProviders;
 
+import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
 public interface WeatherProvider {
 
-   float getLatitude();
-   float getLongitude();
-   float getElevation();
+   Coords getCoordinates();
    Weather currentWeather();
 }

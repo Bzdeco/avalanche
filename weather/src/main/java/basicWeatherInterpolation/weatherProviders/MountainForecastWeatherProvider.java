@@ -1,5 +1,6 @@
 package basicWeatherInterpolation.weatherProviders;
 
+import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
 
@@ -12,18 +13,10 @@ public class MountainForecastWeatherProvider implements WeatherProvider {
     }
 
     @Override
-    public float getLatitude() {
-        return this.peak.getLatitude();
-    }
-
-    @Override
-    public float getLongitude() {
-        return this.peak.getLongitude();
-    }
-
-    @Override
-    public float getElevation() {
-        return this.peak.getHeight();
+    public Coords getCoordinates() {
+        Coords coords = new Coords(peak.getLatitude(),peak.getLongitude());
+        coords.setElevation(peak.getHeight());
+        return coords;
     }
 
     @Override
