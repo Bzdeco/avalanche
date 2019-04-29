@@ -32,8 +32,8 @@ public class Weather {
 
     private Float cloudiness;
 
-    private Float wind_speed;
-    private Float wind_deg;
+    private Float windSpeed;
+    private Float windDeg;
 
     private Float rain;
     private Float snow;

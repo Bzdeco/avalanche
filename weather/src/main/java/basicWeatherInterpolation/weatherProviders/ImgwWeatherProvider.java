@@ -21,16 +21,13 @@ public class ImgwWeatherProvider implements WeatherProvider{
     private String fullLink;
     private Coords location;
 
-    public ImgwWeatherProvider(String stationName, String locationType){
-        if(stationName == null || stationName.isEmpty())
-            stationName = "Kasprowy Wierch";
-
+    public ImgwWeatherProvider(ProvidersName stationName, String locationType){
         String api_link = "https://danepubliczne.imgw.pl/api/data/synop/station/";
-        fullLink = api_link + parseName(stationName) + "/format/json";
+        fullLink = api_link + parseName(stationName.toString()) + "/format/json";
 
 
         try {
-            location = retrieveCoordinates(stationName, locationType);
+            location = retrieveCoordinates(stationName.toString(), locationType);
         } catch (IOException ignored) {
             //Set to center of Tatra Mountains
             location = new Coords(49.25f, 20f);
@@ -89,10 +86,10 @@ public class ImgwWeatherProvider implements WeatherProvider{
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = mapper.readTree(imgwResponse);
 
-        weather.setTime(parseDate(json)/1000L);
+        weather.setTime(new Date(parseDate(json)));
         weather.setTemp(Float.parseFloat(json.get("temperatura").asText()));
         weather.setWindSpeed(Float.parseFloat(json.get("predkosc_wiatru").asText()));
-        weather.setWinDeg(Float.parseFloat(json.get("kierunek_wiatru").asText()));
+        weather.setWindDeg(Float.parseFloat(json.get("kierunek_wiatru").asText()));
         weather.setHumidity(Float.parseFloat(json.get("wilgotnosc_wzgledna").asText()));
         if( weather.getTemp() > 0)
             weather.setRain(Float.parseFloat(json.get("suma_opadu").asText()));

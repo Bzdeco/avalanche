@@ -16,7 +16,7 @@ public class ImgwWeatherProviderTest {
     @Test
     public void ShouldReturnCorrectCoordinatesOfZakopane() {
         //given
-        WeatherProvider imgwWP = new ImgwWeatherProvider("Zakopane", "city");
+        WeatherProvider imgwWP = new ImgwWeatherProvider(ProvidersName.Zakopane, "city");
 
         //when
         Coords expected = new Coords(49.2969446f, 19.950659f);
@@ -28,7 +28,7 @@ public class ImgwWeatherProviderTest {
     @Test
     public void ShouldReturnCorrectCoordinatesOfKasprowyWierch() {
         //given
-        WeatherProvider imgwWP = new ImgwWeatherProvider("Kasprowy Wierch", "peak");
+        WeatherProvider imgwWP = new ImgwWeatherProvider(ProvidersName.KasprowyWierch, "peak");
 
         //when
         Coords expected = new Coords(49.2318014f, 19.9815609f);
@@ -46,15 +46,15 @@ public class ImgwWeatherProviderTest {
 
 
         //given
-        WeatherProvider imgwWP = new ImgwWeatherProvider("Kasprowy Wierch", "peak");
+        WeatherProvider imgwWP = new ImgwWeatherProvider(ProvidersName.KasprowyWierch, "peak");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss");
         Date date = format.parse( "2019-04-23, 18:00:00");
 
         Weather expected = new Weather();
-        expected.setTime(date.getTime()/1000L);
+        expected.setTime(date);
         expected.setTemp(-1f);
         expected.setWindSpeed(10f);
-        expected.setWinDeg(150f);
+        expected.setWindDeg(150f);
         expected.setHumidity(98.5f);
         expected.setSnow(2.7f);
 

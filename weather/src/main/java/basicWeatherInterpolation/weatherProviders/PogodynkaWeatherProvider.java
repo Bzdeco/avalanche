@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -22,14 +23,11 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
     private String stationName;
     private Coords location;
 
-    public PogodynkaWeatherProvider(String stationName, String locationType) {
-        if(stationName == null || stationName.isEmpty())
-            stationName = "Hala Gąsienicowa";
-
-        this.stationName = stationName;
+    public PogodynkaWeatherProvider(ProvidersName stationName, String locationType) {
+        this.stationName = stationName.toString();
 
         try {
-            location = retrieveCoordinates(stationName, locationType);
+            location = retrieveCoordinates(this.stationName, locationType);
         } catch (IOException e) {
             // Set to center of Tatra Mountains
             location = new Coords(49.25f, 20f);
@@ -134,13 +132,13 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
         } catch (Exception e) {
             windDeg = null;
         }
-
-        result.setTime(System.currentTimeMillis()/1000L);
+        getCoordinates().setElevation(elevation);
+        result.setTime(new Date());
         result.setTemp(temp);
         result.setTempMax(temp);
         result.setTempMin(temp);
         result.setWindSpeed(windSpeed);
-        result.setWinDeg(windDeg);
+        result.setWindDeg(windDeg);
         result.setSnow(freshSnowLvl);
     }
 

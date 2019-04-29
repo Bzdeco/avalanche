@@ -110,14 +110,14 @@ public class MountainForecastPageParser {
         float minTemp = getMinTemp(table);
 
         Weather weather = new Weather();
-        weather.setWind_speed(windSpeed);
-        weather.setWind_deg(windDeg);
-        weather.setWind_speed(windSpeed);
+        weather.setWindSpeed(windSpeed);
+        weather.setWindDeg(windDeg);
+        weather.setWindSpeed(windSpeed);
         weather.setRain(rain);
         weather.setSnow(snow);
-        weather.setTemp_max(maxTemp);
-        weather.setTemp_min(minTemp);
-        weather.setSea_level((float)peak.height);
+        weather.setTempMax(maxTemp);
+        weather.setTempMin(minTemp);
+        weather.setSeaLevel((float)peak.height);
         peak.weather = weather;
 
         retrieveCordinates(document,peak);
