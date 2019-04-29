@@ -3,8 +3,9 @@ package basicWeatherInterpolation.weatherProviders;
 import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
-public interface WeatherProvider {
+import java.io.IOException;
 
+public interface WeatherProvider {
    Coords getCoordinates();
-   Weather currentWeather();
+   Weather currentWeather() throws IOException;
 }
