@@ -1,6 +1,7 @@
 package basicWeatherInterpolation.localizationService;
 
 import basicWeatherInterpolation.weatherProviders.ImgwWeatherProvider;
+import basicWeatherInterpolation.weatherProviders.PogodynkaWeatherProvider;
 import basicWeatherInterpolation.weatherProviders.WeatherProvider;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -18,7 +19,6 @@ public class LocalizationService {
     private int numOfClosestsProviders;
 
     private List<WeatherProvider> weatherProviders = new ArrayList<>();
-    private List<WeatherProvider> closestProviders;
 
     public LocalizationService(){
         this(3);
@@ -27,19 +27,19 @@ public class LocalizationService {
     public LocalizationService(int numOfClosestsProviders) {
         this.numOfClosestsProviders = numOfClosestsProviders;
 
-        weatherProviders.add(new ImgwWeatherProvider("Kasprowy Wierch"));
-        weatherProviders.add(new ImgwWeatherProvider("Zakopane"));
-//        weatherProviders.add(new PogodynkaWeatherProvider(/*TODO: Name of station, repeat for all stations*/));
+        weatherProviders.add(new ImgwWeatherProvider("Kasprowy Wierch", "peak"));
+        weatherProviders.add(new ImgwWeatherProvider("Zakopane", "city"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Morskie Oko", "lake"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Hala Gasienicowa", "valley"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Kasprowy Wierch", "peak"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Polana chocholowska", "valley"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Zakopane", "city"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Poronin", "city"));
+        weatherProviders.add(new PogodynkaWeatherProvider("Bukowina Tatrzanska", "city"));
 //        weatherProviders.add(new MountainForecastWeatherProvider(/*TODO: Name of MF station, repeat for all stations*/));
 
 
     }
-    //Constructor only for tests (dunno how to mock it better)
-    public LocalizationService(List<WeatherProvider> mockProviders, int numOfClosestsProviders){
-        weatherProviders = mockProviders;
-        this.numOfClosestsProviders = numOfClosestsProviders;
-    }
-
 
     List <WeatherProvider> getClosestWeatherProviders(Coords interpolatedLocation){
 
@@ -50,7 +50,7 @@ public class LocalizationService {
 
         distanceToProvider.sort(Comparator.comparingDouble(Pair::getKey));
 
-        closestProviders = new ArrayList<>(numOfClosestsProviders);
+        List<WeatherProvider> closestProviders = new ArrayList<>(numOfClosestsProviders);
         for(int i = 0; i < numOfClosestsProviders; ++i){
             closestProviders.add(distanceToProvider.get(i).getValue());
         }
