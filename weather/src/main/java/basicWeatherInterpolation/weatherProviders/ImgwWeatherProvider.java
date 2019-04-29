@@ -140,5 +140,4 @@ public class ImgwWeatherProvider implements WeatherProvider{
     public int hashCode(){
         return Objects.hash(fullLink, location);
     }
-
 }

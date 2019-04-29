@@ -1,5 +1,6 @@
 package basicWeatherInterpolation.localizationService;
 
+
 import basicWeatherInterpolation.weatherProviders.ImgwWeatherProvider;
 import basicWeatherInterpolation.weatherProviders.PogodynkaWeatherProvider;
 import basicWeatherInterpolation.weatherProviders.WeatherProvider;
@@ -7,6 +8,7 @@ import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import weatherCollector.coordinates.Coords;
+
 
 import java.util.ArrayList;
 import java.util.Comparator;

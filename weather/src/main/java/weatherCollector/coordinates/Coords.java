@@ -6,6 +6,7 @@ public class Coords
 {
     private final float latitude;
     private final float longitude;
+    private float elevation;
 
     public Coords(final float latitude, final float longitude)
     {
@@ -21,6 +22,15 @@ public class Coords
     public float getLongitude()
     {
         return longitude;
+    }
+
+    public float getElevation()
+    {
+        return elevation;
+    }
+
+    public void setElevation(float value){
+        elevation = value;
     }
 
     @Override
