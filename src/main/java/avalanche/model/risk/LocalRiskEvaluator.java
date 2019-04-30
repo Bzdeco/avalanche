@@ -38,6 +38,7 @@ public class LocalRiskEvaluator
             riskValue += applyWindDirection(terrainCell);
         }
 
+        // don't allow negative risk values
         if (riskValue < 0) riskValue = 0;
 
         return riskValue / maxRiskValue;
