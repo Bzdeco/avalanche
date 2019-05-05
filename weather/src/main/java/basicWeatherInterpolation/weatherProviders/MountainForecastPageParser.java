@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 
 public class MountainForecastPageParser {
 
-    private String baseUrl = "https://www.mountain-forecast.com";
-    private String peaksListUrl = "/subranges/tatras/locations";
+    private static final String BASE_URL = "https://www.mountain-forecast.com";
+    private static final String PEAKS_LIST_URL = "/subranges/tatras/locations";
     private List<Peak> peaks;
 
     private Map<String,Float> textDirectionToDegree = Stream.of(new Object[][]{
@@ -44,7 +44,7 @@ public class MountainForecastPageParser {
 
     public MountainForecastPageParser(){
         try{
-            Document document = Jsoup.connect(baseUrl + peaksListUrl).get();
+            Document document = Jsoup.connect(BASE_URL + PEAKS_LIST_URL).get();
             readPeaks(document);
             readDataFromPeaks();
         }catch(Exception e){
@@ -89,7 +89,7 @@ public class MountainForecastPageParser {
     }
 
     private void parsePeak(Peak peak) throws IOException {
-        String url = baseUrl+peak.getUrl()+"?skip_layout=true&mode=detailed";
+        String url = BASE_URL +peak.getUrl()+"?skip_layout=true&mode=detailed";
         Document document = Jsoup.connect(url).get();
 
         Elements table = document.select(".forecast__table");
@@ -118,7 +118,7 @@ public class MountainForecastPageParser {
         weather.setSeaLevel((float)peak.getHeight());
         peak.setWeather(weather);
 
-        url = baseUrl+peak.getUrl();
+        url = BASE_URL +peak.getUrl();
         document = Jsoup.connect(url).get();
 
         retrieveCoordinates(document,peak);
