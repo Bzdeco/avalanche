@@ -6,7 +6,7 @@ import weatherCollector.entities.Weather;
 
 public class MountainForecastWeatherProvider implements WeatherProvider {
 
-    private final MountainForecastPageParser.Peak peak;
+    private final Peak peak;
 
     public MountainForecastWeatherProvider(MountainForecastPageParser parser, PeakName peakName) {
         this.peak = parser.getPeak(peakName);

@@ -1,20 +1,20 @@
 package basicWeatherInterpolation.weatherProviders;
 
 public enum PeakName{
-    Banikov("Baníkov"),
-    Baranec("Baranec"),
-    Chopok("Chopok"),
-    Derese("Derese"),
-    Dumbier("Dumbier"),
-    Gerlach("Gerlach"),
-    Giewont("Giewont"),
-    Bubalowka("Gubałówka"),
-    KasprowyWierch("Kasprowy Wierch"),
-    Koscielec("Koscielec"),
-    Krivan("Krivan"),
-    Mnich("Mnich (mountain)"),
-    OstryRohac("Ostry Rohac"),
-    Rysy("Rysy");
+    BANIKOV("Baníkov"),
+    BARANEC("Baranec"),
+    CHOPOK("Chopok"),
+    DERESE("Derese"),
+    DUMBIER("Dumbier"),
+    GERLACH("Gerlach"),
+    GIEWONT("Giewont"),
+    GUBALOWKA("Gubałówka"),
+    KASPROWY_WIERCH("Kasprowy Wierch"),
+    KOSCIELEC("Koscielec"),
+    KRIVAN("Krivan"),
+    MNICH("Mnich (mountain)"),
+    OSTRY_ROHAC("Ostry Rohac"),
+    RYSY("Rysy");
 
     private String name;
 

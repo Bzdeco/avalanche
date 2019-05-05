@@ -38,20 +38,20 @@ public class LocalizationService {
         weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.ZAKOPANE,           LocationType.CITY));
         weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.PORONIN,            LocationType.CITY));
         weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.BUKOWINA_TATRZANSKA, LocationType.CITY));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Banikov ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Baranec ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Bubalowka ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Chopok ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Derese ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Dumbier ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Gerlach ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Giewont ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.KasprowyWierch ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Koscielec ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Krivan));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Mnich));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.OstryRohac));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Rysy));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.BANIKOV));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.BARANEC));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.GUBALOWKA));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.CHOPOK));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.DERESE));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.DUMBIER));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.GERLACH));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.GIEWONT));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.KASPROWY_WIERCH));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.KOSCIELEC));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.KRIVAN));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.MNICH));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.OSTRY_ROHAC));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.RYSY));
     }
 
     public LocalizationService(int numOfClosestProviders, List<WeatherProvider> weatherProviders) {

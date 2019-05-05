@@ -1,36 +1,27 @@
 package basicWeatherInterpolation.weatherProviders;
 
-import lombok.Builder;
-import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MountainForecastPageParser {
 
-    @Data
-    @Builder
-    static class Peak
-    {
-        private String name;
-        private String url;
-        private int height;
-        private float latitude;
-        private float longitude;
-        private Weather weather;
-    }
-
-    private String baseUrl = "https://www.mountain-forecast.com";
-    private String peaksListUrl = "/subranges/tatras/locations";
+    private static final String BASE_URL = "https://www.mountain-forecast.com";
+    private static final String PEAKS_LIST_URL = "/subranges/tatras/locations";
     private List<Peak> peaks;
 
     private Map<String,Float> textDirectionToDegree = Stream.of(new Object[][]{
@@ -54,7 +45,7 @@ public class MountainForecastPageParser {
 
     public MountainForecastPageParser(){
         try{
-            Document document = Jsoup.connect(baseUrl + peaksListUrl).get();
+            Document document = Jsoup.connect(BASE_URL + PEAKS_LIST_URL).get();
             readPeaks(document);
             readDataFromPeaks();
         }catch(Exception e){
@@ -64,10 +55,10 @@ public class MountainForecastPageParser {
     }
 
     Peak getPeak(PeakName name){
-        Optional<Peak> peak = this.peaks.stream().findAny().filter(x -> x.name.equals(name.name()));
-        if(!peak.isPresent())
-            throw new RuntimeException("PeakName was not found");
-        return peak.get();
+        return this.peaks.stream()
+                .filter(x -> x.getName().equals(name.toString()))
+                .findFirst()
+                .orElseThrow(()->new RuntimeException("PeakName was not found"));
     }
 
     private void readPeaks(Document document){
@@ -99,17 +90,22 @@ public class MountainForecastPageParser {
     }
 
     private void parsePeak(Peak peak) throws IOException {
-        String url = baseUrl+peak.getUrl();
+        String url = BASE_URL +peak.getUrl()+"?skip_layout=true&mode=detailed";
         Document document = Jsoup.connect(url).get();
+
         Elements table = document.select(".forecast__table");
-        float windSpeed = getWindSpeed(table);
-        float windDeg = getWindDirection(table);
-        float rain = getRain(table);
-        float snow = getSnow(table);
-        float maxTemp = getMaxTemp(table);
-        float minTemp = getMinTemp(table);
+        int columnIndex = findMatchingColumnByDateTime(table);
+
+        LocalDateTime dateTime = getDateTime(table,columnIndex);
+        float windSpeed = getWindSpeed(table, columnIndex);
+        float windDeg = getWindDirection(table, columnIndex);
+        float rain = getRain(table,columnIndex);
+        float snow = getSnow(table,columnIndex);
+        Float maxTemp = getMaxTemp(table,columnIndex);
+        Float minTemp = getMinTemp(table,columnIndex);
 
         Weather weather = new Weather();
+        weather.setTime(dateTime);
         weather.setWindSpeed(windSpeed);
         weather.setWindDeg(windDeg);
         weather.setWindSpeed(windSpeed);
@@ -117,13 +113,103 @@ public class MountainForecastPageParser {
         weather.setSnow(snow);
         weather.setTempMax(maxTemp);
         weather.setTempMin(minTemp);
-        weather.setSeaLevel((float)peak.height);
-        peak.weather = weather;
+        if(minTemp != null && maxTemp != null)
+            weather.setTemp((minTemp + maxTemp) / 2);
 
-        retrieveCordinates(document,peak);
+        weather.setSeaLevel((float)peak.getHeight());
+        peak.setWeather(weather);
+
+        url = BASE_URL +peak.getUrl();
+        document = Jsoup.connect(url).get();
+
+        Coords coords = retrieveCoordinates(document);
+        peak.setLongitude(coords.getLongitude());
+        peak.setLatitude(coords.getLatitude());
     }
 
-    private void retrieveCordinates(Document document, Peak peak)
+    private int findMatchingColumnByDateTime(Elements table) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        List<Integer> days = table.select("td.forecast__table-days-item")
+                .stream()
+                .map(x -> Integer.parseInt(x.attr("data-value")))
+                .collect(Collectors.toList());
+        int currentDay = currentDateTime.getDayOfMonth();
+        int currentDayIndex = days.indexOf(currentDay);
+
+        Elements rawTimes = table.select("td.forecast__table-time-item");
+
+        List<Integer> dayEndMarkers = IntStream.range(0,rawTimes.size())
+                .boxed()
+                .filter(i->rawTimes.get(i).hasClass("forecast__table-day-end"))
+                .collect(Collectors.toList());
+
+        int startIndex = 0;
+        int endIndex = dayEndMarkers.get(currentDayIndex);
+        if(currentDayIndex != 0)
+            startIndex = dayEndMarkers.get(currentDayIndex-1)+1;
+        List<Element> elements = rawTimes.subList(startIndex, endIndex+1);
+
+        int minIdx = IntStream.range(0,elements.size()).boxed()
+                .min(Comparator.comparingLong(i -> Math.abs(getTimeFrom(elements.get(i)).until(currentDateTime, ChronoUnit.MINUTES))))
+                .get();
+        return startIndex + minIdx;
+    }
+    private LocalTime getTimeFrom(Element element)
+    {
+        String thinSpaceCode = "\\u2009";
+        String time = element.text().replaceAll(thinSpaceCode," ");
+        return LocalTime.parse(time, DateTimeFormatter.ofPattern("h a", Locale.ENGLISH));
+    }
+    private LocalDateTime getDateTime(Elements table,int columnIndex){
+        LocalTime time = getTimeFrom(table.select("td.forecast__table-time-item").get(columnIndex));
+        return time.atDate(LocalDate.now());
+    }
+
+    private Float getMinTemp(Elements table, int columnIndex) {
+        Elements minTempRow = table.select(".forecast__table-min-temperature");
+        if(minTempRow.isEmpty())
+            return null;
+        String value = minTempRow.select("td span.temp").get(columnIndex).text();
+        return Float.parseFloat(value);
+    }
+
+    private Float getMaxTemp(Elements table, int columnIndex) {
+        Elements maxTempRow = table.select(".forecast__table-max-temperature");
+        if(maxTempRow.isEmpty())
+            return null;
+        String value = maxTempRow.select("td span.temp").get(columnIndex).text();
+        return Float.parseFloat(value);
+    }
+
+    private float getSnow(Elements table, int columnIndex) {
+        Elements snowRow = table.select(".forecast__table-snow");
+        String value = snowRow.select("td span.snow").get(columnIndex).text().replaceAll("\\D+","0");
+        return Float.parseFloat(value);
+    }
+
+    private float getRain(Elements table, int columnIndex) {
+        Elements rainRow = table.select(".forecast__table-rain");
+        String value = rainRow.select("td span.rain").get(columnIndex).text().replaceAll("\\D+","0");
+        return Float.parseFloat(value);
+    }
+
+    private float getWindSpeed(Elements table, int columnIndex)
+    {
+        Elements wind = table.select(".forecast__table-wind");
+        Elements speeds = wind.select("td.iconcell span");
+        String text = speeds.get(columnIndex).text();
+        return Float.parseFloat(text);
+    }
+
+    private float getWindDirection(Elements table, int columnIndex)
+    {
+        Elements wind = table.select(".forecast__table-wind");
+        String alt = wind.select("td.iconcell img").get(columnIndex).attr("alt").replaceAll("[^A-Z]+","");
+        return this.textDirectionToDegree.get(alt.toUpperCase());
+    }
+
+    private Coords retrieveCoordinates(Document document)
     {
         Optional<Element> script = document.select("script[type='text/javascript']").stream()
                 .filter(x -> x.toString().contains("FCOSM.initMapForLocation"))
@@ -136,47 +222,7 @@ public class MountainForecastPageParser {
         String[] split = content.substring(start + 1, end).split(",");
         float lat = Float.parseFloat(split[1]);
         float lng = Float.parseFloat(split[2]);
-        peak.latitude = lat;
-        peak.longitude = lng;
-    }
-
-    private float getMinTemp(Elements table) {
-        Elements minTempRow = table.select(".forecast__table-min-temperature");
-        String value = minTempRow.select("td span.temp").get(0).text();
-        return Float.parseFloat(value);
-    }
-
-    private float getMaxTemp(Elements table) {
-        Elements maxTempRow = table.select(".forecast__table-max-temperature");
-        String value = maxTempRow.select("td span.temp").get(0).text();
-        return Float.parseFloat(value);
-    }
-
-    private float getSnow(Elements table) {
-        Elements snowRow = table.select(".forecast__table-snow");
-        String value = snowRow.select("td span.snow").get(0).text().replaceAll("\\D+","0");
-        return Float.parseFloat(value);
-    }
-
-    private float getRain(Elements table) {
-        Elements rainRow = table.select(".forecast__table-rain");
-        String value = rainRow.select("td span.rain").get(0).text().replaceAll("\\D+","0");
-        return Float.parseFloat(value);
-    }
-
-    private float getWindSpeed(Elements table)
-    {
-        Elements wind = table.select(".forecast__table-wind");
-        Elements speeds = wind.select("td.iconcell span");
-        String text = speeds.get(0).text();
-        return Float.parseFloat(text);
-    }
-
-    private float getWindDirection(Elements table)
-    {
-        Elements wind = table.select(".forecast__table-wind");
-        String alt = wind.select("td.iconcell img").attr("alt").replaceAll("[^A-Z]+","");
-        return this.textDirectionToDegree.get(alt.toUpperCase());
+        return new Coords(lat,lng);
     }
 
 }
