@@ -5,7 +5,9 @@ import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +16,7 @@ public class PogodynkaWeatherProviderTest {
     @Test
     public void ShouldReturnCorrectCoordinatesOfZakopane() {
         //given
-        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.Zakopane, "city");
+        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.ZAKOPANE, LocationType.CITY);
 
         //when
         Coords expected = new Coords(49.2969446f, 19.950659f);
@@ -26,7 +28,7 @@ public class PogodynkaWeatherProviderTest {
     @Test
     public void ShouldReturnCorrectCoordinatesOfKasprowyWierch() {
         //given
-        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.KasprowyWierch, "peak");
+        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.KASPROWY_WIERCH, LocationType.PEAK);
 
         //when
         Coords expected = new Coords(49.2318014f, 19.9815609f);
@@ -38,12 +40,14 @@ public class PogodynkaWeatherProviderTest {
     @Test
     public void ShouldReturnCorrectWeatherForDolinaPieciuStawow() throws IOException {
         //given
-        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.DolinaPieciuStawow, "park");
-        long date = System.currentTimeMillis()/1000L;
+        WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.DOLINA_PIECIU_STAWOW, LocationType.EMPTY);
+        long date = System.currentTimeMillis();
 
+
+        //Data should be looked up on website
         //when
         Weather expected = new Weather();
-        expected.setTime(new Date(date));
+        expected.setTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.of("Europe/Warsaw")));
         expected.setTemp(-0.2f);
         expected.setTempMax(-0.2f);
         expected.setTempMin(-0.2f);
@@ -53,7 +57,7 @@ public class PogodynkaWeatherProviderTest {
 
         //then
         Weather result = pogodynkaWP.currentWeather();
-        result.setTime(new Date(date));
+        result.setTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.of("Europe/Warsaw")));
         assertEquals(expected, result);
     }
 

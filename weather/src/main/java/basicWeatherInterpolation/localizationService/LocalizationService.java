@@ -10,12 +10,13 @@ import weatherCollector.coordinates.Coords;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LocalizationService {
 
     @Setter
     @Getter
-    private int numOfClosestsProviders;
+    private int numOfClosestProviders;
 
     private List<WeatherProvider> weatherProviders = new ArrayList<>();
 
@@ -23,20 +24,20 @@ public class LocalizationService {
         this(3);
     }
 
-    public LocalizationService(int numOfClosestsProviders) {
-        this.numOfClosestsProviders = numOfClosestsProviders;
+    public LocalizationService(int numOfClosestProviders) {
+        this.numOfClosestProviders = numOfClosestProviders;
         MountainForecastPageParser parser = new MountainForecastPageParser();
 
-        weatherProviders.add(new ImgwWeatherProvider(ProvidersName.KasprowyWierch, "peak"));
-        weatherProviders.add(new ImgwWeatherProvider(ProvidersName.Zakopane, "city"));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.MorskieOko, "lake"));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.HaleGasienicowa, ""));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.KasprowyWierch, "peak"));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.PolanaChocholowska, ""));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.DolinaPieciuStawow, ""));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.Zakopane, "city"));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.Poronin, "city"));
-        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.BukowinaTatrzanska, "city"));
+        weatherProviders.add(new ImgwWeatherProvider(     ProvidersName.KASPROWY_WIERCH,     LocationType.PEAK));
+        weatherProviders.add(new ImgwWeatherProvider(     ProvidersName.ZAKOPANE,           LocationType.CITY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.MORSKIE_OKO,         LocationType.LAKE));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.HALA_GASIENICOWA,    LocationType.EMPTY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.KASPROWY_WIERCH,     LocationType.PEAK));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.POLANA_CHOCHOLOWSKA, LocationType.EMPTY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.DOLINA_PIECIU_STAWOW, LocationType.EMPTY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.ZAKOPANE,           LocationType.CITY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.PORONIN,            LocationType.CITY));
+        weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.BUKOWINA_TATRZANSKA, LocationType.CITY));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.BANIKOV));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.BARANEC));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.GUBALOWKA));
@@ -53,20 +54,17 @@ public class LocalizationService {
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.RYSY));
     }
 
+    public LocalizationService(int numOfClosestProviders, List<WeatherProvider> weatherProviders) {
+        this.numOfClosestProviders = numOfClosestProviders;
+        this.weatherProviders = weatherProviders;
+    }
+
     List <WeatherProvider> getClosestWeatherProviders(Coords interpolatedLocation){
-
-        List<Pair<Double, WeatherProvider>> distanceToProvider = new ArrayList<>();
-        for(WeatherProvider provider: weatherProviders){
-            distanceToProvider.add(new Pair<>(interpolatedLocation.distance(provider.getCoordinates()), provider));
-        }
-
-        distanceToProvider.sort(Comparator.comparingDouble(Pair::getKey));
-
-        List<WeatherProvider> closestProviders = new ArrayList<>(numOfClosestsProviders);
-        for(int i = 0; i < numOfClosestsProviders; ++i){
-            closestProviders.add(distanceToProvider.get(i).getValue());
-        }
-
-        return closestProviders;
+        return weatherProviders.stream()
+                .map(provider -> new Pair<>(provider, interpolatedLocation.distance(provider.getCoordinates())))
+                .sorted(Comparator.comparingDouble(Pair::getValue))
+                .limit(numOfClosestProviders)
+                .map(Pair::getKey)
+                .collect(Collectors.toList());
     }
 }
