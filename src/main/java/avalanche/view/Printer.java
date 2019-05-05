@@ -31,12 +31,14 @@ import java.util.Optional;
 public class Printer
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Printer.class);
+    private static final int WIDTH_IN_PIXELS = 500;
+    private static final int HEIGHT_IN_PIXELS = 500;
 
     private final Terrain terrain;
     private final Risk risk;
     private final BufferedImage bufferedImage;
-    private final int widthInPixels;
-    private final int heightInPixels;
+    private final int widthInCells;
+    private final int heightInCells;
 
     public Printer(Terrain terrain, Risk risk)
     {
@@ -44,9 +46,9 @@ public class Printer
         this.risk = risk;
 
         TerrainProperties properties = terrain.getTerrainProperties();
-        widthInPixels = properties.getWidthInCells();
-        heightInPixels = properties.getHeightInCells();
-        this.bufferedImage = new BufferedImage(widthInPixels, heightInPixels, BufferedImage.TYPE_INT_ARGB);
+        widthInCells = properties.getWidthInCells();
+        heightInCells = properties.getHeightInCells();
+        this.bufferedImage = new BufferedImage(WIDTH_IN_PIXELS, HEIGHT_IN_PIXELS, BufferedImage.TYPE_INT_ARGB);
     }
 
     public void drawOnPane(final Pane pane,
@@ -79,11 +81,13 @@ public class Printer
     {
         Graphics2D graphics = bufferedImage.createGraphics();
 
-        for (int x = 0; x < widthInPixels; x++) {
-            for (int y = 0; y < heightInPixels; y++) {
-                Coordinates coordinates = new Coordinates(x, y);
-                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(coordinates);
-                terrainCell.ifPresent(cell -> terrainLayer.drawCell(graphics, cell));
+        for (int x = 0; x < widthInCells; x++) {
+            for (int y = 0; y < heightInCells; y++) {
+                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(new Coordinates(x, heightInCells - y - 1));
+				int drawWidth = WIDTH_IN_PIXELS / widthInCells;
+				int drawHeight = HEIGHT_IN_PIXELS / heightInCells;
+				Coordinates drawCoords = new Coordinates(x * drawWidth, y * drawHeight);
+				terrainCell.ifPresent(cell -> terrainLayer.drawCell(graphics, cell, drawCoords, drawWidth, drawHeight));
             }
         }
 
@@ -101,11 +105,13 @@ public class Printer
     {
         Graphics2D graphics = bufferedImage.createGraphics();
 
-        for (int x = 0; x < widthInPixels; x++) {
-            for (int y = 0; y < heightInPixels; y++) {
-                Coordinates coordinates = new Coordinates(x, y);
-                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(coordinates);
-                riskCell.ifPresent(cell -> riskLayer.drawCell(graphics, cell));
+        for (int x = 0; x < widthInCells; x++) {
+            for (int y = 0; y < heightInCells; y++) {
+                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(new Coordinates(x, heightInCells - y - 1));
+                int drawWidth = WIDTH_IN_PIXELS / widthInCells;
+				int drawHeight = HEIGHT_IN_PIXELS / heightInCells;
+				Coordinates drawCoords = new Coordinates(x * drawWidth, y * drawHeight);
+				riskCell.ifPresent(cell -> riskLayer.drawCell(graphics, cell, drawCoords, drawWidth, drawHeight));
             }
         }
 

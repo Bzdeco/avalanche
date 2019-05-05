@@ -11,13 +11,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
+import las2etin.model.GeographicCoordinates;
+import las2etin.model.StaticMapNameToGeoBoundsConverter;
 import las2etin.model.Terrain;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import weatherCollector.coordinates.Coords;
-import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -34,7 +34,7 @@ public class Controller
     private List<TerrainLayer> terrainLayers;
     private List<RiskLayer> riskLayers = ImmutableList.of();
 
-    public final StaticMapNameToCoordsConverter converter = new StaticMapNameToCoordsConverter();
+    public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
 
     @FXML
     private ProgressBar globalRisk;
@@ -60,14 +60,14 @@ public class Controller
             collectWeatherDataToDatabase(file.getName());
 
             final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            final Coords geographicalCoordinates = converter.convert(file.getName());
+            final GeographicCoordinates centerCoords = terrain.getCenterCoords();
             AvalancheRiskController avalancheRiskController = new AvalancheRiskController(terrain,
-                                                                                          geographicalCoordinates);
+                                                                                          centerCoords);
             terrainLayers = ImmutableList.of(
                     new LandformLayer("Landform"),
                     new SlopeLayer("Slope"),
                     new SusceptiblePlacesLayer("Susceptible places"),
-                    new HillshadeLayer("Hillshade", geographicalCoordinates)
+                    new HillshadeLayer("Hillshade", centerCoords)
             );
 
             riskLayers = ImmutableList.of(

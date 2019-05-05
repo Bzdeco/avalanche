@@ -6,12 +6,12 @@ import avalanche.model.risk.LocalRiskEvaluator;
 import avalanche.model.risk.Risk;
 import avalanche.model.risk.RiskCell;
 import javafx.scene.control.TableView;
+import las2etin.model.GeographicCoordinates;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainCell;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import weatherCollector.coordinates.Coords;
 import com.sun.javafx.util.Utils;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;
@@ -25,13 +25,13 @@ public class AvalancheRiskController {
 
     private Risk risk;
     private Terrain terrain;
-    private Coords geographicalCoordinates;
+    private GeographicCoordinates geographicCoordinates;
 
-    public AvalancheRiskController(final Terrain terrain, final Coords geographicalCoordinates)
+    public AvalancheRiskController(final Terrain terrain, final GeographicCoordinates geographicCoordinates)
     {
         this.risk = new Risk(terrain);
         this.terrain = terrain;
-        this.geographicalCoordinates = geographicalCoordinates;
+        this.geographicCoordinates = geographicCoordinates;
     }
 
     public float getGlobalRiskValue()
@@ -63,8 +63,8 @@ public class AvalancheRiskController {
 
             GregorianCalendar dateTime = new GregorianCalendar();
             dateTime.setTime(weather.getTime());
-            Float latitude = geographicalCoordinates.getLatitude();
-            Float longitude = geographicalCoordinates.getLongitude();
+            Float latitude = geographicCoordinates.getLatitude();
+            Float longitude = geographicCoordinates.getLongitude();
             AzimuthZenithAngle solarPosition = Grena3.calculateSolarPosition(
                     dateTime,
                     latitude,

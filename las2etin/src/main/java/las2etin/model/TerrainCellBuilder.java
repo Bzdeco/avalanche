@@ -18,6 +18,7 @@ public class TerrainCellBuilder
     private GwrTinInterpolator interpolator;
     private Vertex vertex;
     private Coordinates coordinates;
+    private GeographicCoordinates geographicCoords;
 
     public TerrainCellBuilder()
     {
@@ -41,6 +42,12 @@ public class TerrainCellBuilder
         return this;
     }
 
+    public TerrainCellBuilder withGeographicCoords(GeographicCoordinates geographicCoords)
+	{
+		this.geographicCoords = geographicCoords;
+		return this;
+	}
+
     public TerrainCell build()
     {
         checkNotNull(interpolator);
@@ -49,7 +56,7 @@ public class TerrainCellBuilder
 
         double[] coefficients = interpolator.getCoefficients();
 
-        double altitude = getAltitude();
+        geographicCoords.setAltitude(getAltitude());
         Vector3D normal = calculateNormal();
 
         if (isCoefficientsAvailable(coefficients)) {
@@ -60,7 +67,7 @@ public class TerrainCellBuilder
             double profileCurvature = calculateProfileCurvature(coefficients);
 
             return new TerrainCell(coordinates,
-                                   altitude,
+                                   geographicCoords,
                                    normal,
                                    aspect,
                                    grade,
@@ -70,7 +77,7 @@ public class TerrainCellBuilder
         }
         else {
             return new TerrainCell(coordinates,
-                                   altitude,
+                                   geographicCoords,
                                    normal,
                                    0,
                                    0,

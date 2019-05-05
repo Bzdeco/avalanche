@@ -18,12 +18,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 public class Las2etin
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Las2etin.class);
+	private final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
 
-    @Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
+
+	@Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
     private String lasFilepath;
 
     @Parameter(names = {"--resolution", "-r"}, description = "Number of probed points across one direction (max 500)." +
@@ -74,9 +77,12 @@ public class Las2etin
         TerrainSettings settings = new TerrainSettingsBuilder().withWidthInCells(resolution)
                                                                .withHeightInCells(resolution)
                                                                .build();
-        Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings).build();
+        GeographicBounds geographicBounds = converter.convert(lasFilepath);
+        Terrain terrainToSerialize = new TerrainBuilder(terrainMesh).withSettings(settings)
+																	.withGeographicBounds(geographicBounds)
+																	.build();
 
-        setSavePathToDefault();
+		setSavePathToDefault();
 
         Path saveLocation = Paths.get(serFilepath);
         reportProgress("Saving terrain to file...");

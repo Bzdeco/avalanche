@@ -16,6 +16,7 @@ public class TerrainBuilder
     private Tin tin;
     private GwrTinInterpolator interpolator;
     private TerrainProperties properties;
+	private GeographicBounds geographicBounds;
     private Bounds bounds;
 
     public TerrainBuilder(Tin tin)
@@ -39,16 +40,28 @@ public class TerrainBuilder
         return this;
     }
 
+    public TerrainBuilder withGeographicBounds(GeographicBounds geographicBounds)
+	{
+		this.geographicBounds = geographicBounds;
+		return this;
+	}
+
     public Terrain build()
     {
         checkNotNull(properties);
 
         Map<Integer, List<TerrainCell>> cells = createAllTerrainCells();
+        geographicBounds.setCenterAltitude(getCenterAltitude(cells));
 
-        return new Terrain(cells, properties, tin.getBounds());
+        return new Terrain(cells, properties, geographicBounds, tin.getBounds());
     }
 
-    private Map<Integer, List<TerrainCell>> createAllTerrainCells()
+	private double getCenterAltitude(Map<Integer, List<TerrainCell>> cells)
+	{
+		return cells.get((properties.getWidthInCells() / 2)).get(properties.getHeightInCells() / 2).getGeographicCoords().getAltitude();
+	}
+
+	private Map<Integer, List<TerrainCell>> createAllTerrainCells()
     {
         int widthInCells = properties.getWidthInCells();
         int heightInCells = properties.getHeightInCells();
@@ -68,17 +81,31 @@ public class TerrainBuilder
     {
         Coordinates coordinates = new Coordinates(xCoord, yCoord);
         Vertex interpolatedVertex = createVertexForInterpolation(coordinates);
+        GeographicCoordinates geographicCoords = estimateTerrainCellGeographicCoordinates(xCoord, yCoord);
         return new TerrainCellBuilder().withInterpolator(interpolator)
                                        .withVertex(interpolatedVertex)
                                        .withCoordinates(coordinates)
+									   .withGeographicCoords(geographicCoords)
                                        .build();
     }
 
-    private Vertex createVertexForInterpolation(Coordinates coordinates)
+	private Vertex createVertexForInterpolation(Coordinates coordinates)
     {
         return new Vertex(
             bounds.getMinX() + properties.getWidthOffset() + coordinates.getX() * properties.getRealCellWidth(),
             bounds.getMinY() + properties.getHeightOffset() + coordinates.getY() * properties.getRealCellHeight(),
             0);
     }
+
+	private GeographicCoordinates estimateTerrainCellGeographicCoordinates(int xCoord, int yCoord)
+	{
+		int widthInCells = properties.getWidthInCells();
+		int heightInCells = properties.getHeightInCells();
+
+		float width = geographicBounds.getWidth();
+		float height = geographicBounds.getHeight();
+
+		return new GeographicCoordinates(geographicBounds.getMinLatitude() + (float) (xCoord + 0.5) / widthInCells * width,
+								geographicBounds.getMinLongitude() + (float) (yCoord + 0.5) / heightInCells * height);
+	}
 }

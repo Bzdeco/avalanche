@@ -34,7 +34,7 @@ public class WeatherCollectorService {
 
     public void collectWeatherData(String filename) throws IOException {
         String charset = UTF_8.name();
-        final Coords coords = converter.convert(extractName(filename));
+        final Coords coords = converter.convert(filename);
 
         String latitude = Float.toString(coords.getLatitude());
         String longitude = Float.toString(coords.getLongitude());
@@ -55,10 +55,5 @@ public class WeatherCollectorService {
 
         weatherRepo.deleteAll();
         weatherRepo.save(weatherObjectsList);
-    }
-
-    private String extractName(String filename)
-    {
-        return filename.substring(0, filename.length() - 6);
     }
 }

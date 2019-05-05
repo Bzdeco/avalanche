@@ -1,12 +1,13 @@
 package avalanche.view.layers;
 
 import com.sun.javafx.util.Utils;
+import las2etin.model.Coordinates;
+import las2etin.model.GeographicCoordinates;
 import las2etin.model.TerrainCell;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;
 import net.e175.klaus.solarpositioning.Grena3;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import weatherCollector.coordinates.Coords;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -18,16 +19,16 @@ import java.util.GregorianCalendar;
 public class HillshadeLayer implements TerrainLayer
 {
     private final String name;
-    private final Coords geographicalCoordinates;
+    private final GeographicCoordinates geographicCoordinates;
 
-    public HillshadeLayer(String name, Coords geographicalCoordinates)
+    public HillshadeLayer(String name, GeographicCoordinates geographicCoordinates)
     {
         this.name = name;
-        this.geographicalCoordinates = geographicalCoordinates;
+        this.geographicCoordinates = geographicCoordinates;
     }
 
     @Override
-    public void drawCell(Graphics2D graphics, TerrainCell cell)
+    public void drawCell(Graphics2D graphics, TerrainCell cell, Coordinates drawCoords, int drawWidth, int drawHeight)
     {
         GregorianCalendar todayNoon = getTodayNoonTime();
         float sunAngle = getSunAngle(cell.getNormal(), todayNoon);
@@ -35,7 +36,7 @@ public class HillshadeLayer implements TerrainLayer
 
         Color pixelColor = getColorFromHillshade(hillshade);
 
-        Shape cellRectangle = new Rectangle(cell.getX(), cell.getY(), 1, 1);
+        Shape cellRectangle = new Rectangle(drawCoords.getX(), drawCoords.getY(), drawWidth, drawHeight);
         graphics.setPaint(pixelColor);
         graphics.draw(cellRectangle);
         graphics.fill(cellRectangle);
@@ -56,8 +57,8 @@ public class HillshadeLayer implements TerrainLayer
 
     private float getSunAngle(Vector3D terrainCellNormal, GregorianCalendar todayNoon)
     {
-        Float latitude = geographicalCoordinates.getLatitude();
-        Float longitude = geographicalCoordinates.getLongitude();
+        Float latitude = geographicCoordinates.getLatitude();
+        Float longitude = geographicCoordinates.getLongitude();
         AzimuthZenithAngle solarPosition = Grena3.calculateSolarPosition(
                 todayNoon,
                 latitude,

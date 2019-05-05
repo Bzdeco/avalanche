@@ -9,12 +9,15 @@ public class Terrain implements Serializable
 
     private final Map<Integer, List<TerrainCell>> terrainCells;
     private final TerrainProperties terrainProperties;
+    private final GeographicBounds geographicBounds;
     private final Bounds bounds;
 
-    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties, Bounds bounds)
+    Terrain(Map<Integer, List<TerrainCell>> terrainCells, TerrainProperties terrainProperties,
+			GeographicBounds geographicBounds, Bounds bounds)
     {
         this.terrainCells = terrainCells;
         this.terrainProperties = terrainProperties;
+        this.geographicBounds = geographicBounds;
         this.bounds = bounds;
     }
 
@@ -32,7 +35,17 @@ public class Terrain implements Serializable
         return bounds;
     }
 
-    public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
+	public GeographicBounds getGeographicBounds()
+	{
+		return geographicBounds;
+	}
+
+	public GeographicCoordinates getCenterCoords()
+	{
+		return geographicBounds.getCenterCoords();
+	}
+
+	public Optional<TerrainCell> getCellWithCoordinates(Coordinates coordinates)
     {
         int x = coordinates.getX();
         int y = coordinates.getY();
