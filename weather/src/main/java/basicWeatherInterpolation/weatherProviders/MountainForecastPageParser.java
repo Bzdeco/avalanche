@@ -96,7 +96,7 @@ public class MountainForecastPageParser {
         Elements table = document.select(".forecast__table");
         int columnIndex = findMatchingColumnByDateTime(table);
 
-        Date dateTime = getDateTime(table,columnIndex);
+        LocalDateTime dateTime = getDateTime(table,columnIndex);
         float windSpeed = getWindSpeed(table, columnIndex);
         float windDeg = getWindDirection(table, columnIndex);
         float rain = getRain(table,columnIndex);
@@ -161,9 +161,9 @@ public class MountainForecastPageParser {
         String time = element.text().replaceAll(thinSpaceCode," ");
         return LocalTime.parse(time, DateTimeFormatter.ofPattern("h a", Locale.ENGLISH));
     }
-    private Date getDateTime(Elements table,int columnIndex){
+    private LocalDateTime getDateTime(Elements table,int columnIndex){
         LocalTime time = getTimeFrom(table.select("td.forecast__table-time-item").get(columnIndex));
-        return java.sql.Timestamp.valueOf(time.atDate(LocalDate.now()));
+        return time.atDate(LocalDate.now());
     }
 
     private Float getMinTemp(Elements table, int columnIndex) {

@@ -10,7 +10,7 @@ class Peak
 {
     private String name;
     private String url;
-    private int height;
+    private float height;
     private float latitude;
     private float longitude;
     private Weather weather;
