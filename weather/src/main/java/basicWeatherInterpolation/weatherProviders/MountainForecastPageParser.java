@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
 import java.io.IOException;
@@ -100,10 +101,8 @@ public class MountainForecastPageParser {
         float windDeg = getWindDirection(table, columnIndex);
         float rain = getRain(table,columnIndex);
         float snow = getSnow(table,columnIndex);
-        float maxTemp = getMaxTemp(table,columnIndex);
+        Float maxTemp = getMaxTemp(table,columnIndex);
         Float minTemp = getMinTemp(table,columnIndex);
-        if(minTemp == null)
-            minTemp = maxTemp;
 
         Weather weather = new Weather();
         weather.setTime(dateTime);
@@ -114,14 +113,18 @@ public class MountainForecastPageParser {
         weather.setSnow(snow);
         weather.setTempMax(maxTemp);
         weather.setTempMin(minTemp);
-        weather.setTemp((minTemp + maxTemp) / 2);
+        if(minTemp != null && maxTemp != null)
+            weather.setTemp((minTemp + maxTemp) / 2);
+
         weather.setSeaLevel((float)peak.getHeight());
         peak.setWeather(weather);
 
         url = BASE_URL +peak.getUrl();
         document = Jsoup.connect(url).get();
 
-        retrieveCoordinates(document,peak);
+        Coords coords = retrieveCoordinates(document);
+        peak.setLongitude(coords.getLongitude());
+        peak.setLatitude(coords.getLatitude());
     }
 
     private int findMatchingColumnByDateTime(Elements table) {
@@ -173,8 +176,10 @@ public class MountainForecastPageParser {
         return Float.parseFloat(value);
     }
 
-    private float getMaxTemp(Elements table, int columnIndex) {
+    private Float getMaxTemp(Elements table, int columnIndex) {
         Elements maxTempRow = table.select(".forecast__table-max-temperature");
+        if(maxTempRow.isEmpty())
+            return null;
         String value = maxTempRow.select("td span.temp").get(columnIndex).text();
         return Float.parseFloat(value);
     }
@@ -206,7 +211,7 @@ public class MountainForecastPageParser {
         return this.textDirectionToDegree.get(alt.toUpperCase());
     }
 
-    private void retrieveCoordinates(Document document, Peak peak)
+    private Coords retrieveCoordinates(Document document)
     {
         Optional<Element> script = document.select("script[type='text/javascript']").stream()
                 .filter(x -> x.toString().contains("FCOSM.initMapForLocation"))
@@ -219,8 +224,7 @@ public class MountainForecastPageParser {
         String[] split = content.substring(start + 1, end).split(",");
         float lat = Float.parseFloat(split[1]);
         float lng = Float.parseFloat(split[2]);
-        peak.setLatitude(lat);
-        peak.setLongitude(lng);
+        return new Coords(lat,lng);
     }
 
 }
