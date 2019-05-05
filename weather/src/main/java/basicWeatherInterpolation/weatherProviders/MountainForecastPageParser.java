@@ -55,7 +55,7 @@ public class MountainForecastPageParser {
 
     Peak getPeak(PeakName name){
         return this.peaks.stream()
-                .filter(x -> x.getName().equals(name.name()))
+                .filter(x -> x.getName().equals(name.toString()))
                 .findFirst()
                 .orElseThrow(()->new RuntimeException("PeakName was not found"));
     }
