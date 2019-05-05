@@ -138,7 +138,7 @@ public class MountainForecastPageParser {
         int currentDayIndex = days.indexOf(currentDay);
 
         Elements rawTimes = table.select("td.forecast__table-time-item");
-        
+
         List<Integer> dayEndMarkers = IntStream.range(0,rawTimes.size())
                 .boxed()
                 .filter(i->rawTimes.get(i).hasClass("forecast__table-day-end"))
@@ -157,8 +157,8 @@ public class MountainForecastPageParser {
     }
     private LocalTime getTimeFrom(Element element)
     {
-        int thinSpaceCode = 8201;
-        String time = element.text().replaceAll(Character.toString((char)thinSpaceCode)," ");
+        String thinSpaceCode = "\\u2009";
+        String time = element.text().replaceAll(thinSpaceCode," ");
         return LocalTime.parse(time, DateTimeFormatter.ofPattern("h a", Locale.ENGLISH));
     }
     private Date getDateTime(Elements table,int columnIndex){
