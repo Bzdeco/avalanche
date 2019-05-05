@@ -1,7 +1,5 @@
 package basicWeatherInterpolation.weatherProviders;
 
-import lombok.Builder;
-import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,18 +18,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MountainForecastPageParser {
-
-    @Data
-    @Builder
-    static class Peak
-    {
-        private String name;
-        private String url;
-        private int height;
-        private float latitude;
-        private float longitude;
-        private Weather weather;
-    }
 
     private String baseUrl = "https://www.mountain-forecast.com";
     private String peaksListUrl = "/subranges/tatras/locations";
@@ -68,7 +54,7 @@ public class MountainForecastPageParser {
     }
 
     Peak getPeak(PeakName name){
-        Optional<Peak> peak = this.peaks.stream().findAny().filter(x -> x.name.equals(name.name()));
+        Optional<Peak> peak = this.peaks.stream().findAny().filter(x -> x.getName().equals(name.name()));
         if(!peak.isPresent())
             throw new RuntimeException("PeakName was not found");
         return peak.get();
@@ -129,8 +115,8 @@ public class MountainForecastPageParser {
         weather.setTempMax(maxTemp);
         weather.setTempMin(minTemp);
         weather.setTemp((minTemp + maxTemp) / 2);
-        weather.setSeaLevel((float)peak.height);
-        peak.weather = weather;
+        weather.setSeaLevel((float)peak.getHeight());
+        peak.setWeather(weather);
 
         url = baseUrl+peak.getUrl();
         document = Jsoup.connect(url).get();
@@ -233,8 +219,8 @@ public class MountainForecastPageParser {
         String[] split = content.substring(start + 1, end).split(",");
         float lat = Float.parseFloat(split[1]);
         float lng = Float.parseFloat(split[2]);
-        peak.latitude = lat;
-        peak.longitude = lng;
+        peak.setLatitude(lat);
+        peak.setLongitude(lng);
     }
 
 }

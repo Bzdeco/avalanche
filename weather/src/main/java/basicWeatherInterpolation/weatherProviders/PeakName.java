@@ -8,7 +8,7 @@ public enum PeakName{
     Dumbier("Dumbier"),
     Gerlach("Gerlach"),
     Giewont("Giewont"),
-    Bubalowka("Gubałówka"),
+    Gubalowka("Gubałówka"),
     KasprowyWierch("Kasprowy Wierch"),
     Koscielec("Koscielec"),
     Krivan("Krivan"),

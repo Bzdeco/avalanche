@@ -39,7 +39,7 @@ public class LocalizationService {
         weatherProviders.add(new PogodynkaWeatherProvider(ProvidersName.BukowinaTatrzanska, "city"));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Banikov ));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Baranec ));
-        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Bubalowka ));
+        weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Gubalowka));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Chopok ));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Derese ));
         weatherProviders.add(new MountainForecastWeatherProvider(parser, PeakName.Dumbier ));
