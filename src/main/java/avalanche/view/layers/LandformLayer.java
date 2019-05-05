@@ -19,7 +19,7 @@ public class LandformLayer implements TerrainLayer
     @Override
     public void drawCell(Graphics2D graphics, TerrainCell cell, Coordinates drawCoords, int drawWidth, int drawHeight)
     {
-        Color pixelColor = getColorFromAltitude(cell.getAltitude());
+        Color pixelColor = getColorFromAltitude(cell.getGeographicCoords().getAltitude());
 
         Shape cellRectangle = new Rectangle(drawCoords.getX(), drawCoords.getY(), drawWidth, drawHeight);
         graphics.setPaint(pixelColor);

@@ -3,6 +3,7 @@ package las2etin.model;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class TerrainCell implements Serializable
 {
@@ -10,7 +11,6 @@ public class TerrainCell implements Serializable
 
     private final Coordinates coordinates;
     private final GeographicCoordinates geographicCoords;
-    private final double altitude;
     private final Vector3D normal;
     private final double aspect;
     private final double grade;
@@ -20,7 +20,6 @@ public class TerrainCell implements Serializable
 
     TerrainCell(Coordinates coordinates,
                 GeographicCoordinates geographicCoords,
-                double altitude,
                 Vector3D normal,
                 double aspect,
                 double grade,
@@ -30,8 +29,6 @@ public class TerrainCell implements Serializable
     {
         this.coordinates = coordinates;
         this.geographicCoords = geographicCoords;
-        geographicCoords.setAltitude(altitude);
-        this.altitude = altitude;
         this.normal = normal;
         this.aspect = aspect;
         this.grade = grade;
@@ -57,11 +54,6 @@ public class TerrainCell implements Serializable
     public int getY()
     {
         return coordinates.getY();
-    }
-
-    public double getAltitude()
-    {
-        return altitude;
     }
 
     public Vector3D getNormal()
@@ -94,49 +86,25 @@ public class TerrainCell implements Serializable
         return profileCurvature;
     }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TerrainCell that = (TerrainCell) o;
+		return Double.compare(that.aspect, aspect) == 0 &&
+				Double.compare(that.grade, grade) == 0 &&
+				Double.compare(that.slope, slope) == 0 &&
+				Double.compare(that.planCurvature, planCurvature) == 0 &&
+				Double.compare(that.profileCurvature, profileCurvature) == 0 &&
+				Objects.equals(coordinates, that.coordinates) &&
+				Objects.equals(geographicCoords, that.geographicCoords) &&
+				Objects.equals(normal, that.normal);
+	}
 
-        TerrainCell that = (TerrainCell) o;
-
-        if (Double.compare(that.altitude, altitude) != 0)
-            return false;
-        if (Double.compare(that.aspect, aspect) != 0)
-            return false;
-        if (Double.compare(that.grade, grade) != 0)
-            return false;
-        if (Double.compare(that.slope, slope) != 0)
-            return false;
-        if (Double.compare(that.planCurvature, planCurvature) != 0)
-            return false;
-        if (Double.compare(that.profileCurvature, profileCurvature) != 0)
-            return false;
-        return normal.equals(that.normal);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(altitude);
-        result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + normal.hashCode();
-        temp = Double.doubleToLongBits(aspect);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(grade);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(slope);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(planCurvature);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(profileCurvature);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(coordinates, geographicCoords, normal, aspect, grade, slope, planCurvature, profileCurvature);
+	}
 }

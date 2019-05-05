@@ -58,7 +58,7 @@ public class TerrainBuilder
 
 	private double getCenterAltitude(Map<Integer, List<TerrainCell>> cells)
 	{
-		return cells.get((properties.getWidthInCells() / 2)).get(properties.getHeightInCells() / 2).getAltitude();
+		return cells.get((properties.getWidthInCells() / 2)).get(properties.getHeightInCells() / 2).getGeographicCoords().getAltitude();
 	}
 
 	private Map<Integer, List<TerrainCell>> createAllTerrainCells()

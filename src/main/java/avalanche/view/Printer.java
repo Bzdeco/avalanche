@@ -83,7 +83,7 @@ public class Printer
 
         for (int x = 0; x < widthInCells; x++) {
             for (int y = 0; y < heightInCells; y++) {
-                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(new Coordinates(x, y));
+                Optional<TerrainCell> terrainCell = terrain.getCellWithCoordinates(new Coordinates(x, heightInCells - y - 1));
 				int drawWidth = WIDTH_IN_PIXELS / widthInCells;
 				int drawHeight = HEIGHT_IN_PIXELS / heightInCells;
 				Coordinates drawCoords = new Coordinates(x * drawWidth, y * drawHeight);
@@ -107,7 +107,7 @@ public class Printer
 
         for (int x = 0; x < widthInCells; x++) {
             for (int y = 0; y < heightInCells; y++) {
-                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(new Coordinates(x, y));
+                Optional<RiskCell> riskCell = risk.getRiskCellWithCoordinates(new Coordinates(x, heightInCells - y - 1));
                 int drawWidth = WIDTH_IN_PIXELS / widthInCells;
 				int drawHeight = HEIGHT_IN_PIXELS / heightInCells;
 				Coordinates drawCoords = new Coordinates(x * drawWidth, y * drawHeight);

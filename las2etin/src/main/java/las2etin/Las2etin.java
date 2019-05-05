@@ -23,7 +23,7 @@ import java.util.Map;
 public class Las2etin
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Las2etin.class);
-	public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
+	private final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
 
 
 	@Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)

@@ -19,7 +19,8 @@ def _extract_coords(url):
     longitudes = [float(span.string) for span in coords_spans if span['class'] == ['longitude']]
     return latitudes, longitudes
 
-with open("data_extracted.html", "r") as f, open("geoBoundsMap.txt", "w") as dest:
+# list included in data_extracted2 is enough to cover every las file we have without any duplicates
+with open("data_extracted2.html", "r") as f, open("geoBoundsMap.txt", "w") as dest:
     for line in f:
         link, filename = _extract_from_row(line)
         latitudes, longitudes = _extract_coords(link)

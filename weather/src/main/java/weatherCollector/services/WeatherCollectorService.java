@@ -56,9 +56,4 @@ public class WeatherCollectorService {
         weatherRepo.deleteAll();
         weatherRepo.save(weatherObjectsList);
     }
-
-    private String extractName(String filename)
-    {
-        return filename.substring(0, filename.length() - 6);
-    }
 }

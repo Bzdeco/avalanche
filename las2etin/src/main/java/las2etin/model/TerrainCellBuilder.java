@@ -56,7 +56,7 @@ public class TerrainCellBuilder
 
         double[] coefficients = interpolator.getCoefficients();
 
-        double altitude = getAltitude();
+        geographicCoords.setAltitude(getAltitude());
         Vector3D normal = calculateNormal();
 
         if (isCoefficientsAvailable(coefficients)) {
@@ -68,7 +68,6 @@ public class TerrainCellBuilder
 
             return new TerrainCell(coordinates,
                                    geographicCoords,
-                                   altitude,
                                    normal,
                                    aspect,
                                    grade,
@@ -79,7 +78,6 @@ public class TerrainCellBuilder
         else {
             return new TerrainCell(coordinates,
                                    geographicCoords,
-                                   altitude,
                                    normal,
                                    0,
                                    0,
