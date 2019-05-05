@@ -138,13 +138,11 @@ public class MountainForecastPageParser {
         int currentDayIndex = days.indexOf(currentDay);
 
         Elements rawTimes = table.select("td.forecast__table-time-item");
-        List<Integer> dayEndMarkers = new ArrayList<>();
-        for (int i = 0; i < rawTimes.size(); i++) {
-            Element item = rawTimes.get(i);
-            if(item.hasClass("forecast__table-day-end")){
-                dayEndMarkers.add(i);
-            }
-        }
+        
+        List<Integer> dayEndMarkers = IntStream.range(0,rawTimes.size())
+                .boxed()
+                .filter(i->rawTimes.get(i).hasClass("forecast__table-day-end"))
+                .collect(Collectors.toList());
 
         int startIndex = 0;
         int endIndex = dayEndMarkers.get(currentDayIndex);
