@@ -8,7 +8,9 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,7 +20,7 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Weather {
     @Id
-    private Date time;
+    private LocalDateTime time;
 
     private Float temp;
     private Float tempMin;
@@ -45,7 +47,7 @@ public class Weather {
     public Weather(@JsonProperty("dt") Long time, @JsonProperty("main") Map<String, Float> main,
                    @JsonProperty("clouds") Map<String, Float> clouds, @JsonProperty("wind") Map<String, Float> wind,
                    @JsonProperty("rain") Map<String, Float> rain, @JsonProperty("snow") Map<String, Float> snow) {
-        this.time = new Date(time * 1000L);
+        this.time = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.of("Europe/Warsaw"));
         this.temp = main.get("temp");
         this.tempMin = main.get("temp_min");
         this.tempMax = main.get("temp_max");

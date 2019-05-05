@@ -1,14 +1,14 @@
 package basicWeatherInterpolation.weatherProviders;
 
 public enum ProvidersName {
-    Zakopane("Zakopane"),
-    HaleGasienicowa("Hala Gasienicowa"),
-    Poronin("Poronin"),
-    BukowinaTatrzanska("Bukowina Tatrzanska"),
-    MorskieOko("Morskie Oko"),
-    PolanaChocholowska ("Polana Chocholowska"),
-    KasprowyWierch("Kasprowy Wierch"),
-    DolinaPieciuStawow("Dolina Pieciu Stawow");
+    ZAKOPANE("ZAKOPANE"),
+    HALA_GASIENICOWA("Hala Gasienicowa"),
+    PORONIN("PORONIN"),
+    BUKOWINA_TATRZANSKA("Bukowina Tatrzanska"),
+    MORSKIE_OKO("Morskie Oko"),
+    POLANA_CHOCHOLOWSKA("Polana Chocholowska"),
+    KASPROWY_WIERCH("Kasprowy Wierch"),
+    DOLINA_PIECIU_STAWOW("Dolina Pieciu Stawow");
 
 
     private String name;

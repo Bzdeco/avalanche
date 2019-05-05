@@ -8,9 +8,8 @@ import weatherCollector.entities.Weather;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -18,19 +17,31 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ImgwWeatherProvider implements WeatherProvider{
 
-    private String fullLink;
+    private static final String API_LINK = "https://danepubliczne.imgw.pl/api/data/synop/station/";
     private Coords location;
+    private static final float DEFAULT_LATITUDE = 49.25f;
+    private static final float DEFAULT_LONGITUDE = 20f;
+    private String STATION_API_LINK;
 
-    public ImgwWeatherProvider(ProvidersName stationName, String locationType){
-        String api_link = "https://danepubliczne.imgw.pl/api/data/synop/station/";
-        fullLink = api_link + parseName(stationName.toString()) + "/format/json";
-
+    public ImgwWeatherProvider(ProvidersName stationName, LocationType locationType){
+        STATION_API_LINK = API_LINK + parseName(stationName.toString()) + "/format/json";
 
         try {
-            location = retrieveCoordinates(stationName.toString(), locationType);
+            location = retrieveCoordinates(stationName.toString(), locationType.toString());
         } catch (IOException ignored) {
             //Set to center of Tatra Mountains
-            location = new Coords(49.25f, 20f);
+            location = new Coords(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+        }
+    }
+
+    public ImgwWeatherProvider(String stationName, LocationType locationType) {
+        STATION_API_LINK = API_LINK + parseName(stationName) + "/format/json";
+
+        try {
+            location = retrieveCoordinates(stationName, locationType.toString());
+        } catch (IOException ignored) {
+            //Set to center of Tatra Mountains
+            location = new Coords(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
         }
     }
 
@@ -82,11 +93,11 @@ public class ImgwWeatherProvider implements WeatherProvider{
     @Override
     public Weather currentWeather() throws IOException {
         Weather weather = new Weather();
-        String imgwResponse = getJsonResponse(fullLink);
+        String imgwResponse = getJsonResponse(STATION_API_LINK);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = mapper.readTree(imgwResponse);
 
-        weather.setTime(new Date(parseDate(json)));
+        weather.setTime(parseDate(json));
         weather.setTemp(Float.parseFloat(json.get("temperatura").asText()));
         weather.setWindSpeed(Float.parseFloat(json.get("predkosc_wiatru").asText()));
         weather.setWindDeg(Float.parseFloat(json.get("kierunek_wiatru").asText()));
@@ -104,17 +115,9 @@ public class ImgwWeatherProvider implements WeatherProvider{
      * @param json from IMGW
      * @return Date retrieved from IMGW response JSON
      */
-    private Long parseDate(JsonNode json) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss");
-        Date date;
-        try {
-
-            date = format.parse(json.get("data_pomiaru").asText() + ", " + json.get("godzina_pomiaru").asText() +":00:00");
-        } catch (ParseException ignored) {
-            date = new Date(System.currentTimeMillis());
-        }
-
-        return date.getTime();
+    private LocalDateTime parseDate(JsonNode json) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss");
+        return LocalDateTime.parse(json.get("data_pomiaru").asText() + ", " + json.get("godzina_pomiaru").asText() + ":00:00", formatter);
     }
 
     /**
@@ -129,12 +132,12 @@ public class ImgwWeatherProvider implements WeatherProvider{
     public boolean equals(final Object o){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        String other_fullLink = ((ImgwWeatherProvider) o).fullLink;
-        return fullLink.equals(other_fullLink);
+        String other_fullLink = ((ImgwWeatherProvider) o).STATION_API_LINK;
+        return STATION_API_LINK.equals(other_fullLink);
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(fullLink, location);
+        return Objects.hash(STATION_API_LINK, location);
     }
 }

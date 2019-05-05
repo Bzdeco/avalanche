@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -22,26 +24,30 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
 
     private String stationName;
     private Coords location;
+    private static final String API_LINK = "http://www.pogodynka.pl/gory/pogoda/tatry";
+    private static final List<Float> BEAUFORT_TO_AVG_WIND_SPEED = Arrays.asList(0.1f, 0.9f, 2.5f, 4.5f, 6.7f, 9.35f, 12.3f, 15.5f, 18.95f, 22.6f, 26.45f, 30.55f, 40f);
+    private static final float DEFAULT_LATITUDE = 49.25f;
+    private static final float DEFAULT_LONGITUDE = 20f;
 
-    public PogodynkaWeatherProvider(ProvidersName stationName, String locationType) {
+    public PogodynkaWeatherProvider(ProvidersName stationName, LocationType locationType) {
         this.stationName = stationName.toString();
 
         try {
-            location = retrieveCoordinates(this.stationName, locationType);
+            location = retrieveCoordinates(this.stationName, locationType.toString());
         } catch (IOException e) {
             // Set to center of Tatra Mountains
-            location = new Coords(49.25f, 20f);
+            location = new Coords(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
         }
     }
 
     /**
-     * @param stationName name of the station to get coordinates
+     * @param stationName  name of the station to get coordinates
      * @param locationType type of the station to get coordinates
-     * @return  coordinates od station
+     * @return coordinates od station
      * @throws IOException when can't get conection from OpenWeatherApi
      */
     private Coords retrieveCoordinates(String stationName, String locationType) throws IOException {
-        URI url  = URI.create( "https://nominatim.openstreetmap.org/search?q="
+        URI url = URI.create("https://nominatim.openstreetmap.org/search?q="
                 + stationName.replaceAll(" ", "+")
                 + "+" + locationType + "&format=json");
 
@@ -50,7 +56,7 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
         JsonNode node = mapper.readTree(locationResponse).get(0);
 
         float longitude = Float.parseFloat(node.get("lon").asText());
-        float latitude  = Float.parseFloat(node.get("lat").asText());
+        float latitude = Float.parseFloat(node.get("lat").asText());
 
         return new Coords(latitude, longitude);
     }
@@ -74,18 +80,14 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
 
     @Override
     public Weather currentWeather() throws IOException {
-        String api_link = "http://www.pogodynka.pl/gory/pogoda/tatry";
-
-        Document doc = Jsoup.connect(api_link).get();
+        Document doc = Jsoup.connect(API_LINK).get();
         Elements table = doc.select(".gory_table").last().child(1).children();
 
         // Remove faulty elements from table, leave only children
         table.removeIf(elem -> elem.text().startsWith("<script"));
-
-        String windDegIconNumber = "0";
         Weather result = new Weather();
 
-        for (Element row : table.select("tr")) { //first row is the col names so skip it.
+        for (Element row : table.select("tr")) {
             Elements cols = row.select("td");
             if (cols.get(0).text().equals(stationName)) {
                 setWeatherParams(result, cols);
@@ -108,7 +110,7 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
 
         try {
             elevation = Float.parseFloat(cols.get(1).text());
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             elevation = null;
         }
 
@@ -123,7 +125,7 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
             freshSnowLvl = null;
         }
         try {
-            windSpeed = getAvgWindSpeedFromBoufortScale(Integer.parseInt(cols.get(7).text()));
+            windSpeed = BEAUFORT_TO_AVG_WIND_SPEED.get(Integer.parseInt(cols.get(7).text()));
         } catch (Exception e) {
             windSpeed = null;
         }
@@ -133,7 +135,7 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
             windDeg = null;
         }
         getCoordinates().setElevation(elevation);
-        result.setTime(new Date());
+        result.setTime(LocalDateTime.now());
         result.setTemp(temp);
         result.setTempMax(temp);
         result.setTempMin(temp);
@@ -141,54 +143,4 @@ public class PogodynkaWeatherProvider implements WeatherProvider {
         result.setWindDeg(windDeg);
         result.setSnow(freshSnowLvl);
     }
-
-    private Float getAvgWindSpeedFromBoufortScale(Integer windSpeedBoufortScale) {
-        float windSpeed;
-        switch(windSpeedBoufortScale) {
-            case 0:
-                windSpeed = 0.1f;
-                break;
-            case 1:
-                windSpeed = 0.9f;
-                break;
-            case 2:
-                windSpeed = 2.5f;
-                break;
-            case 3:
-                windSpeed = 4.5f;
-                break;
-            case 4:
-                windSpeed = 6.7f;
-                break;
-            case 5:
-                windSpeed = 9.35f;
-                break;
-            case 6:
-                windSpeed = 12.3f;
-                break;
-            case 7:
-                windSpeed = 15.5f;
-                break;
-            case 8:
-                windSpeed = 18.95f;
-                break;
-            case 9:
-                windSpeed = 22.6f;
-                break;
-            case 10:
-                windSpeed = 26.45f;
-                break;
-            case 11:
-                windSpeed = 30.55f;
-                break;
-            case 12:
-                windSpeed = 40f;
-                break;
-            default:
-                windSpeed = 0f;
-        }
-        return windSpeed;
-    }
 }
-
-

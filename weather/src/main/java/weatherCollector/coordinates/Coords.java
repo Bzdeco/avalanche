@@ -1,61 +1,24 @@
 package weatherCollector.coordinates;
 
-import java.util.Objects;
+import lombok.Data;
 
+@Data
 public class Coords
 {
-    private final float latitude;
-    private final float longitude;
-    private float elevation;
+    private Float latitude;
+    private Float longitude;
+    private Float elevation;
 
-    public Coords(final float latitude, final float longitude)
-    {
+    public Coords(float latitude, float longitude){
         this.latitude = latitude;
         this.longitude = longitude;
+        this.elevation = 0f;
     }
 
-    public float getLatitude()
-    {
-        return latitude;
-    }
-
-    public float getLongitude()
-    {
-        return longitude;
-    }
-
-    public float getElevation()
-    {
-        return elevation;
-    }
-
-    public void setElevation(float value){
-        elevation = value;
-    }
-
-    @Override
-    public boolean equals(final Object o)
-    {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Coords coords = (Coords) o;
-        return Float.compare(coords.latitude, latitude) == 0 &&
-                Float.compare(coords.longitude, longitude) == 0;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(latitude, longitude);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Coords{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                '}';
+    public Coords(float latitude, float longitude, float elevation){
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.elevation = elevation;
     }
 
     public double distance(Coords other){
