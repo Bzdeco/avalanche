@@ -54,10 +54,10 @@ public class MountainForecastPageParser {
     }
 
     Peak getPeak(PeakName name){
-        Optional<Peak> peak = this.peaks.stream().findAny().filter(x -> x.getName().equals(name.name()));
-        if(!peak.isPresent())
-            throw new RuntimeException("PeakName was not found");
-        return peak.get();
+        return this.peaks.stream()
+                .filter(x -> x.getName().equals(name.name()))
+                .findFirst()
+                .orElseThrow(()->new RuntimeException("PeakName was not found"));
     }
 
     private void readPeaks(Document document){
