@@ -47,7 +47,7 @@ public class Weather {
     public Weather(@JsonProperty("dt") Long time, @JsonProperty("main") Map<String, Float> main,
                    @JsonProperty("clouds") Map<String, Float> clouds, @JsonProperty("wind") Map<String, Float> wind,
                    @JsonProperty("rain") Map<String, Float> rain, @JsonProperty("snow") Map<String, Float> snow) {
-        this.time = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.of("Europe/Warsaw"));
+        this.time = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), ZoneId.of("Europe/Warsaw"));
         this.temp = main.get("temp");
         this.tempMin = main.get("temp_min");
         this.tempMax = main.get("temp_max");

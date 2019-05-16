@@ -54,6 +54,6 @@ public class WeatherCollectorService {
         List<Weather> weatherObjectsList = parser.convertToListOfWeather(weatherList);
 
         weatherRepo.deleteAll();
-        weatherRepo.save(weatherObjectsList);
+        weatherRepo.saveAll(weatherObjectsList);
     }
 }

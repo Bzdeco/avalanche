@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class WeatherDto {
 
-    private Date time;
+    private LocalDateTime time;
 
     private Float temp;
     private Float temp_min;
@@ -50,7 +50,7 @@ public class WeatherDto {
         this.snow = builder.snow;
     }
 
-    public Date getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
@@ -104,7 +104,7 @@ public class WeatherDto {
 
     public static class Builder {
 
-        private Date time;
+        private LocalDateTime time;
 
         private Float temp;
         private Float temp_min;
@@ -129,8 +129,7 @@ public class WeatherDto {
 
         public Builder time(String val) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime d = formatter.parse(val, LocalDateTime::from);
-            this.time = Date.from(d.atZone(ZoneId.systemDefault()).toInstant());
+            this.time = formatter.parse(val, LocalDateTime::from);
             return this;
         }
 
