@@ -36,8 +36,8 @@ public class Controller
 
     public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
 
-    @FXML
-    private ProgressBar globalRisk;
+//    @FXML
+//    private ProgressBar globalRisk;
 
     @FXML
     private TreeView layerSelector;
@@ -78,8 +78,8 @@ public class Controller
             final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
 
             new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
-            float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
-            globalRisk.setProgress(globalRiskValue);
+//            float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
+//            globalRisk.setProgress(globalRiskValue);
         }
     }
 
