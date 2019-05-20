@@ -77,7 +77,7 @@ public class Risk {
     public void predictLocalRisks(LocalRiskEvaluator localRiskEvaluator)
     {
         Collection<List<RiskCell>> allRiskCells = getRiskCells().values();
-        allRiskCells.forEach(row -> row.forEach(riskCell -> riskCell.evaluateLocalRisk(localRiskEvaluator, globalRiskValue)));
+        allRiskCells.forEach(row -> row.forEach(riskCell -> riskCell.evaluateRisk(localRiskEvaluator, globalRiskValue)));
     }
 
     /**

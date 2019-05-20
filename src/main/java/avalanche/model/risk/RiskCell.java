@@ -16,9 +16,10 @@ public class RiskCell {
         return terrainCell.getCoordinates();
     }
 
-    public void evaluateLocalRisk(LocalRiskEvaluator localRiskEvaluator, float globalRiskValue)
+    public void evaluateRisk(LocalRiskEvaluator localRiskEvaluator, float globalRiskValue)
     {
-        riskValue = (localRiskEvaluator.evaluate(terrainCell) + globalRiskValue) / 2;
+    	float localRiskValue = localRiskEvaluator.evaluate(terrainCell);
+        riskValue = localRiskValue > 0 ? (localRiskValue + globalRiskValue) / 2 : 0f;
     }
 
     public float getRiskValue() {

@@ -31,13 +31,9 @@ import java.util.List;
 public class Controller
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private List<TerrainLayer> terrainLayers;
-    private List<RiskLayer> riskLayers = ImmutableList.of();
 
-    public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
-
-//    @FXML
-//    private ProgressBar globalRisk;
+    //    @FXML
+	//    private ProgressBar globalRisk;
 
     @FXML
     private TreeView layerSelector;
@@ -63,16 +59,16 @@ public class Controller
             final GeographicCoordinates centerCoords = terrain.getCenterCoords();
             AvalancheRiskController avalancheRiskController = new AvalancheRiskController(terrain,
                                                                                           centerCoords);
-            terrainLayers = ImmutableList.of(
-                    new LandformLayer("Landform"),
-                    new SlopeLayer("Slope"),
-                    new SusceptiblePlacesLayer("Susceptible places"),
-                    new HillshadeLayer("Hillshade", centerCoords)
-            );
+			List<TerrainLayer> terrainLayers = ImmutableList.of(
+					new LandformLayer("Landform"),
+					new SlopeLayer("Slope"),
+					new SusceptiblePlacesLayer("Susceptible places"),
+					new HillshadeLayer("Hillshade", centerCoords)
+			);
 
-            riskLayers = ImmutableList.of(
-                    new AvalancheRiskLayer("Avalanche risk")
-            );
+			List<RiskLayer> riskLayers = ImmutableList.of(
+					new AvalancheRiskLayer("Avalanche risk")
+			);
 
             List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
             final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
