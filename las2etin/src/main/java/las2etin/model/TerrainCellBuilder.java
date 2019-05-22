@@ -1,13 +1,16 @@
 package las2etin.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import tinfour.common.Vertex;
-import tinfour.gwr.BandwidthSelectionMethod;
-import tinfour.gwr.SurfaceModel;
-import tinfour.interpolation.GwrTinInterpolator;
+import org.tinfour.common.Vertex;
+import org.tinfour.gwr.BandwidthSelectionMethod;
+import org.tinfour.gwr.GwrTinInterpolator;
+import org.tinfour.gwr.SurfaceModel;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class TerrainCellBuilder
 {
     private static final SurfaceModel SURFACE_MODEL = SurfaceModel.CubicWithCrossTerms;
@@ -20,23 +23,19 @@ public class TerrainCellBuilder
     private Coordinates coordinates;
     private GeographicCoordinates geographicCoords;
 
-    public TerrainCellBuilder()
-    {
-    }
-
-    public TerrainCellBuilder withInterpolator(GwrTinInterpolator interpolator)
+    TerrainCellBuilder withInterpolator(GwrTinInterpolator interpolator)
     {
         this.interpolator = interpolator;
         return this;
     }
 
-    public TerrainCellBuilder withVertex(Vertex interpolatedVertex)
+    TerrainCellBuilder withVertex(Vertex interpolatedVertex)
     {
         this.vertex = interpolatedVertex;
         return this;
     }
 
-    public TerrainCellBuilder withCoordinates(Coordinates coordinates)
+    TerrainCellBuilder withCoordinates(Coordinates coordinates)
     {
         this.coordinates = coordinates;
         return this;

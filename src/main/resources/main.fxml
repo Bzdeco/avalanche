@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="avalanche.controller.Controller"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.avalanche.controller.FXMLController"
             prefHeight="1000.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8">
     <left>
         <Accordion BorderPane.alignment="CENTER" expandedPane="$viewPane">

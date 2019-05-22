@@ -1,15 +1,14 @@
 package las2etin.model;
 
+import lombok.NoArgsConstructor;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
+@NoArgsConstructor
 public class TerrainSettingsBuilder
 {
     private int widthInCells;
     private int heightInCells;
-
-    public TerrainSettingsBuilder()
-    {
-    }
 
     public TerrainSettingsBuilder withWidthInCells(int widthInCells)
     {

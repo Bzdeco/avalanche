@@ -1,12 +1,13 @@
-package avalanche.model.database;
+package org.avalanche.model.database;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,26 +16,24 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import static avalanche.controller.ResourceHandler.getDbDriver;
-import static avalanche.controller.ResourceHandler.getDbPass;
-import static avalanche.controller.ResourceHandler.getDbUrl;
-import static avalanche.controller.ResourceHandler.getDbUser;
-
 /**
  * Class used for connecting with database and fetching weather measurements as well as attaching them to UI
  */
+@Service
+@Log4j2
 public class WeatherConnector {
-    private static final Logger LOGGER = LogManager.getLogger();
+
+    @Value("${avalanche.weather.database.url}")
+    private String dbUrl;
+
+    @Value("${avalanche.weather.database.username}")
+    private String dbUsername;
+
+    @Value("${avalanche.weather.database.password}")
+    private String dbPassword;
 
     private Connection connection;
-    private PreparedStatement statement;
     private TableView tableView;
-
-    private WeatherConnector() {}
-
-    public static WeatherConnector getInstance(){
-        return LazyHandler.instance;
-    }
 
     public void setTableView(TableView table) {
         this.tableView = table;
@@ -42,14 +41,12 @@ public class WeatherConnector {
 
     private void connect() {
         try {
-            Class.forName(getDbDriver());
-            connection = DriverManager.getConnection(getDbUrl(), getDbUser(), getDbPass());
+            connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
+            log.error(e.getMessage(), e);
             System.exit(0);
         }
-        LOGGER.info("Opened database successfully");
+        log.info("Opened database successfully");
     }
 
     public List<WeatherDto> fetchAndBuildData() {
@@ -60,7 +57,7 @@ public class WeatherConnector {
             if (connection == null) connect();
 
             String query = "select * from weather order by time";
-            statement = connection.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
 
             // Initialize TableView with column headers
@@ -78,18 +75,18 @@ public class WeatherConnector {
                     });
 
                     tableView.getColumns().addAll(tableColumn);
-                    LOGGER.debug("Column [{}] ", i);
+                    log.debug("Column [{}] ", i);
                 }
             }
 
             // Data added to ObservableList
-            int cnt = 1;
+            int count = 1;
             while (resultSet.next()) {
                 ObservableList<String> row = FXCollections.observableArrayList();
                 for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
                     row.add(resultSet.getString(i));
                 }
-                LOGGER.debug("Row [{}] added {}", cnt++, row);
+                log.debug("Row [{}] added {}", count++, row);
                 data.add(row);
 
                 WeatherDto weatherDto = new WeatherDto.Builder().build(row);
@@ -100,13 +97,8 @@ public class WeatherConnector {
             tableView.setItems(data);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("Error on Building Data");
+            log.error("Failed to build weather list", e);
         }
         return weatherDtoList;
-    }
-
-    private static class LazyHandler {
-        private static WeatherConnector instance = new WeatherConnector();
     }
 }

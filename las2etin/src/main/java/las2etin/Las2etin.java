@@ -9,9 +9,8 @@ import las2etin.las.LASReader;
 import las2etin.model.*;
 import las2etin.tin.Tin;
 import las2etin.tin.TinBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tinfour.common.Vertex;
+import lombok.extern.log4j.Log4j2;
+import org.tinfour.common.Vertex;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,18 +19,17 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 public class Las2etin
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Las2etin.class);
 	private final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
-
 
 	@Parameter(names = {"--input", "-i"}, description = "LAS file to be converted", required = true)
     private String lasFilepath;
 
     @Parameter(names = {"--resolution", "-r"}, description = "Number of probed points across one direction (max 500)." +
             " Total number of probed points is equal to this argument squared (probes are taken in X and Y direction).")
-    int resolution = 500;
+    private int resolution = 500;
 
     @Parameter(names = {"--help", "-h"}, help = true)
     private boolean help = false;
@@ -59,7 +57,7 @@ public class Las2etin
             las2etin.serialize();
         }
         catch (LasFileException e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

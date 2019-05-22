@@ -2,9 +2,9 @@ package las2etin.tin;
 
 import las2etin.model.Bounds;
 import las2etin.tin.exception.TINBuildingException;
-import tinfour.common.IIncrementalTin;
-import tinfour.common.Vertex;
-import tinfour.standard.IncrementalTin;
+import org.tinfour.common.IIncrementalTin;
+import org.tinfour.common.Vertex;
+import org.tinfour.standard.IncrementalTin;
 
 import java.util.List;
 

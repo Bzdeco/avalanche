@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:avalanche
+    username: avalanche
+    password: avalanche
+    # TODO: is this needed?
+    tomcat:
+      test-while-idle: true
+      validation-query: select 1
+  jpa:
+    database: h2
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

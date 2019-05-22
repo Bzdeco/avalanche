@@ -1,4 +1,4 @@
-package avalanche;
+package org.avalanche;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

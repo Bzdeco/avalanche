@@ -11,10 +11,13 @@ import javax.persistence.Id;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javax.persistence.Table;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
 @Entity
+@Table(name = "weather")
 @Data
 @JsonDeserialize
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -60,26 +63,5 @@ public class Weather {
         this.windDeg = wind.get("deg");
         this.rain = rain == null || rain.get("3h") == null ? new Float(0) : rain.get("3h");
         this.snow = snow == null || snow.get("3h") == null ? new Float(0) : snow.get("3h");
-    }
-
-    @Override
-    public boolean equals(final Object o){
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Weather other = (Weather) o;
-
-        return  Objects.equals(time, other.time) &&
-                Objects.equals(temp, other.temp) &&
-                Objects.equals(tempMin, other.tempMin) &&
-                Objects.equals(tempMax, other.tempMax) &&
-                Objects.equals(pressure, other.pressure) &&
-                Objects.equals(seaLevel, other.seaLevel) &&
-                Objects.equals(grndLevel, other.grndLevel) &&
-                Objects.equals(humidity, other.humidity) &&
-                Objects.equals(cloudiness, other.cloudiness) &&
-                Objects.equals(windSpeed, other.windSpeed) &&
-                Objects.equals(windDeg, other.windDeg) &&
-                Objects.equals(rain, other.rain) &&
-                Objects.equals(snow, other.snow);
     }
 }

@@ -1,17 +1,15 @@
 package las2etin.las.vertex;
 
-import las2etin.las.vertex.VertexFilter;
-import tinfour.common.Vertex;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.tinfour.common.Vertex;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VertexUtil
 {
-    private VertexUtil()
-    {
-    }
-
     public static List<Vertex> filter(List<Vertex> vertices, VertexFilter filter)
     {
         return vertices.stream().filter(filter::accept).collect(Collectors.toList());

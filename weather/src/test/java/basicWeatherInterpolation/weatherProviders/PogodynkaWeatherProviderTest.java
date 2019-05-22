@@ -1,6 +1,7 @@
 package basicWeatherInterpolation.weatherProviders;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
@@ -9,7 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PogodynkaWeatherProviderTest {
 
@@ -38,6 +39,7 @@ public class PogodynkaWeatherProviderTest {
     }
 
     @Test
+    @Disabled
     public void ShouldReturnCorrectWeatherForDolinaPieciuStawow() throws IOException {
         //given
         WeatherProvider pogodynkaWP = new PogodynkaWeatherProvider(ProvidersName.DOLINA_PIECIU_STAWOW, LocationType.EMPTY);

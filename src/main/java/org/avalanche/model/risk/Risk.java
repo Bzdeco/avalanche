@@ -1,6 +1,6 @@
-package avalanche.model.risk;
+package org.avalanche.model.risk;
 
-import avalanche.model.database.WeatherDto;
+import org.avalanche.model.database.WeatherDto;
 import las2etin.model.Coordinates;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainCell;
@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class representing avalanche risk evaluated for entire {@link Terrain}. {@code Risk} consists of {@link RiskCell}s
+ * Class representing org.avalanche risk evaluated for entire {@link Terrain}. {@code Risk} consists of {@link RiskCell}s
  * (similarly to {@link Terrain} that consists of {@link TerrainCell}s) and also contains global risk value and
  * parameters for assessing global risk value.
  */
@@ -81,8 +81,8 @@ public class Risk {
     }
 
     /**
-     * Global avalanche risk determines general weather condition and indicates if such weather conditions are likely
-     * to be ones preceding. If 3 or more out of 5 factors are present, avalanche global risk is set to maximum value.
+     * Global org.avalanche risk determines general weather condition and indicates if such weather conditions are likely
+     * to be ones preceding. If 3 or more out of 5 factors are present, org.avalanche global risk is set to maximum value.
      */
     public void predictGlobalRiskValue(List<WeatherDto> weatherConditions)
     {

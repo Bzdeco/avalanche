@@ -1,19 +1,3 @@
--- login as postgres user: sudo su postgres
--- execute this sql:  \i path
-
-DROP DATABASE if EXISTS lawiny_test;
-CREATE DATABASE lawiny_test;
-DROP USER IF EXISTS lawiny;
-
-
-CREATE USER lawiny WITH SUPERUSER PASSWORD 'l1234';
-
-ALTER DATABASE lawiny_test OWNER TO lawiny;
-
-\connect lawiny_test;
-
-begin;
-
 DROP TABLE IF EXISTS weather;
 CREATE TABLE weather
 (
@@ -31,7 +15,3 @@ CREATE TABLE weather
   rain                  REAL,
   snow                  REAL
 );
-
-ALTER TABLE weather OWNER TO lawiny;
-
-commit;

@@ -1,14 +1,11 @@
-package avalanche.controller;
+package org.avalanche.controller;
 
-import avalanche.model.database.WeatherConnector;
-import avalanche.model.database.WeatherDto;
-import avalanche.model.risk.LocalRiskEvaluator;
-import avalanche.model.risk.Risk;
-import avalanche.model.risk.RiskCell;
+import com.sun.javafx.util.Utils;
 import javafx.scene.control.TableView;
 import las2etin.model.GeographicCoordinates;
 import las2etin.model.Terrain;
 import las2etin.model.TerrainCell;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,21 +13,33 @@ import com.sun.javafx.util.Utils;
 import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
 import net.e175.klaus.solarpositioning.DeltaT;
 import net.e175.klaus.solarpositioning.Grena3;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.avalanche.model.database.WeatherConnector;
+import org.avalanche.model.database.WeatherDto;
+import org.avalanche.model.risk.LocalRiskEvaluator;
+import org.avalanche.model.risk.Risk;
+import org.avalanche.model.risk.RiskCell;
+import weatherCollector.coordinates.Coords;
 
-import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
+@Log4j2
 public class AvalancheRiskController {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private final WeatherConnector weatherConnector;
 
     private Risk risk;
     private Terrain terrain;
     private GeographicCoordinates geographicCoordinates;
 
-    public AvalancheRiskController(final Terrain terrain, final GeographicCoordinates geographicCoordinates)
-    {
-        this.risk = new Risk(terrain);
+    public AvalancheRiskController(final WeatherConnector weatherConnector,
+                                   final Terrain terrain,
+                                   final GeographicCoordinates geographicCoordinates) {
+        this.weatherConnector = weatherConnector;
         this.terrain = terrain;
+        this.risk = new Risk(terrain);
         this.geographicCoordinates = geographicCoordinates;
     }
 
@@ -41,18 +50,17 @@ public class AvalancheRiskController {
 
     public Risk getEvaluatedRisk(List<WeatherDto> weatherConditions)
     {
-        LOGGER.info("Risk evaluation started");
+        log.info("Risk evaluation started");
         risk.predictGlobalRiskValue(weatherConditions);
         risk.predictLocalRisks(new LocalRiskEvaluator(weatherConditions));
-        LOGGER.info("Risk evaluation finished successfully");
+        log.info("Risk evaluation finished successfully");
 
         return risk;
     }
 
     public List<WeatherDto> fetchWeatherDataInto(TableView tableView)
     {
-        WeatherConnector connector = WeatherConnector.getInstance();
-        connector.setTableView(tableView);
-        return connector.fetchAndBuildData();
+        weatherConnector.setTableView(tableView);
+        return weatherConnector.fetchAndBuildData();
     }
 }

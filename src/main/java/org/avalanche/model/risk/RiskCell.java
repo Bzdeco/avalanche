@@ -1,4 +1,4 @@
-package avalanche.model.risk;
+package org.avalanche.model.risk;
 
 import las2etin.model.Coordinates;
 import las2etin.model.TerrainCell;
