@@ -3,8 +3,8 @@ package basicWeatherInterpolation.localizationService;
 import basicWeatherInterpolation.weatherProviders.ImgwWeatherProvider;
 import basicWeatherInterpolation.weatherProviders.LocationType;
 import basicWeatherInterpolation.weatherProviders.WeatherProvider;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import weatherCollector.coordinates.Coords;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class LocalizationServiceTest {
 
         //then
         List<WeatherProvider> closest = service.getClosestWeatherProviders(coords);
-        Assert.assertArrayEquals(
+        Assertions.assertArrayEquals(
                 new ImgwWeatherProvider[]{
                         new ImgwWeatherProvider("Warszawa",   LocationType.CITY),
                         new ImgwWeatherProvider("Kielce",     LocationType.CITY),

@@ -1,6 +1,7 @@
 package basicWeatherInterpolation.weatherProviders;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import weatherCollector.coordinates.Coords;
 import weatherCollector.entities.Weather;
 
@@ -9,7 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ImgwWeatherProviderTest {
 
@@ -40,6 +41,7 @@ public class ImgwWeatherProviderTest {
 
 
     @Test
+    @Disabled
     public void getCurrentWeather() throws IOException, ParseException {
         // Data should be parsed from:
         // https://danepubliczne.imgw.pl/api/data/synop/station/kasprowywierch/format/json

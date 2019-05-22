@@ -71,7 +71,7 @@ public class FXMLController {
             collectWeatherDataToDatabase(file.getName());
 
             final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            final GeographicCoordinates centerCoords = terrain.getCenterCoords()
+            final GeographicCoordinates centerCoords = terrain.getCenterCoords();
             AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
                     weatherConnector,
                     terrain,

@@ -30,5 +30,5 @@ jar {
 
 application {
     mainClassName = 'las2etin.Las2etin'
-    applicationDefaultJvmArgs = ["-Xmx1536m"]
+    applicationDefaultJvmArgs = ["-Xmx4g"]
 }

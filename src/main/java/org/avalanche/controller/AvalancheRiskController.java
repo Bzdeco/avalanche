@@ -36,7 +36,7 @@ public class AvalancheRiskController {
 
     public AvalancheRiskController(final WeatherConnector weatherConnector,
                                    final Terrain terrain,
-                                   final GeographicCoordinates geographicCoordinates)) {
+                                   final GeographicCoordinates geographicCoordinates) {
         this.weatherConnector = weatherConnector;
         this.terrain = terrain;
         this.risk = new Risk(terrain);

@@ -5,6 +5,9 @@ dependencies {
     
     // JSON
     implementation 'org.json:json:20180813'
+    
+    // JSoup
+    implementation 'org.jsoup:jsoup:1.7.2'
 
     // Jackson
     implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'

@@ -1,8 +1,10 @@
 package org.avalanche.view.layers;
 
-import avalanche.model.risk.RiskCell;
 
 import javafx.scene.paint.Color;
+import las2etin.model.Coordinates;
+import org.avalanche.model.risk.RiskCell;
+
 import java.awt.*;
 
 /**
@@ -10,8 +12,6 @@ import java.awt.*;
  */
 public class AvalancheRiskLayer implements RiskLayer
 {
-	private static final float SUSCEPTIBILITY_COLOR_HUE = 0f;
-	private static final float SUSCEPTIBILITY_COLOR_BRIGHTNESS = 1f;
 
 	private final String name;
 
