@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.tinfour.common.Vertex;
 import org.tinfour.gis.las.LasFileReader;
 import org.tinfour.gis.las.LasPoint;
+import org.tinfour.gis.las.LasRecordFilterByLastReturn;
 import org.tinfour.gis.utils.VertexWithClassification;
 
 import java.io.File;
@@ -21,7 +22,7 @@ class VertexLoader
 {
     private final LasPoint pointHolder;
     private final LasFileReader tinfourReader;
-//    private final LasRecordFilterByLastReturn lastReturnFilter = new LasRecordFilterByLastReturn();
+    private final LasRecordFilterByLastReturn lastReturnFilter;
 
     static VertexLoader create(File file)
     {
@@ -36,7 +37,7 @@ class VertexLoader
 
     private static VertexLoader initializeVertexLoader(File file) throws IOException
     {
-        return new VertexLoader(new LasPoint(), new LasFileReader(file));
+        return new VertexLoader(new LasPoint(), new LasFileReader(file), new LasRecordFilterByLastReturn());
     }
 
     private static void handleVertexLoaderInitializationError(Exception ex)
@@ -84,7 +85,7 @@ class VertexLoader
     {
         tinfourReader.readRecord(pointIndex, pointHolder);
 
-        if(isGroundPoint(pointHolder) && isRealAltitude(pointHolder.z)) {
+        if(isLastReturnPoint(pointHolder) && isRealAltitude(pointHolder.z)) {
             Vertex vertex = new VertexWithClassification(pointHolder.x,
                                                          pointHolder.y,
                                                          pointHolder.z,
@@ -99,6 +100,10 @@ class VertexLoader
     {
         log.info(String.format("Unable to read data for LAS record (id: %d), skipping the entry", pointIndex));
         return Optional.empty();
+    }
+
+    private boolean isLastReturnPoint(LasPoint point) {
+        return lastReturnFilter.accept(point);
     }
 
     private boolean isGroundPoint(LasPoint point)
