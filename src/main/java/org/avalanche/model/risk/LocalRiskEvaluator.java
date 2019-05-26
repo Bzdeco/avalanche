@@ -1,5 +1,7 @@
 package org.avalanche.model.risk;
 
+import las2etin.model.Classification;
+import las2etin.model.TerrainBuilder;
 import org.avalanche.model.database.WeatherDto;
 import las2etin.model.TerrainCell;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -32,7 +34,7 @@ public class LocalRiskEvaluator
         float riskValue = 0f;
         float maxRiskValue = 7.5f; // maximum possible risk value for a given point
 
-        if (isSlopeInRange(terrainCell.getSlope())) {
+        if (isSlopeInRange(terrainCell.getSlope()) && !isClassifiedAsForrest(terrainCell.getClassification())) {
             riskValue += SLOPE_INC;
             riskValue += applyCurvatureEffect(terrainCell);
             riskValue += applyWindDirection(terrainCell);
@@ -50,6 +52,10 @@ public class LocalRiskEvaluator
     private boolean isSlopeInRange(double slope)
     {
         return slope >= 30 && slope <= 45;
+    }
+
+    private boolean isClassifiedAsForrest(Classification classification) {
+        return classification == Classification.FORREST;
     }
 
     /**

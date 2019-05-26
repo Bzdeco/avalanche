@@ -14,8 +14,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class TerrainBuilder
 {
     public static final int GROUND_CLASSIFICATION = 2;
-    public static final int MEDIUM_VEGETATION_CLASSIFICATION = 3;
-    public static final int HIGH_VEGETATION_CLASSIFICATION = 4;
+    public static final int LOW_VEGETATION_CLASSIFICATION = 3;
+    public static final int MEDIUM_VEGETATION_CLASSIFICATION = 4;
+    public static final int HIGH_VEGETATION_CLASSIFICATION = 5;
 
     private Tin tin;
     private GwrTinInterpolator interpolator;
@@ -88,7 +89,8 @@ public class TerrainBuilder
     {
         Coordinates coordinates = new Coordinates(xCoord, yCoord);
         Vertex interpolatedVertex = createVertexForInterpolation(coordinates);
-        List<Vertex> neighbours = neighboursCollector.collectNeighboringVertices(interpolatedVertex.getX(), interpolatedVertex.getY(), 0, 3);
+        List<Vertex> neighbours = neighboursCollector.collectNeighboringVertices(interpolatedVertex.getX(),
+                interpolatedVertex.getY(), 4, 20);
         GeographicCoordinates geographicCoords = estimateTerrainCellGeographicCoordinates(xCoord, yCoord);
         return new TerrainCellBuilder().withInterpolator(interpolator)
                                        .withVertex(interpolatedVertex)
@@ -119,15 +121,15 @@ public class TerrainBuilder
 	}
 
 	private Classification classifyVertexBasedOnNeighbours(List<Vertex> neighbours) {
-        short mediumAndHighVegetationCount = 0;
+        short vegetationCount = 0;
         short groundCount = 0;
         short other = 0;
 
         for (Vertex vertex : neighbours) {
             int classification = tryGettingClassificationByDowncasting(vertex);
 
-            if (classification == MEDIUM_VEGETATION_CLASSIFICATION || classification == HIGH_VEGETATION_CLASSIFICATION) {
-                mediumAndHighVegetationCount++;
+            if (classification == HIGH_VEGETATION_CLASSIFICATION) {
+                vegetationCount++;
             } else if (classification == GROUND_CLASSIFICATION) {
                 groundCount++;
             } else {
@@ -135,9 +137,9 @@ public class TerrainBuilder
             }
         }
 
-        if (other > groundCount && other > mediumAndHighVegetationCount) {
+        if (other > groundCount && other > vegetationCount) {
             return Classification.OTHER;
-        } else if (mediumAndHighVegetationCount > groundCount) {
+        } else if (vegetationCount > groundCount) {
             return Classification.FORREST;
         } else {
             return Classification.GROUND;

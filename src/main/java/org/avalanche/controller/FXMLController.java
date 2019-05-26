@@ -81,7 +81,8 @@ public class FXMLController {
                     new LandformLayer("Landform"),
                     new SlopeLayer("Slope"),
                     new SusceptiblePlacesLayer("Susceptible places"),
-                    new HillshadeLayer("Hillshade", centerCoords)
+                    new HillshadeLayer("Hillshade", centerCoords),
+                    new ForrestLayer("Forrest area")
             );
 
             riskLayers = ImmutableList.of(
