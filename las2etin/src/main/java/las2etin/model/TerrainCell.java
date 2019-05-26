@@ -17,6 +17,7 @@ public class TerrainCell implements Serializable
 
     private final Coordinates coordinates;
     private final GeographicCoordinates geographicCoords;
+    private final Classification classification;
     private final Vector3D normal;
     private final double aspect;
     private final double grade;

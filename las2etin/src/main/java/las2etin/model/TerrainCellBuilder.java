@@ -22,6 +22,7 @@ public class TerrainCellBuilder
     private Vertex vertex;
     private Coordinates coordinates;
     private GeographicCoordinates geographicCoords;
+    private Classification classification;
 
     TerrainCellBuilder withInterpolator(GwrTinInterpolator interpolator)
     {
@@ -41,11 +42,16 @@ public class TerrainCellBuilder
         return this;
     }
 
-    public TerrainCellBuilder withGeographicCoords(GeographicCoordinates geographicCoords)
+    TerrainCellBuilder withGeographicCoords(GeographicCoordinates geographicCoords)
 	{
 		this.geographicCoords = geographicCoords;
 		return this;
 	}
+
+	TerrainCellBuilder withClassification(Classification classification) {
+        this.classification = classification;
+        return this;
+    }
 
     public TerrainCell build()
     {
@@ -67,6 +73,7 @@ public class TerrainCellBuilder
 
             return new TerrainCell(coordinates,
                                    geographicCoords,
+                                   classification,
                                    normal,
                                    aspect,
                                    grade,
@@ -77,6 +84,7 @@ public class TerrainCellBuilder
         else {
             return new TerrainCell(coordinates,
                                    geographicCoords,
+                                   classification,
                                    normal,
                                    0,
                                    0,
