@@ -10,6 +10,8 @@
       <module name="avalanche_test" target="1.8" />
       <module name="las2etin_main" target="1.8" />
       <module name="las2etin_test" target="1.8" />
+      <module name="org.avalanche_main" target="1.8" />
+      <module name="org.avalanche_test" target="1.8" />
       <module name="weather_main" target="1.8" />
       <module name="weather_test" target="1.8" />
     </bytecodeTargetLevel>
