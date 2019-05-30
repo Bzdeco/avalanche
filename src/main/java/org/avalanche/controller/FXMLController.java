@@ -2,6 +2,7 @@ package org.avalanche.controller;
 
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableView;
@@ -9,6 +10,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
+import las2etin.model.Adjacency;
 import las2etin.model.GeographicCoordinates;
 import las2etin.model.StaticMapNameToGeoBoundsConverter;
 import las2etin.model.Terrain;
@@ -22,8 +24,6 @@ import org.avalanche.view.Printer;
 import org.avalanche.view.layers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import weatherCollector.coordinates.Coords;
-import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -39,6 +39,7 @@ import java.util.List;
 public class FXMLController {
     private List<TerrainLayer> terrainLayers;
     private List<RiskLayer> riskLayers = ImmutableList.of();
+    private String fileName;
 
     public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
     private final WeatherConnector weatherConnector;
@@ -67,37 +68,43 @@ public class FXMLController {
     public void initialize() {
         final File file = selectFile();
 
-        if (file != null) {
-            collectWeatherDataToDatabase(file.getName());
+		setupApplicationWindow(file);
+	}
 
-            final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            final GeographicCoordinates centerCoords = terrain.getCenterCoords();
-            AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
-                    weatherConnector,
-                    terrain,
-                    centerCoords);
+	private void setupApplicationWindow(File file)
+	{
+		if (file != null) {
+			fileName = file.getName();
+			collectWeatherDataToDatabase(fileName);
 
-            terrainLayers = ImmutableList.of(
-                    new LandformLayer("Landform"),
-                    new SlopeLayer("Slope"),
-                    new SusceptiblePlacesLayer("Susceptible places"),
-                    new HillshadeLayer("Hillshade", centerCoords)
-            );
+			final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
+			final GeographicCoordinates centerCoords = terrain.getCenterCoords();
+			AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
+					weatherConnector,
+					terrain,
+					centerCoords);
 
-            riskLayers = ImmutableList.of(
-                    new AvalancheRiskLayer("Avalanche risk")
-            );
+			terrainLayers = ImmutableList.of(
+					new LandformLayer("Landform"),
+					new SlopeLayer("Slope"),
+					new SusceptiblePlacesLayer("Susceptible places"),
+					new HillshadeLayer("Hillshade", centerCoords)
+			);
 
-            List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
-            final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
+			riskLayers = ImmutableList.of(
+					new AvalancheRiskLayer("Avalanche risk")
+			);
 
-            new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
-            float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
-            globalRisk.setProgress(globalRiskValue);
-        }
-    }
+			List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
+			final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
 
-    /**
+			new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
+			float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
+			globalRisk.setProgress(globalRiskValue);
+		}
+	}
+
+	/**
      * Gets most recent 5-day weather forecast to local database
      */
     private void collectWeatherDataToDatabase(String filename) {
@@ -140,4 +147,24 @@ public class FXMLController {
             throw new OperationNotSupportedException("You have to select a file to proceed");
         }
     }
+
+	public void handleLeftButtonAction(ActionEvent actionEvent)
+	{
+		setupApplicationWindow(new File(Adjacency.left(fileName) + ".ser"));
+	}
+
+	public void handleRightButtonAction(ActionEvent actionEvent)
+	{
+		setupApplicationWindow(new File(Adjacency.right(fileName) + ".ser"));
+	}
+
+	public void handleTopButtonAction(ActionEvent actionEvent)
+	{
+		setupApplicationWindow(new File(Adjacency.top(fileName) + ".ser"));
+	}
+
+	public void handleBottomButtonAction(ActionEvent actionEvent)
+	{
+		setupApplicationWindow(new File(Adjacency.bottom(fileName) + ".ser"));
+	}
 }
