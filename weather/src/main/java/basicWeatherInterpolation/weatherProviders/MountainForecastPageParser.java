@@ -43,33 +43,18 @@ public class MountainForecastPageParser {
             {"NNW",337.5f},
     }).collect(Collectors.toMap(data ->(String)data[0], data->(Float)data[1]));
 
-    public MountainForecastPageParser(){
+    public MountainForecastPageParser() {
         try{
             Document document = Jsoup.connect(BASE_URL + PEAKS_LIST_URL).get();
             readPeaks(document);
             readDataFromPeaks();
         }catch(Exception e){
-            System.out.println("Some error occuried while parsing data.");
+            System.out.println("Some error occurred while parsing data.");
             throw new RuntimeException();
         }
     }
 
-    Peak getPeak(PeakName name){
-        return this.peaks.stream()
-                .filter(x -> x.getName().equals(name.toString()))
-                .findFirst()
-                .orElseThrow(()->new RuntimeException("PeakName was not found"));
-    }
-
-    private void readPeaks(Document document){
-        Elements rawPeaks = document.body().select(".b-list-table").select("li");
-        peaks = rawPeaks.stream()
-                .map(MountainForecastPageParser::mapToPeak)
-                .collect(Collectors.toList());
-    }
-
-    private static Peak mapToPeak(Element element)
-    {
+    private static Peak mapToPeak(Element element) {
         String name = element.select("span.b-list-table__item-name a").text();
         String url = element.select("span.b-list-table__item-name a").attr("href");
         int height = Integer.parseInt(element.select("span.b-list-table__item-height").text()
@@ -82,8 +67,21 @@ public class MountainForecastPageParser {
                 .build();
     }
 
-    private void readDataFromPeaks() throws Exception
-    {
+    Peak getPeak(PeakName name) {
+        return this.peaks.stream()
+                .filter(x -> x.getName().equals(name.toString()))
+                .findFirst()
+                .orElseThrow(()->new RuntimeException("PeakName was not found"));
+    }
+
+    private void readPeaks(Document document) {
+        Elements rawPeaks = document.body().select(".b-list-table").select("li");
+        peaks = rawPeaks.stream()
+                .map(MountainForecastPageParser::mapToPeak)
+                .collect(Collectors.toList());
+    }
+
+    private void readDataFromPeaks() throws Exception {
         for (Peak peak : peaks) {
             parsePeak(peak);
         }
@@ -116,7 +114,7 @@ public class MountainForecastPageParser {
         if(minTemp != null && maxTemp != null)
             weather.setTemp((minTemp + maxTemp) / 2);
 
-        weather.setSeaLevel((float)peak.getHeight());
+        weather.setSeaLevel(peak.getHeight());
         peak.setWeather(weather);
 
         url = BASE_URL +peak.getUrl();
@@ -155,13 +153,14 @@ public class MountainForecastPageParser {
                 .get();
         return startIndex + minIdx;
     }
-    private LocalTime getTimeFrom(Element element)
-    {
+
+    private LocalTime getTimeFrom(Element element){
         String thinSpaceCode = "\\u2009";
         String time = element.text().replaceAll(thinSpaceCode," ");
         return LocalTime.parse(time, DateTimeFormatter.ofPattern("h a", Locale.ENGLISH));
     }
-    private LocalDateTime getDateTime(Elements table,int columnIndex){
+
+    private LocalDateTime getDateTime(Elements table,int columnIndex) {
         LocalTime time = getTimeFrom(table.select("td.forecast__table-time-item").get(columnIndex));
         return time.atDate(LocalDate.now());
     }
@@ -194,23 +193,20 @@ public class MountainForecastPageParser {
         return Float.parseFloat(value);
     }
 
-    private float getWindSpeed(Elements table, int columnIndex)
-    {
+    private float getWindSpeed(Elements table, int columnIndex) {
         Elements wind = table.select(".forecast__table-wind");
         Elements speeds = wind.select("td.iconcell span");
         String text = speeds.get(columnIndex).text();
         return Float.parseFloat(text);
     }
 
-    private float getWindDirection(Elements table, int columnIndex)
-    {
+    private float getWindDirection(Elements table, int columnIndex) {
         Elements wind = table.select(".forecast__table-wind");
         String alt = wind.select("td.iconcell img").get(columnIndex).attr("alt").replaceAll("[^A-Z]+","");
         return this.textDirectionToDegree.get(alt.toUpperCase());
     }
 
-    private Coords retrieveCoordinates(Document document)
-    {
+    private Coords retrieveCoordinates(Document document) {
         Optional<Element> script = document.select("script[type='text/javascript']").stream()
                 .filter(x -> x.toString().contains("FCOSM.initMapForLocation"))
                 .findFirst();
@@ -224,5 +220,4 @@ public class MountainForecastPageParser {
         float lng = Float.parseFloat(split[2]);
         return new Coords(lat,lng);
     }
-
 }
