@@ -59,7 +59,7 @@ public class LocalizationService {
         this.weatherProviders = weatherProviders;
     }
 
-    List <WeatherProvider> getClosestWeatherProviders(Coords interpolatedLocation){
+    public List <WeatherProvider> getClosestWeatherProviders(Coords interpolatedLocation){
         return weatherProviders.stream()
                 .map(provider -> new Pair<>(provider, interpolatedLocation.distance(provider.getCoordinates())))
                 .sorted(Comparator.comparingDouble(Pair::getValue))
