@@ -22,8 +22,6 @@ import org.avalanche.view.Printer;
 import org.avalanche.view.layers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import weatherCollector.coordinates.Coords;
-import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -82,7 +80,8 @@ public class FXMLController {
                     new SlopeLayer("Slope"),
                     new SusceptiblePlacesLayer("Susceptible places"),
                     new HillshadeLayer("Hillshade", centerCoords),
-                    new ForrestLayer("Forrest area")
+                    new ForrestLayer("Forrest area"),
+                    new WaterLayer("Water area")
             );
 
             riskLayers = ImmutableList.of(
