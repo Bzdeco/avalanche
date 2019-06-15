@@ -12,7 +12,6 @@ import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
 import las2etin.model.Adjacency;
 import las2etin.model.GeographicCoordinates;
-import las2etin.model.StaticMapNameToGeoBoundsConverter;
 import las2etin.model.Terrain;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
@@ -41,7 +40,7 @@ public class FXMLController {
     private List<RiskLayer> riskLayers = ImmutableList.of();
     private String fileName;
 
-    public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
+    private Adjacency adjacency;
     private final WeatherConnector weatherConnector;
 
     @FXML
@@ -73,10 +72,12 @@ public class FXMLController {
 
 	private void setupApplicationWindow(File file)
 	{
+		layerViewport.getChildren().clear();
 		if (file != null) {
 			fileName = file.getName();
 			collectWeatherDataToDatabase(fileName);
 
+			adjacency = new Adjacency(fileName);
 			final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
 			final GeographicCoordinates centerCoords = terrain.getCenterCoords();
 			AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
@@ -150,21 +151,33 @@ public class FXMLController {
 
 	public void handleLeftButtonAction(ActionEvent actionEvent)
 	{
-		setupApplicationWindow(new File(Adjacency.left(fileName) + ".ser"));
+		String left = adjacency.getLeft();
+		if (!left.isEmpty()) {
+			setupApplicationWindow(new File(left + ".ser"));
+		}
 	}
 
 	public void handleRightButtonAction(ActionEvent actionEvent)
 	{
-		setupApplicationWindow(new File(Adjacency.right(fileName) + ".ser"));
+		String right = adjacency.getRight();
+		if (!right.isEmpty()) {
+			setupApplicationWindow(new File(right + ".ser"));
+		}
 	}
 
 	public void handleTopButtonAction(ActionEvent actionEvent)
 	{
-		setupApplicationWindow(new File(Adjacency.top(fileName) + ".ser"));
+		String top = adjacency.getTop();
+		if (!top.isEmpty()) {
+			setupApplicationWindow(new File(top + ".ser"));
+		}
 	}
 
 	public void handleBottomButtonAction(ActionEvent actionEvent)
 	{
-		setupApplicationWindow(new File(Adjacency.bottom(fileName) + ".ser"));
+		String bottom = adjacency.getBottom();
+		if (!bottom.isEmpty()) {
+			setupApplicationWindow(new File(bottom + ".ser"));
+		}
 	}
 }

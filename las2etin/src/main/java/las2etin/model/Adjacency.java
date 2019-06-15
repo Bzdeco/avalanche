@@ -1,5 +1,7 @@
 package las2etin.model;
 
+import lombok.Getter;
+
 public class Adjacency {
 	//note: there's probably a simpler way to do this, but it works just fine for now
 
@@ -43,41 +45,55 @@ public class Adjacency {
 			{"","","","","","","","","","","","","","","",""}
 	};
 
-	public static String left(String name) {
-		int x = 0, y = 0;
+	private static final int NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE = 16;
+	private int xIndex, yIndex;
+	@Getter
+	private String left, right, top, bottom;
 
-		if (name.contains("M-34-101-A-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapA[i][j].isEmpty() && name.contains(lasMapA[i][j])) {
-						x = j;
-						y = i;
-					}
+	public Adjacency(String name)
+	{
+		if (name.startsWith("M-34-101-A-")) {
+			findXAndYIndexes(name, lasMapA);
+			top = findTopOrBottom(name, lasMapA, 1);
+			bottom = findTopOrBottom(name, lasMapA, -1);
+		}
+		else if (name.startsWith("M-34-100-B-")) {
+			findXAndYIndexes(name, lasMapB);
+			top = findTopOrBottom(name, lasMapB, 1);
+			bottom = findTopOrBottom(name, lasMapB, -1);
+		}
+
+		left = findLeft(name);
+		right = findRight(name);
+	}
+
+	private void findXAndYIndexes(String name, String[][] map) {
+		for (int i = 0; i < NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE; i++) {
+			for (int j = 0; j < NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE; j++) {
+				if (!map[i][j].isEmpty() && name.contains(map[i][j])) {
+					xIndex = j;
+					yIndex = i;
+					return;
 				}
 			}
+		}
+	}
 
-			if (x > 0 && !lasMapA[y][x-1].isEmpty()) {
-				return "M-34-101-A-" + lasMapA[y][x-1];
+	private String findLeft(String name) {
+		if (name.startsWith("M-34-101-A-")) {
+			if (xIndex > 0 && !lasMapA[yIndex][xIndex-1].isEmpty()) {
+				return "M-34-101-A-" + lasMapA[yIndex][xIndex-1];
 			}
-			else if (x == 0 && !lasMapB[y][15].isEmpty()) {
-				return "M-34-100-B-" + lasMapB[y][15];
+			else if (xIndex == 0 && !lasMapB[yIndex][NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE-1].isEmpty()) {
+				return "M-34-100-B-" + lasMapB[yIndex][NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE-1];
 			}
 			else {
 				return "";
 			}
 		}
-		else if (name.contains("M-34-100-B-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapB[i][j].isEmpty() && name.contains(lasMapB[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (x > 0 && !lasMapB[y][x-1].isEmpty()) {
-				return "M-34-100-B-" + lasMapB[y][x-1];
+		else if (name.startsWith("M-34-100-B-")) {
+			if (xIndex > 0 && !lasMapB[yIndex][xIndex-1].isEmpty()) {
+				return "M-34-100-B-" + lasMapB[yIndex][xIndex-1];
 			}
 			else {
 				return "";
@@ -86,41 +102,21 @@ public class Adjacency {
 		return "";
 	}
 
-	public static String right(String name) {
-		int x = 0, y = 0;
-
-		if (name.contains("M-34-101-A-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapA[i][j].isEmpty() && name.contains(lasMapA[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (x < 15 && !lasMapA[y][x+1].isEmpty()) {
-				return "M-34-101-A-" + lasMapA[y][x+1];
+	private String findRight(String name) {
+		if (name.startsWith("M-34-101-A-")) {
+			if (xIndex < NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE-1 && !lasMapA[yIndex][xIndex+1].isEmpty()) {
+				return "M-34-101-A-" + lasMapA[yIndex][xIndex+1];
 			}
 			else {
 				return "";
 			}
 		}
 		else if (name.contains("M-34-100-B-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapB[i][j].isEmpty() && name.contains(lasMapB[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
+			if (xIndex < NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE-1 && !lasMapB[yIndex][xIndex+1].isEmpty()) {
+				return "M-34-100-B-" + lasMapB[yIndex][xIndex+1];
 			}
-
-			if (x < 15 && !lasMapB[y][x+1].isEmpty()) {
-				return "M-34-100-B-" + lasMapB[y][x+1];
-			}
-			else if (x == 15 && !lasMapA[y][0].isEmpty()) {
-				return "M-34-101-A-" + lasMapA[y][0];
+			else if (xIndex == NUMBER_OF_SUBREGIONS_IN_SCAN_SIDE-1 && !lasMapA[yIndex][0].isEmpty()) {
+				return "M-34-101-A-" + lasMapA[yIndex][0];
 			}
 			else {
 				return "";
@@ -129,83 +125,18 @@ public class Adjacency {
 		return "";
 	}
 
-	public static String top(String name) {
-		int x = 0, y = 0;
-
-		if (name.contains("M-34-101-A-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapA[i][j].isEmpty() && name.contains(lasMapA[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (y > 0 && !lasMapA[y-1][x].isEmpty()) {
-				return "M-34-101-A-" + lasMapA[y-1][x];
+	private String findTopOrBottom(String name, String[][] map, int direction) {
+		String prefix = map == lasMapA ? "M-34-101-A-" : "M-34-100-B-";
+		try {
+			if (!map[yIndex-direction][xIndex].isEmpty()) {
+				return prefix + map[yIndex-direction][xIndex];
 			}
 			else {
 				return "";
 			}
 		}
-		else if (name.contains("M-34-100-B-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapB[i][j].isEmpty() && name.contains(lasMapB[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (y > 0 && !lasMapB[y-1][x].isEmpty()) {
-				return "M-34-100-B-" + lasMapB[y-1][x];
-			}
-			else {
-				return "";
-			}
+		catch (IndexOutOfBoundsException e) {
+			return "";
 		}
-		return "";
-	}
-
-	public static String bottom(String name) {
-		int x = 0, y = 0;
-
-		if (name.contains("M-34-101-A-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapA[i][j].isEmpty() && name.contains(lasMapA[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (y < 15 && !lasMapA[y+1][x].isEmpty()) {
-				return "M-34-101-A-" + lasMapA[y+1][x];
-			}
-			else {
-				return "";
-			}
-		}
-		else if (name.contains("M-34-100-B-")) {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					if (!lasMapB[i][j].isEmpty() && name.contains(lasMapB[i][j])) {
-						x = j;
-						y = i;
-					}
-				}
-			}
-
-			if (y < 15 && !lasMapB[y+1][x].isEmpty()) {
-				return "M-34-100-B-" + lasMapB[y+1][x];
-			}
-			else {
-				return "";
-			}
-		}
-		return "";
 	}
 }
