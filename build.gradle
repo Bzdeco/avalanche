@@ -69,11 +69,26 @@ dependencies {
     // Tinfour
     implementation 'org.tinfour:Tinfour:2.0'
 
+    // JSON
+    implementation 'org.json:json:20180813'
+
+    // JSoup
+    implementation 'org.jsoup:jsoup:1.7.2'
+
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
+
+    // H2
+    implementation 'com.h2database:h2:1.4.199'
+
     // OkHttp
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter:2.1.4.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.1.4.RELEASE'
 }
 
 jar {

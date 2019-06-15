@@ -42,11 +42,11 @@ public class WeatherConnector {
     private void connect() {
         try {
             connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+            log.info("Opened database successfully");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             System.exit(0);
         }
-        log.info("Opened database successfully");
     }
 
     public List<WeatherDto> fetchAndBuildData() {

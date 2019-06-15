@@ -13,17 +13,14 @@ import las2etin.model.GeographicCoordinates;
 import las2etin.model.StaticMapNameToGeoBoundsConverter;
 import las2etin.model.Terrain;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import org.avalanche.model.database.WeatherConnector;
 import org.avalanche.model.database.WeatherDto;
 import org.avalanche.model.risk.Risk;
 import org.avalanche.view.Printer;
 import org.avalanche.view.layers.*;
+import org.avalanche.weather.service.WeatherCollectorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import weatherCollector.coordinates.Coords;
-import weatherCollector.coordinates.StaticMapNameToCoordsConverter;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -42,6 +39,7 @@ public class FXMLController {
 
     public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
     private final WeatherConnector weatherConnector;
+    private final WeatherCollectorService weatherCollectorService;
 
     @FXML
     private ProgressBar globalRisk;
@@ -56,8 +54,10 @@ public class FXMLController {
     private TableView tableView;
 
     @Autowired
-    public FXMLController(final WeatherConnector weatherConnector) {
+    public FXMLController(final WeatherConnector weatherConnector,
+                          final WeatherCollectorService weatherCollectorService) {
         this.weatherConnector = weatherConnector;
+        this.weatherCollectorService = weatherCollectorService;
     }
 
     /**
@@ -102,16 +102,11 @@ public class FXMLController {
      * Gets most recent 5-day weather forecast to local database
      */
     private void collectWeatherDataToDatabase(String filename) {
-        OkHttpClient avalancheClient = new OkHttpClient();
-        String requestURL = String.format("http://localhost:8080/getWeatherData?filename=%s", filename);
-        Request request = new Request.Builder()
-                .url(requestURL)
-                .build();
-
         try {
-            avalancheClient.newCall(request).execute();
+            weatherCollectorService.collectWeatherData(filename);
         } catch (IOException e) {
-            log.warn("Could not update weather data in the database");
+            log.error("Failed to collect weather data");
+            System.exit(0);
         }
     }
 
