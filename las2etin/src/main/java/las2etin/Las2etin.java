@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 public class Las2etin
@@ -87,7 +86,7 @@ public class Las2etin
         TerrainFormatter.serialize(terrainToSerialize, saveLocation);
     }
 
-    private void trimResolution()
+	private void trimResolution()
     {
         if (resolution > 500 || resolution < 0)
             resolution = 500;
