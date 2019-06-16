@@ -2,6 +2,7 @@ package org.avalanche.controller;
 
 import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableView;
@@ -9,10 +10,13 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import las2etin.display.TerrainFormatter;
+import las2etin.model.Adjacency;
 import las2etin.model.GeographicCoordinates;
 import las2etin.model.StaticMapNameToGeoBoundsConverter;
 import las2etin.model.Terrain;
 import lombok.extern.log4j.Log4j2;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.avalanche.model.database.WeatherConnector;
 import org.avalanche.model.database.WeatherDto;
 import org.avalanche.model.risk.Risk;
@@ -36,8 +40,9 @@ import java.util.List;
 public class FXMLController {
     private List<TerrainLayer> terrainLayers;
     private List<RiskLayer> riskLayers = ImmutableList.of();
+    private String fileName;
 
-    public final StaticMapNameToGeoBoundsConverter converter = new StaticMapNameToGeoBoundsConverter();
+    private Adjacency adjacency;
     private final WeatherConnector weatherConnector;
     private final WeatherCollectorService weatherCollectorService;
 
@@ -67,15 +72,23 @@ public class FXMLController {
     public void initialize() {
         final File file = selectFile();
 
-        if (file != null) {
-            collectWeatherDataToDatabase(file.getName());
+		setupApplicationWindow(file);
+	}
 
-            final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
-            final GeographicCoordinates centerCoords = terrain.getCenterCoords();
-            AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
-                    weatherConnector,
-                    terrain,
-                    centerCoords);
+	private void setupApplicationWindow(File file)
+	{
+		layerViewport.getChildren().clear();
+		if (file != null) {
+			fileName = file.getName();
+			collectWeatherDataToDatabase(fileName);
+
+			adjacency = new Adjacency(fileName);
+			final Terrain terrain = TerrainFormatter.deserialize(file.toPath());
+			final GeographicCoordinates centerCoords = terrain.getCenterCoords();
+			AvalancheRiskController avalancheRiskController = new AvalancheRiskController(
+					weatherConnector,
+					terrain,
+					centerCoords);
 
             terrainLayers = ImmutableList.of(
                     new LandformLayer("Landform"),
@@ -85,20 +98,20 @@ public class FXMLController {
                     new ForrestLayer("Forrest area")
             );
 
-            riskLayers = ImmutableList.of(
-                    new AvalancheRiskLayer("Avalanche risk")
-            );
+			riskLayers = ImmutableList.of(
+					new AvalancheRiskLayer("Avalanche risk")
+			);
 
-            List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
-            final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
+			List<WeatherDto> weatherConditions = avalancheRiskController.fetchWeatherDataInto(tableView);
+			final Risk risk = avalancheRiskController.getEvaluatedRisk(weatherConditions);
 
-            new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
-            float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
-            globalRisk.setProgress(globalRiskValue);
-        }
-    }
+			new Printer(terrain, risk).drawOnPane(layerViewport, terrainLayers, riskLayers, layerSelector);
+			float globalRiskValue = avalancheRiskController.getGlobalRiskValue();
+			globalRisk.setProgress(globalRiskValue);
+		}
+	}
 
-    /**
+	/**
      * Gets most recent 5-day weather forecast to local database
      */
     private void collectWeatherDataToDatabase(String filename) {
@@ -136,4 +149,36 @@ public class FXMLController {
             throw new OperationNotSupportedException("You have to select a file to proceed");
         }
     }
+
+	public void handleLeftButtonAction(ActionEvent actionEvent)
+	{
+		String left = adjacency.getLeft();
+		if (!left.isEmpty()) {
+			setupApplicationWindow(new File(left + ".ser"));
+		}
+	}
+
+	public void handleRightButtonAction(ActionEvent actionEvent)
+	{
+		String right = adjacency.getRight();
+		if (!right.isEmpty()) {
+			setupApplicationWindow(new File(right + ".ser"));
+		}
+	}
+
+	public void handleTopButtonAction(ActionEvent actionEvent)
+	{
+		String top = adjacency.getTop();
+		if (!top.isEmpty()) {
+			setupApplicationWindow(new File(top + ".ser"));
+		}
+	}
+
+	public void handleBottomButtonAction(ActionEvent actionEvent)
+	{
+		String bottom = adjacency.getBottom();
+		if (!bottom.isEmpty()) {
+			setupApplicationWindow(new File(bottom + ".ser"));
+		}
+	}
 }
