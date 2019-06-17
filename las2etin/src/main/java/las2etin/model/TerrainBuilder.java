@@ -7,7 +7,10 @@ import org.tinfour.common.Vertex;
 import org.tinfour.gis.utils.VertexWithClassification;
 import org.tinfour.gwr.GwrTinInterpolator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,6 +20,8 @@ public class TerrainBuilder
     public static final int LOW_VEGETATION_CLASSIFICATION = 3;
     public static final int MEDIUM_VEGETATION_CLASSIFICATION = 4;
     public static final int HIGH_VEGETATION_CLASSIFICATION = 5;
+    public static final int WATER_CLASSIFICATION = 9;
+
 
     private Tin tin;
     private GwrTinInterpolator interpolator;
@@ -123,26 +128,39 @@ public class TerrainBuilder
 	private Classification classifyVertexBasedOnNeighbours(List<Vertex> neighbours) {
         short vegetationCount = 0;
         short groundCount = 0;
+        short waterCount = 0;
         short other = 0;
 
         for (Vertex vertex : neighbours) {
             int classification = tryGettingClassificationByDowncasting(vertex);
 
-            if (classification == HIGH_VEGETATION_CLASSIFICATION) {
-                vegetationCount++;
-            } else if (classification == GROUND_CLASSIFICATION) {
-                groundCount++;
-            } else {
-                other++;
+            switch (classification){
+                case HIGH_VEGETATION_CLASSIFICATION: {
+                    vegetationCount++;
+                    break;
+                }
+                case GROUND_CLASSIFICATION: {
+                    groundCount++;
+                    break;
+                }
+                case WATER_CLASSIFICATION: {
+                    waterCount++;
+                    break;
+                }
+                default: {
+                    other++;
+                }
             }
         }
 
-        if (other > groundCount && other > vegetationCount) {
+        if (other > groundCount && other > vegetationCount && other > waterCount) {
             return Classification.OTHER;
-        } else if (vegetationCount > groundCount) {
+        } else if (vegetationCount > groundCount && vegetationCount > waterCount) {
             return Classification.FORREST;
-        } else {
+        } else if (groundCount > waterCount){
             return Classification.GROUND;
+        } else {
+            return Classification.WATER;
         }
     }
 

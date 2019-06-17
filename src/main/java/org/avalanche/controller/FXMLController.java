@@ -95,7 +95,8 @@ public class FXMLController {
                     new SlopeLayer("Slope"),
                     new SusceptiblePlacesLayer("Susceptible places"),
                     new HillshadeLayer("Hillshade", centerCoords),
-                    new ForrestLayer("Forrest area")
+                    new ForrestLayer("Forrest area"),
+                    new WaterLayer("Water area")
             );
 
 			riskLayers = ImmutableList.of(
