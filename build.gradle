@@ -55,7 +55,6 @@ repositories {
 dependencies {
     // Sub-projects
     implementation project(':las2etin')
-    implementation project(':weather')
 
     // Guava
     implementation 'com.google.guava:guava:27.1-jre'
