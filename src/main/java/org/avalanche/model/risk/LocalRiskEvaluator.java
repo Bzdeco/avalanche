@@ -1,10 +1,9 @@
 package org.avalanche.model.risk;
 
 import las2etin.model.Classification;
-import las2etin.model.TerrainBuilder;
-import org.avalanche.model.database.WeatherDto;
 import las2etin.model.TerrainCell;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.avalanche.model.database.WeatherDto;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class LocalRiskEvaluator
         float riskValue = 0f;
         float maxRiskValue = 7.5f; // maximum possible risk value for a given point
 
-        if (isSlopeInRange(terrainCell.getSlope()) && !isClassifiedAsForrest(terrainCell.getClassification())) {
+        if (isRiskyCell(terrainCell)) {
             riskValue += SLOPE_INC;
             riskValue += applyCurvatureEffect(terrainCell);
             riskValue += applyWindDirection(terrainCell);
@@ -46,6 +45,14 @@ public class LocalRiskEvaluator
         return riskValue / maxRiskValue;
     }
 
+    private boolean isRiskyCell(TerrainCell terrainCell) {
+        return isSlopeInRange(terrainCell.getSlope()) && !isClassifiedAsForrest(terrainCell) && !isClassiifiedAsWater(terrainCell);
+    }
+
+    private boolean isClassiifiedAsWater(TerrainCell terrainCell) {
+        return terrainCell.getClassification() == Classification.WATER;
+    }
+
     /**
      * Only slopes between 30 and 45 degrees are concerned as they are most likely to produce deep slab avalanches.
      */
@@ -54,8 +61,8 @@ public class LocalRiskEvaluator
         return slope >= 30 && slope <= 45;
     }
 
-    private boolean isClassifiedAsForrest(Classification classification) {
-        return classification == Classification.FORREST;
+    private boolean isClassifiedAsForrest(TerrainCell terrainCell) {
+        return terrainCell.getClassification() == Classification.FORREST;
     }
 
     /**
