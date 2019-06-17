@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="1000.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8.0.121" fx:controller="org.avalanche.controller.FXMLController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="1000.0" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="org.avalanche.controller.FXMLController">
     <left>
         <BorderPane>
             <top>
                 <HBox alignment="BOTTOM_CENTER">
-                    <children>
-                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleLeftButtonAction" text="LEWY" />
-                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleRightButtonAction" text="PRAWY" />
-                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleTopButtonAction" text="GÓRA" />
-                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleBottomButtonAction" text="DÓŁ" />
+                    <children >
+                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleLeftButtonAction" text="LEFT" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
+                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleRightButtonAction" text="RIGHT" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
+                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleTopButtonAction" text="UP" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
+                        <Button layoutX="10.0" layoutY="10.0" onAction="#handleBottomButtonAction" text="DOWN" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
                     </children>
                 </HBox>
             </top>
@@ -22,40 +23,55 @@
                 <Accordion BorderPane.alignment="TOP_CENTER">
                     <panes>
                         <!--suppress JavaFxUnresolvedFxIdReference -->
-                        <TitledPane fx:id="viewPane" animated="false" text="View">
-                            <TreeView fx:id="layerSelector" editable="true" />
+                        <TitledPane fx:id="viewPane" text="View" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css">
+                            <TreeView fx:id="layerSelector" editable="true" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
                         </TitledPane>
                     </panes>
                 </Accordion>
             </center>
         </BorderPane>
     </left>
+
     <center>
-        <Pane fx:id="layerViewport" />
+        <Pane fx:id="layerViewport" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css"/>
     </center>
+
     <bottom>
-        <TitledPane animated="true" expanded="true" text="5-day weather forecast" BorderPane.alignment="CENTER">
-            <TableView fx:id="tableView" prefHeight="300.0" prefWidth="1300.0">
+        <TitledPane text="5-day weather forecast" BorderPane.alignment="CENTER" styleClass="bottom-table" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css">
+            <TableView fx:id="tableView" prefHeight="300.0" prefWidth="1300.0" stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css">
             </TableView>
         </TitledPane>
     </bottom>
-   <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="1300.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Weather conditions Global Risk">
-               <font>
-                  <Font size="15.0" />
-               </font>
-               <HBox.margin>
-                  <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
-               </HBox.margin>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="1300.0"
+              stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Weather conditions Global Risk" styleClass="text-id" >
+                <font>
+                    <Font size="15.0"/>
+                </font>
+                <HBox.margin>
+                    <Insets bottom="10.0" left="20.0" right="10.0" top="10.0"/>
+                </HBox.margin>
             </Text>
-            <ProgressBar fx:id="globalRisk" prefHeight="35.0" prefWidth="234.0" progress="0.0">
-               <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </HBox.margin>
+            <ProgressBar fx:id="globalRisk" prefHeight="35.0" prefWidth="234.0" progress="0.0"
+                         stylesheets="@../../../src/main/java/org/avalanche/view/css/style.css">
+                <HBox.margin>
+                    <Insets bottom="10.0" left="30.0" right="10.0" top="10.0"/>
+                </HBox.margin>
             </ProgressBar>
-         </children>
-      </HBox>
-   </top>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scroll on map zoom in or out" styleClass="text-id" >
+                <font>
+                    <Font size="15.0"/>
+                </font>
+                <HBox.margin>
+                    <Insets bottom="10.0" left="20.0" right="10.0" top="10.0"/>
+                </HBox.margin>
+            </Text>
+        </HBox>
+    </top>
+
+    <!--<stylesheets>-->
+        <!--<URL value="@../java/org/avalanche/view/css/style.css" />-->
+    <!--</stylesheets>-->
 </BorderPane>

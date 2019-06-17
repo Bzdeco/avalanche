@@ -1,0 +1,203 @@
+* {
+    -fx-primary-dark:       #232323; /*#2A2E37*/
+    -fx-primary-color:      #2ea8e6; /*#2ea8e6*/
+    -fx-primary-light:      #dddddd; /*#DDDDDD*/
+    -fx-secondary-dark:     #383838; /*#383838*/
+}
+
+.root {
+    -fx-background-color:   -fx-primary-dark;
+}
+
+* {
+    -fx-animated:           true;
+    -fx-text-fill:          -fx-primary-light;
+}
+/*--------------- titled pane --------------------*/
+
+.titled-pane {
+    -fx-animated:           true;
+    -fx-text-fill:          -fx-primary-light;
+    -fx-background-color:   -fx-primary-dark;
+}
+
+.titled-pane .title  {
+
+    -fx-font:               bold 16px System;
+    -fx-text-fill:          -fx-primary-light;
+    -fx-background-color:   derive(-fx-primary-color, -20%);
+    -fx-background-radius:  0;
+    -fx-padding:            0.3em 0.833333em 0.35em 0.833333em;
+
+}
+
+.titled-pane .title:hover{
+    -fx-text-fill:          derive(-fx-secondary-dark, -5%);
+    -fx-background-color:   derive(-fx-primary-color, 10%);
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow {
+    -fx-background-color:   -fx-primary-light;
+}
+
+/*--------------- button  --------------------*/
+
+.button {
+    -fx-font:               bold 14px System;
+    -fx-text-fill:          -fx-primary-light;
+    -fx-background-color:   derive(-fx-primary-color, -20%);
+    -fx-background-radius:  0;
+    -fx-label-padding:      0.3em 0.833333em 0.35em 0.833333em;
+}
+
+.button:hover {
+    -fx-text-fill:          derive(-fx-primary-light, -5%);
+    -fx-background-color:   derive(-fx-primary-color, 10%);
+}
+/*--------------- tree cell --------------------*/
+
+.tree-cell{
+    -fx-font:               14px System;
+    -fx-text-fill:          derive(-fx-primary-light, -5%);
+}
+
+.tree-cell:odd{
+    -fx-background-color:   derive(-fx-primary-dark,-5%);
+}
+
+.tree-cell:even{
+    -fx-background-color:   derive(-fx-primary-dark,-30%);
+}
+
+/*--------------- check box--------------------*/
+
+.check-box{
+    -fx-background-color:   -fx-primary-dark;
+    -fx-color:              -fx-primary-dark;
+    -fx-text-fill:          -fx-secondary-dark;
+    -fx-border-radius:      0;
+    -fx-background-insets:  0, 0 0 0 0, 0 0 0 0;
+}
+
+.check-box:selected {
+    -fx-text-fill:          -fx-primary-light;
+}
+
+.check-box .box {
+    -fx-background-color:   -fx-primary-color;
+    -fx-text-fill:          -fx-secondary-dark;
+    -fx-border-radius:      0;
+}
+
+/*--------------- arrow & slider--------------------*/
+
+.tree-cell .arrow{
+    -fx-background-color:   -fx-primary-light;
+}
+
+.tree-cell .slider .track{
+    -fx-fill:               -fx-primary-color;
+    -fx-background-color:   -fx-primary-color;
+}
+
+/*--------------- table view --------------------*/
+
+.table-view .column-header {
+    -fx-background-color:   -fx-primary-dark;
+    -fx-border-color:       -fx-primary-light;
+    -fx-border-radius:      2px;
+}
+
+.table-row-cell:even {
+    -fx-background-color:   derive(-fx-primary-dark,-30%);
+    -fx-text-fill:          derive(-fx-primary-light, -5%);
+}
+
+.table-row-cell:odd {
+    -fx-background-color:   derive(-fx-primary-dark,-5%);
+    -fx-text-fill:          derive(-fx-primary-light, +5%);
+}
+
+.bottom-table {
+    -fx-border-color:       -fx-primary-light;
+    -fx-border-radius:      2px;
+}
+
+/*--------------- text &  progress bar --------------------*/
+
+.text-id {
+    -fx-fill:               -fx-primary-light;
+}
+
+.progress-bar {
+    -fx-padding:                            10px 0 0 0 ;
+    -fx-indeterminate-bar-length:           60;
+    -fx-indeterminate-bar-escape:           true;
+    -fx-indeterminate-bar-flip:             true;
+    -fx-indeterminate-bar-animation-time:   2;
+}
+.progress-bar > .bar {
+    -fx-background-color:        -fx-primary-color;
+    -fx-background-insets:       0 0 0 0;
+    -fx-background-radius:       0;
+    -fx-padding:                 0.75em;
+}
+
+.progress-bar > .track {
+    -fx-background-color:       derive(-fx-primary-dark, +30%);
+    -fx-background-insets:      0, 0 0 0 0, 0 0 0 0;
+    -fx-background-radius:      0;
+}
+
+/*---------------  scroll bar --------------------*/
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color:       -fx-primary-dark;
+    -fx-border-color :          transparent;
+    -fx-background-radius :     0em;
+    -fx-border-radius :         0em;
+}
+
+
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(-fx-primary-dark,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(-fx-primary-light,20.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 0em;
+}
