@@ -92,13 +92,13 @@ dependencies {
 
 jar {
     manifest {
-        attributes('Main-Class': 'org.avalanche.Main',
+        attributes('Main-Class': 'org.avalanche.AvalancheApplication',
                    'Implementation-Title': project.name,
                    'Implementation-Version': project.version)
     }
 }
 
 application {
-    mainClassName = 'org.avalanche.Main'
+    mainClassName = 'org.avalanche.AvalancheApplication'
     applicationDefaultJvmArgs = ['-ea', '-Xmx2048m']
 }
